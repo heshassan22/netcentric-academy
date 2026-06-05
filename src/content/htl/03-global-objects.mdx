@@ -1,0 +1,94 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Global Objects',
+  topics: 'The implicit objects HTL gives you for free'
+};
+
+HTL injects a set of **global (implicit) objects** into every script. You use them without
+declaring anything — they are the bridge between the JCR/Sling world and your markup.
+
+## The ones you'll use most
+
+- `properties` — ValueMap of the *current* resource (the component node)
+- `pageProperties` — `jcr:content` properties of the current page
+- `inheritedPageProperties` — same, but walks up the page hierarchy
+- `currentPage` — the WCM Page (path, title, name, depth…)
+- `resource` — the current Sling Resource
+- `request` — the `SlingHttpServletRequest` (selectors, params…)
+- `wcmmode` — edit / preview / disabled flags (author vs publish)
+- `component` — the component definition
+
+## `resource` & `properties`
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<ul>
+  <li>${resource.path}</li>
+  <li>${resource.name}</li>
+  <li>${properties['jcr:primaryType']}</li>
+</ul>
+```
+
+</Tab>
+<Tab label="Result">
+
+Example output:
+
+<ul>
+  <li>/content/site/en/jcr:content/root/demo</li>
+  <li>demo</li>
+  <li>nt:unstructured</li>
+</ul>
+
+</Tab>
+</Tabs>
+
+## `currentPage` & `pageProperties`
+
+```html
+${currentPage.title}    ${currentPage.path}    ${currentPage.depth}
+${pageProperties['jcr:title']}
+```
+
+## `wcmmode` — author or publish?
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<sly data-sly-test="${wcmmode.edit}">Author-only hint</sly>
+<sly data-sly-test="${wcmmode.disabled}">This is how it looks on publish</sly>
+```
+
+</Tab>
+<Tab label="Result">
+
+Use it to load author-only clientlibs or placeholders, like the project's `title` component does.
+
+</Tab>
+</Tabs>
+
+## `request`
+
+```html
+${request.requestPathInfo.selectorString}
+${request.requestPathInfo.extension}
+${request.requestPathInfo.suffix}
+```
+
+## 🧪 Try it in the HTL REPL
+
+The REPL evaluates these against its current resource/request:
+
+```html
+Resource:   ${resource.path}
+Page:       ${currentPage.path}
+Prim. type: ${properties['jcr:primaryType']}
+Edit mode?  ${wcmmode.edit}
+Extension:  ${request.requestPathInfo.extension}
+```
+
+<ReplLink />

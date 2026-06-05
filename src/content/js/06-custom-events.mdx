@@ -1,0 +1,85 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'Custom Events',
+  topics: 'Creating events · dispatching · cross-component communication · modules'
+};
+
+Custom events let **independent components talk to each other** without direct references — one
+dispatches, any number listen.
+
+## Create, listen, dispatch
+
+```js
+const event = new Event('customEvent');
+
+window.addEventListener('customEvent', () => {
+  // react to it
+});
+
+window.dispatchEvent(event);
+```
+
+You can dispatch on `window`, `document`, or any element. Use a shared target (like `window`) for
+broadcast-style communication between unrelated components.
+
+## Carrying data — `CustomEvent`
+
+```js
+const event = new CustomEvent('cart:add', { detail: { id: 42, qty: 1 } });
+window.dispatchEvent(event);
+
+window.addEventListener('cart:add', (e) => {
+  console.log(e.detail.id, e.detail.qty);   // 42 1
+});
+```
+
+<Callout type="do">Namespace event names (`cart:add`, `lightbulb:on`) so they read clearly and don't collide with native events.</Callout>
+
+## 🛠 Practice — synchronised light bulbs
+
+Several "light bulb" components on the page. Two buttons should switch **all** bulbs on/off via
+custom events dispatched on `window`; each bulb toggles `light-bulb__base--on` in response.
+
+<Reveal>
+
+```js
+// buttons dispatch
+onButton.addEventListener('click', () => window.dispatchEvent(new Event('bulb:on')));
+offButton.addEventListener('click', () => window.dispatchEvent(new Event('bulb:off')));
+
+// each bulb listens
+init() {
+  window.addEventListener('bulb:on',  () => this.element.classList.add('light-bulb__base--on'));
+  window.addEventListener('bulb:off', () => this.element.classList.remove('light-bulb__base--on'));
+}
+```
+
+</Reveal>
+
+## Reusing logic — modules
+
+When a piece of code is useful in several components, extract it into a **module** and import it.
+
+```js
+// modules/intersection-observer.js
+export default function observe(target, callback, once = false) {
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        callback(entry);
+        if (once) obs.unobserve(target);
+      }
+    });
+  });
+  io.observe(target);
+}
+```
+
+```js
+// in a component
+import observe from '../modules/intersection-observer.js';
+observe(this.element, () => this.displayImg(), true);
+```
+
+<Callout type="note">Custom events (loose coupling between components) plus shared modules (reused logic) are the two patterns that keep a component-based front end maintainable as it grows.</Callout>

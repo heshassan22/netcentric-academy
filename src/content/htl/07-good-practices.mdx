@@ -1,0 +1,50 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'Good Practices',
+  topics: 'The Netcentric HTL Style Guide as DO / DON\'T pairs'
+};
+
+The rules to internalise. Full project:
+[github.com/Netcentric/aem-htl-style-guide](https://github.com/Netcentric/aem-htl-style-guide).
+
+## 1 · Keep logic out of the view — use Sling Models
+
+<Callout type="dont">`${properties.first} ${properties.last} (${properties.age > 17 ? 'adult' : 'minor'})`</Callout>
+<Callout type="do">`${model.fullName}` — compose strings and decisions in Java.</Callout>
+
+## 2 · Use `<sly>`, not a wrapper with `data-sly-unwrap`
+
+<Callout type="dont">`<div data-sly-unwrap data-sly-use.m="…"></div>`</Callout>
+<Callout type="do">`<sly data-sly-use.m="…"/>`</Callout>
+
+## 3 · Meaningful, camelCase identifiers; reuse test variables
+
+<Callout type="dont">`<div data-sly-test="${properties.title}">${properties.title}</div>`</Callout>
+<Callout type="do">`<div data-sly-test.hasTitle="${properties.title}">${hasTitle}</div>` — evaluate once, reuse.</Callout>
+
+## 4 · Declare `data-sly-use` at the top
+
+<Callout type="do">Put all `data-sly-use` statements first (in `<sly>` tags) so a script's dependencies are obvious at a glance.</Callout>
+
+## 5 · Respect the output context — never disable escaping
+
+<Callout type="dont">`${properties.text @ context='unsafe'}`</Callout>
+<Callout type="do">Let HTL choose the context; set it explicitly only with intent (e.g. `@ context='html'` for rich text).</Callout>
+
+## 6 · Name loop variables; avoid the default `item`
+
+<Callout type="dont">`<li data-sly-list="${model.courses}">${item.title}</li>`</Callout>
+<Callout type="do">`<li data-sly-list.course="${model.courses}">${course.title}</li>`</Callout>
+
+## 7 · Reuse intentionally
+
+- Logic / data → `data-sly-use` (a model)
+- Parameterised markup → `data-sly-template` + `data-sly-call`
+- Render another node → `data-sly-resource` (prefer over including JSP)
+
+## 8 · Comment with `<!--/* */-->`
+
+<Callout type="do">Keeps notes and any expressions out of the published page.</Callout>
+
+<Callout type="note">**The thread running through all of these:** HTL is a *view*. If you're tempted to compute, concatenate, or branch on complex logic in the template, that work belongs in a Sling Model.</Callout>

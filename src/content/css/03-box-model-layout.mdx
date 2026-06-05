@@ -1,0 +1,62 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'The Box Model & Basic Layout',
+  topics: 'Box model · <code>box-sizing</code> · <code>position</code> · z-index &amp; stacking contexts'
+};
+
+Every element is a rectangular box. Getting layout right starts with understanding that box.
+
+## The box model
+
+From the inside out:
+
+- **Content** — the text/image area
+- **Padding** — space *inside* the border (transparent)
+- **Border** — around the padding
+- **Margin** — space *outside* the border (transparent)
+
+```css
+.box {
+  width: 200px;     /* by default applies to the CONTENT box only */
+  padding: 16px;
+  border: 2px solid;
+}
+```
+
+<Callout type="warn">By default `width`/`height` size only the **content** box, so padding + border are *added* on top — a 200px box with 16px padding is actually 234px wide.</Callout>
+
+<Callout type="do">Set `box-sizing: border-box` (globally is fine) so `width` includes padding and border. It's what most projects do:</Callout>
+
+```css
+*, *::before, *::after { box-sizing: border-box; }
+```
+
+## `position`
+
+| Value | Behaviour |
+|---|---|
+| `static` | default; normal flow; ignores `top/left/…` |
+| `relative` | offset *from its own* position; original space is kept |
+| `absolute` | removed from flow; positioned to nearest *positioned* ancestor |
+| `fixed` | removed from flow; positioned to the viewport; stays on scroll |
+| `sticky` | flows normally, then "sticks" within its container on scroll |
+
+```css
+.parent  { position: relative; }     /* establishes a containing block */
+.badge   { position: absolute; top: 0; right: 0; }
+```
+
+<Callout type="note">`absolute` looks for the nearest ancestor with a `position` other than `static`. If there is none, it anchors to the document body.</Callout>
+
+## z-index & stacking contexts
+
+`z-index` controls vertical stacking of overlapping elements — but only **within the same
+stacking context**. A new stacking context is created by, e.g., a positioned element with a
+`z-index`, `opacity < 1`, `transform`, `filter`, etc.
+
+```css
+.modal { position: fixed; z-index: 1000; }
+```
+
+<Callout type="warn">"My `z-index: 9999` doesn't work!" almost always means the element is trapped in a parent stacking context. Learn stacking contexts — it saves real headaches.</Callout>

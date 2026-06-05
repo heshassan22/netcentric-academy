@@ -1,0 +1,54 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Custom Properties',
+  topics: '<code>var()</code> · scoping · the cascade · theming'
+};
+
+Custom properties (often called "CSS variables") hold a value you can reuse with `var()`. Unlike
+Sass variables, they're **live in the browser** — they cascade, inherit, and can change at runtime.
+
+## Declaring and using
+
+```css
+:root {
+  --brand: #6b2fb3;
+  --space: 1rem;
+}
+
+.button {
+  background: var(--brand);
+  padding: var(--space);
+}
+```
+
+## Fallback values
+
+```css
+color: var(--accent, currentColor);   /* use currentColor if --accent is unset */
+```
+
+## They cascade and scope to elements
+
+A custom property is scoped to the element it's declared on and inherits to descendants —
+so you can **override per component or per state**:
+
+```css
+.card        { --pad: 1rem; padding: var(--pad); }
+.card--roomy { --pad: 2rem; }            /* same rule, new value */
+```
+
+## Theming with one switch
+
+Because they're live, flipping a value re-themes everything that uses it:
+
+```css
+:root        { --bg: #fff; --fg: #1c1c28; }
+[data-theme="dark"] { --bg: #14141c; --fg: #e8e8f2; }
+
+body { background: var(--bg); color: var(--fg); }
+```
+
+<Callout type="note">This site's light/dark toggle is exactly this: it flips `data-theme` on `<html>`, and every `var(--…)` updates instantly — no extra CSS per component.</Callout>
+
+<Callout type="do">Expose component "knobs" as custom properties (`--gap`, `--columns`). It makes components themeable and overridable without touching their internals.</Callout>

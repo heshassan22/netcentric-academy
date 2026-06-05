@@ -1,0 +1,87 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Policies',
+  topics: 'Template vs content policies · allowed components · the design dialog · <code>currentStyle</code>'
+};
+
+A **policy** is design-time configuration attached to a component **within an editable
+template**. Where a *dialog* edits one component instance's content, a *policy* configures a
+component for **every instance** on pages built from that template.
+
+<Callout type="note">**Dialog vs Policy.** Dialog = per-instance *content*, edited by the page author. Policy = per-template *configuration*, set once by the template author and applied everywhere.</Callout>
+
+## Where policies live
+
+Editable templates and their policies live under `/conf`:
+
+```text
+/conf/academy/settings/wcm/
+├── templates/academy-homepage/
+│   ├── structure/      ← locked layout + which components are where
+│   ├── initial/        ← content a new page starts with
+│   └── policies/       ← maps each component → a policy
+└── policies/           ← the policy definitions themselves
+```
+
+## Use 1 — Allowed components (why your component shows up)
+
+The responsive grid's policy lists which **component groups** an author may insert. This is
+exactly what decides whether your new component appears in **Insert New Component**:
+
+```xml
+<policy_default_component_parsys
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Academy Default Parsys Policy"
+    sling:resourceType="wcm/core/components/policy/policy"
+    components="group:Academy"/>
+```
+
+<Callout type="warn">If a component is missing from the Insert dialog, its `componentGroup` is probably not in this list. Add the group (e.g. `group:Academy`) or list the component path explicitly, then redeploy the policy.</Callout>
+
+## Use 2 — Configuring a component via its design dialog
+
+A component can expose **policy-level options** through a **design dialog**
+(`cq:design_dialog`, same Granite UI as a normal dialog). The template author sets them once;
+the values are stored in the policy and read at render time.
+
+```text
+apps/academy/components/title/
+├── _cq_dialog/         ← per-instance content (the title text)
+└── _cq_design_dialog/  ← per-policy options (allowed heading sizes, default style…)
+```
+
+Read policy values in HTL through the `currentStyle` global object:
+
+```html
+<sly data-sly-test.allowH1="${currentStyle.allowH1}">…</sly>
+${currentStyle.defaultColor}
+```
+
+…or in a Sling Model with `@ScriptVariable private Style currentStyle;`.
+
+## How a template wires it together
+
+The template's `policies` node maps each component to a policy by `cq:policy`:
+
+```xml
+<root
+    cq:policy="wcm/foundation/components/responsivegrid/policy_default_container"
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="wcm/core/components/policies/mapping">
+  <image
+      cq:policy="academy/components/image/policy_image"
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="wcm/core/components/policies/mapping"/>
+</root>
+```
+
+Here the `image` component is bound to a policy that fixes its rendition widths, crop ratios,
+and lazy-loading — author-proof configuration that applies to every image on the template.
+
+## Editing policies in the UI
+
+In practice template authors do this visually: **Templates → open template → Structure mode →
+select a component → Policy tab**. The XML above is what that UI writes to `/conf`.
+
+<Callout type="do">Decide deliberately: does a setting belong to the **author of each instance** (dialog) or to the **template** (policy)? Heading-level *options*, allowed components, and style variations are policy; the actual heading *text* is dialog.</Callout>

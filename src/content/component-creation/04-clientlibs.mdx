@@ -1,0 +1,79 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Adding the Clientlibs',
+  topics: '<code>cq:ClientLibraryFolder</code> · categories · loading from HTL · <code>ui.frontend</code>'
+};
+
+A component usually needs CSS (and sometimes JS). AEM delivers these through a **client library**
+(clientlib) — a folder of CSS/JS that AEM bundles, minifies, and serves under a **category**
+name you reference from HTL.
+
+## Where styles come from in this project
+
+The front end lives in `ui.frontend`. You author SCSS per component:
+
+```text
+ui.frontend/src/main/frontend/academy/publish/components/hello/
+└── hello.clientlibs.scss
+```
+
+The build (`nc-fe-build`) compiles it into a generated clientlib whose **category** follows the
+folder path: `academy.publish.components.hello`.
+
+## Loading the clientlib from HTL
+
+Pull the category in with the Granite `clientlib` template:
+
+```html
+<sly data-sly-use.clientlib="${'/libs/granite/sightly/templates/clientlib.html'}"
+     data-sly-call="${clientlib.all @ categories='academy.publish.components.hello'}"/>
+
+<h2 class="hello__title">${hello.greeting}</h2>
+```
+
+- `clientlib.all` injects both CSS and JS. There are also `clientlib.css` and `clientlib.js`
+  if you need only one.
+- The `categories` string must match the generated category exactly.
+
+<Callout type="note">Author-only styling? Guard it with `<sly data-sly-test="${wcmmode.edit}">` around an author clientlib call, like the project's `title` component does.</Callout>
+
+## The manual alternative — `cq:ClientLibraryFolder`
+
+Without the FE build you can define a clientlib node by hand under the component (or under
+`/apps/academy/clientlibs`):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:ClientLibraryFolder"
+    allowProxy="{Boolean}true"
+    categories="[academy.publish.components.hello]"/>
+```
+
+with sibling files listing what to include:
+
+```text
+hello-clientlib/
+├── .content.xml      ← cq:ClientLibraryFolder (above)
+├── css.txt           ← #base=css  →  hello.css
+├── js.txt            ← #base=js   →  hello.js
+├── css/hello.css
+└── js/hello.js
+```
+
+The FE build just automates generating this from your SCSS/JS sources.
+
+## Useful clientlib properties
+
+| Property | Purpose |
+|---|---|
+| `categories` | the name(s) you load by |
+| `allowProxy` | serve under `/etc.clientlibs` (recommended, keeps `/apps` private) |
+| `dependencies` | other categories that must load first |
+| `embed` | inline another category's output into this one |
+
+<Callout type="do">Name categories by environment + type + component (`academy.publish.components.hello`). Consistent naming keeps the clientlib graph predictable as the project grows.</Callout>
+
+Next: how **policies** configure components per template — including which clientlibs and which
+**Style System** variations are available.

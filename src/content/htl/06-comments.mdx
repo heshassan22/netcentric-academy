@@ -1,0 +1,47 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'HTML vs HTL Comments',
+  topics: 'What gets shipped to the browser — and what gets compiled away'
+};
+
+There are two kinds of comment, with very different behaviour. Getting this wrong leaks data
+into the page source.
+
+## HTL comment — `<!--/* */-->`
+
+```html
+<!--/* TODO: ${resource.path} — note for developers */-->
+```
+
+<Callout type="do">Removed by the HTL compiler. **Never reaches the browser**, and the expression inside is **not evaluated**. Use it for notes, TODOs, and disabling code.</Callout>
+
+## HTML comment — `<!-- -->`
+
+```html
+<!-- Page path is ${currentPage.path} -->
+```
+
+<Callout type="dont">Kept in the final markup and **sent to the browser** — and its expression **is evaluated**. This is how comments accidentally leak internal paths or data.</Callout>
+
+## Side by side
+
+| | HTL `<!--/* */-->` | HTML `<!-- -->` |
+|---|---|---|
+| In page source? | No | Yes |
+| Expressions evaluated? | No | Yes |
+| Use for | dev notes, TODOs, disabling | real comments meant for the client (no data!) |
+
+<Callout type="note">Default to HTL comments. Treat any expression inside an HTML comment as published data.</Callout>
+
+## 🧪 Try it in the HTL REPL
+
+Run this, then inspect the rendered output — only the HTML comment survives, with its expression evaluated:
+
+```html
+<!--/* HTL comment: removed at compile time, never sent: ${currentPage.title} */-->
+<!-- HTML comment: kept AND evaluated: ${resource.path} -->
+<p>Compare this against the rendered source.</p>
+```
+
+<ReplLink />

@@ -1,0 +1,108 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'Style System',
+  topics: '<code>cq:styleGroups</code> · author-selectable variations · classes from your clientlib'
+};
+
+The **Style System** lets authors switch between predefined visual variations of a component by
+toggling CSS classes — **without a code change per variation and without a new dialog field**.
+It's a policy feature: you define named styles in the component's policy, AEM adds the chosen
+class to the component's wrapper, and your clientlib provides the CSS.
+
+## The three pieces
+
+```text
+1. Policy        defines the styles (label → CSS class)   →  cq:styleGroups
+2. AEM           adds the selected class to the wrapper    →  automatic
+3. Your clientlib defines what that class looks like       →  BEM modifier in SCSS
+```
+
+## 1 · Define styles in the policy
+
+Styles live under `cq:styleGroups` in the component's policy. Each style has a label (what the
+author sees) and the class(es) it applies:
+
+```xml
+<policy_title
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="wcm/core/components/policy/policy"
+    jcr:title="Title">
+  <cq:styleGroups jcr:primaryType="nt:unstructured">
+    <item0 jcr:primaryType="nt:unstructured" cq:styleGroupLabel="Appearance">
+      <cq:styles jcr:primaryType="nt:unstructured">
+        <item0 jcr:primaryType="nt:unstructured"
+            cq:styleLabel="Hero"
+            cq:styleClasses="title--hero"/>
+        <item1 jcr:primaryType="nt:unstructured"
+            cq:styleLabel="Compact"
+            cq:styleClasses="title--compact"/>
+      </cq:styles>
+    </item0>
+  </cq:styleGroups>
+</policy_title>
+```
+
+<Callout type="note">In the UI this is the **Styles** tab of the component's policy. The author then picks a style from the component toolbar on the page.</Callout>
+
+## 2 · AEM applies the class
+
+When an author selects "Hero", AEM adds `title--hero` to the component's wrapping element
+automatically. You don't read anything in HTL — the class is just there on the wrapper:
+
+```html
+<!-- what AEM renders around your component -->
+<div class="title title--hero"> … your component markup … </div>
+```
+
+## 3 · Style the classes in your clientlib (BEM)
+
+Your job is to make those classes mean something. The project's stylelint config enforces
+**BEM** (`block__element--modifier`, kebab-case):
+
+```scss
+$module-name: "title";
+
+.#{$module-name} {
+  &__text { font-weight: 700; }
+
+  &--hero {                 // .title--hero
+    font-size: 3rem;
+    text-transform: uppercase;
+  }
+  &--compact {              // .title--compact
+    font-size: 1.25rem;
+    opacity: .8;
+  }
+}
+```
+
+<Tabs>
+<Tab label="Author picks">
+
+Component toolbar → **Styles** → *Hero* / *Compact*
+
+</Tab>
+<Tab label="Result">
+
+The same component, two policy-driven looks — no new dialog field, no code change.
+
+<p style={{fontSize:'1.6rem',fontWeight:800,textTransform:'uppercase'}}>Hero title</p>
+<p style={{fontSize:'1rem',opacity:.7}}>Compact title</p>
+
+</Tab>
+</Tabs>
+
+## Style System vs a dialog dropdown
+
+You *could* add a `select` dialog field and a `${'title--' @ format=...}` class instead — but:
+
+<Callout type="do">Use the **Style System** for purely visual variations (appearance, spacing, theme). It keeps presentation in policy + CSS, needs no model code, and gives authors a consistent picker across all components.</Callout>
+<Callout type="dont">Don't hand-roll a "style" dialog dropdown for what the Style System already does — you'd duplicate a platform feature and add model/HTL code to maintain.</Callout>
+
+## You've now covered the full path
+
+**Structure → no-dialog → dialog → clientlibs → policies → Style System.** That's everything to
+build, configure, and skin an AEM component the way this project does. Advanced next steps:
+multifield lists, extending Core Components via `sling:resourceSuperType`, and unit-testing the
+Sling Model with AEM Mocks.

@@ -1,0 +1,85 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Values & Operators',
+  topics: 'Variables · data types · operators · interpolation <code>#{}</code>'
+};
+
+## Variables
+
+Declare with `$name: value;` and reuse anywhere.
+
+```scss
+$brand: #6b2fb3;
+$space: 1rem;
+
+.card { padding: $space; border-color: $brand; }
+```
+
+## Data types
+
+| Type | Examples |
+|---|---|
+| Number | `10`, `10px`, `10.5`, `1rem`, `2em` |
+| String | `Netcentric`, `"Netcentric"` |
+| Color | `red`, `#ff0000`, `rgba(255,0,0,1)`, `hsl(0, 100%, 50%)` |
+| Boolean / Null | `true`, `false`, `null` |
+| List | `0 auto`, `Helvetica, Arial, sans-serif` |
+| Map | key/value pairs (below) |
+
+### Maps
+
+Keys are unique; values can be any type, including nested lists and maps.
+
+```scss
+$theme: (
+  brand: #6b2fb3,
+  space: 1rem,
+  shades: (light: #eee, dark: #222)
+);
+
+.box { color: map.get($theme, brand); }   /* helper functions read maps */
+```
+
+## Operators
+
+```scss
+// Equality
+1px == 1px;                 // true
+96px == 1in;                // true (unit-aware)
+
+// Boolean
+true and true;              // true
+not true;                   // false
+
+// Relational
+10px < 17px;                // true
+
+// String concatenation
+"Helvetica" + " Neue";      // "Helvetica Neue"
+
+// Numeric (unit-aware)
+10s + 15s;                  // 25s
+1in - 10px;                 // 0.8958...in
+100px + 50;                 // 150px
+```
+
+<Callout type="warn">Mixing incompatible units throws (`100px < 17s` is an error). And `5px * 3px` gives `15px*px` — multiply a length by a *unitless* number, not by another length.</Callout>
+
+## Interpolation `#{}`
+
+Drop a Sass value into a place that isn't a normal property value — selectors, property *names*,
+or inside strings like `calc()`:
+
+```scss
+$name: foo;
+$attr: border;
+$line-height: 30px;
+
+p.#{$name} {
+  #{$attr}-color: red;                     /* border-color: red */
+  height: calc(100% - #{$line-height});    /* calc(100% - 30px) */
+}
+```
+
+<Callout type="do">You especially need `#{}` when mixing Sass variables with CSS custom properties or inside `calc()` — Sass won't reach into those without interpolation.</Callout>

@@ -1,0 +1,108 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Functions & Mixins',
+  topics: '<code>@mixin</code>/<code>@include</code> · <code>@function</code> · <code>@extend</code> · control flow · mixins vs functions'
+};
+
+The `@`-rules are where Sass gets its reuse and logic powers.
+
+## `@mixin` / `@include` — reusable chunks of CSS
+
+```scss
+@mixin button($bg: var(--brand), $fg: #fff) {   // default values
+  display: inline-flex;
+  padding: .5rem 1rem;
+  border-radius: 8px;
+  background: $bg;
+  color: $fg;
+}
+
+.cta      { @include button; }
+.cta--ghost { @include button(transparent, var(--brand)); }
+```
+
+The mixin's CSS is **emitted each time** you `@include` it. You can pass arguments and give them
+defaults.
+
+## `@function` — compute and return a value
+
+```scss
+@function rem($px, $base: 16px) {
+  @return math.div($px, $base) * 1rem;
+}
+
+.title { font-size: rem(24px); }   // 1.5rem
+```
+
+A function returns a **value**; it never emits CSS itself.
+
+## `@extend` — share a selector's declarations
+
+```scss
+%card-base { border: 1px solid #ddd; border-radius: 8px; }
+
+.card  { @extend %card-base; }
+.panel { @extend %card-base; }
+```
+
+<Callout type="warn">`@extend` groups selectors in the output, which can produce surprising, far-reaching selector lists. When in doubt, prefer a `@mixin` — it's more predictable.</Callout>
+
+## Control flow
+
+```scss
+// @if / @else
+@mixin theme($mode) {
+  @if $mode == dark { background: #14141c; }
+  @else            { background: #fff; }
+}
+
+// @each over a list/map
+$sizes: (sm: .5rem, md: 1rem, lg: 2rem);
+@each $name, $val in $sizes {
+  .p-#{$name} { padding: $val; }
+}
+
+// @for
+@for $i from 1 through 4 {
+  .col-#{$i} { width: percentage(math.div($i, 4)); }
+}
+```
+
+Also available: `@while`, plus `@use` / `@forward` to organise files (the modern replacement for
+`@import`).
+
+## Mixins vs functions
+
+| | `@mixin` | `@function` |
+|---|---|---|
+| Returns | a **chunk of CSS** | a **value** |
+| Emits styles? | yes | no |
+| Used with | `@include` | called in an expression |
+| Typical use | a button, a media-query helper | a calculation, a map lookup |
+
+## Practice — complete the button mixin
+
+<Reveal>
+
+```scss
+@mixin button($bg: var(--brand), $fg: #fff, $radius: 8px) {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem 1rem;
+  border: 0;
+  border-radius: $radius;
+  background: $bg;
+  color: $fg;
+  cursor: pointer;
+
+  &:hover { filter: brightness(1.08); }
+}
+
+.cta { @include button; }
+```
+
+</Reveal>
+
+<Callout type="do">Use **functions** to compute values (sizes, colors from a map) and **mixins** to stamp out reusable blocks of CSS. A function can feed a mixin — that's the most flexible combo.</Callout>

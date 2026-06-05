@@ -1,0 +1,132 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Loop Control',
+  topics: '<code>data-sly-list</code> · <code>data-sly-repeat</code> · the <code>itemList</code> object · maps'
+};
+
+Two blocks iterate collections — and the difference matters: `data-sly-list` repeats the
+element's **children**; `data-sly-repeat` repeats the **element itself**.
+
+## The `itemList` object
+
+Inside a loop you get metadata about the iteration:
+
+- `itemList.index` — 0-based position · `itemList.count` — total size
+- `itemList.first` / `itemList.last` — booleans
+- `itemList.odd` / `itemList.even` / `itemList.middle`
+
+<Callout type="do">Name the loop variable: `data-sly-list.course` gives you `course` and `courseList` instead of the default `item` / `itemList`.</Callout>
+
+## `data-sly-list` with a named item
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<!--/* given: model.courses = [
+     { title: "HTL Fundamentals",             level: "Beginner" },
+     { title: "Sling Models & Use-API",       level: "Intermediate" },
+     { title: "Style Guide & Best Practices", level: "Advanced" } ] */-->
+<ul data-sly-list.course="${model.courses}">
+  <li>#${courseList.index} — ${course.title} (${course.level})
+    <sly data-sly-test="${courseList.first}"> ← first</sly>
+    <sly data-sly-test="${courseList.last}"> ← last</sly>
+  </li>
+</ul>
+```
+
+</Tab>
+<Tab label="Result">
+
+<ul>
+  <li>#0 — HTL Fundamentals (Beginner) ← first</li>
+  <li>#1 — Sling Models & Use-API (Intermediate)</li>
+  <li>#2 — Style Guide & Best Practices (Advanced) ← last</li>
+</ul>
+
+</Tab>
+<Tab label="When to use it">
+
+To render any collection an author or the back end produces: cards from a multifield, navigation
+items, search results, tags, FAQ entries, table rows. Use the `itemList` metadata for real-world
+polish — separators between items, "and" before the last one, zebra striping, or a
+"first 3 + show more" pattern.
+
+</Tab>
+</Tabs>
+
+## `data-sly-repeat` — the host element repeats
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<!--/* given: model.levels = ["Beginner", "Intermediate", "Advanced"] */-->
+<span class="pill" data-sly-repeat.tag="${model.levels}">${tag}</span>
+```
+
+</Tab>
+<Tab label="Result">
+
+No wrapper — each `<span>` is a full copy:
+
+<span className="pill">Beginner</span> <span className="pill">Intermediate</span> <span className="pill">Advanced</span>
+
+</Tab>
+<Tab label="When to use it">
+
+When the repeated thing *is* the element and you must not introduce a wrapper: `<tr>` rows dropped
+straight into a `<table>`, `<option>`s in a `<select>`, breadcrumb `<li>`s, or sibling tags that
+have to be direct children of an existing parent. If a wrapper is fine, prefer `data-sly-list`.
+
+</Tab>
+</Tabs>
+
+## Iterating a Map
+
+When you loop a `Map`, the loop variable is the **key**; read the value with `${map[key]}`.
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<!--/* given: model.glossary = {
+     "Block":      "An HTL statement, written as a data-sly-* attribute.",
+     "Expression": "A placeholder evaluated at render time." } */-->
+<dl data-sly-list.term="${model.glossary}">
+  <dt>${term}</dt>
+  <dd>${model.glossary[term]}</dd>
+</dl>
+```
+
+</Tab>
+<Tab label="Result">
+
+<dl>
+  <dt><strong>Block</strong></dt>
+  <dd>An HTL statement, written as a data-sly-* attribute.</dd>
+  <dt><strong>Expression</strong></dt>
+  <dd>A placeholder evaluated at render time.</dd>
+</dl>
+
+</Tab>
+</Tabs>
+
+<Callout type="warn">HTL has no arithmetic, so you can't print a 1-based number with `index + 1`. Use an `<ol>` for auto-numbering, or expose the number from a model.</Callout>
+
+## 🧪 Try it in the HTL REPL
+
+Self-contained — inline arrays, no model needed:
+
+```html
+<ul data-sly-list.tech="${['HTL', 'Sling Models', 'Clientlibs']}">
+  <li>${techList.index}. ${tech}
+    <sly data-sly-test="${techList.first}"> ← first</sly>
+    <sly data-sly-test="${techList.last}"> ← last</sly>
+  </li>
+</ul>
+<span data-sly-repeat.n="${['A', 'B', 'C']}">[${n}]</span>
+```
+
+<ReplLink />

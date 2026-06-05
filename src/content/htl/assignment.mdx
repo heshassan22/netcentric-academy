@@ -1,0 +1,446 @@
+export const meta = {
+  order: 99,
+  num: '',
+  title: 'Hands-on Assignment',
+  topics: 'One dataset · many tasks · solve them in the AEM HTL REPL'
+};
+
+Paste the **GIVEN** block into the [AEM HTL REPL](https://github.com/adobe/aem-htl-repl), then
+write your answer underneath and run it. Reveal each answer only after you've tried.
+
+<Callout type="note">The REPL has no dialog, so the "properties" are faked with the `data-sly-test.x="${…}"` idiom — it assigns the variable and the empty `<sly>` renders nothing. Falsy values still assign (`data-sly-test.isCancelled="${false}"` → usable as `${!isCancelled}`).</Callout>
+
+<ReplLink>Open the HTL REPL ↗</ReplLink>
+
+## GIVEN — paste this first
+
+```html
+<sly data-sly-test.firstName="${'Ada'}"/>
+<sly data-sly-test.lastName="${'Lovelace'}"/>
+<sly data-sly-test.talkTitle="${'Weaving Algorithms'}"/>
+<sly data-sly-test.headingLevel="${'h2'}"/>
+<sly data-sly-test.durationMinutes="${45}"/>
+<sly data-sly-test.seatsTotal="${100}"/>
+<sly data-sly-test.seatsTaken="${120}"/>
+<sly data-sly-test.isKeynote="${true}"/>
+<sly data-sly-test.isCancelled="${false}"/>
+<sly data-sly-test.bioHtml="${'<b>Ada</b> is a <i>mathematician</i> & writer.'}"/>
+<sly data-sly-test.website="${'https://example.com/ada'}"/>
+<sly data-sly-test.tags="${['ai', 'math', 'history']}"/>
+<sly data-sly-test.agenda="${['Welcome', 'Live demo', 'Q&A']}"/>
+```
+
+## Part A — Expressions & the data-sly element
+
+<div className="task">
+
+### 1. Full name
+
+Render `Ada Lovelace`. *Hint: HTL has no `+` — how do you join two values?*
+
+<Reveal>
+
+```html
+${'{0} {1}' @ format=[firstName, lastName]}
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 2. Ternary
+
+Render `KEYNOTE` if `isKeynote`, otherwise `Breakout session`.
+
+<Reveal>
+
+```html
+${isKeynote ? 'KEYNOTE' : 'Breakout session'}
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 3. Comparison
+
+Render `Overbooked!` **only** when `seatsTaken` is greater than `seatsTotal`.
+
+<Reveal>
+
+```html
+<p data-sly-test="${seatsTaken > seatsTotal}">Overbooked!</p>
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 4. Dynamic element
+
+Render `talkTitle` inside a heading whose tag comes from `headingLevel`.
+
+<Reveal>
+
+```html
+<span data-sly-element="${headingLevel}">${talkTitle}</span>
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 5. Dynamic attribute
+
+Render a link to `website` with the text `Speaker page`. *Bonus: what happens to `href` if `website` were empty?*
+
+<Reveal>
+
+```html
+<a data-sly-attribute.href="${website}">Speaker page</a>
+```
+
+An empty/null value removes the `href` entirely — no `href=""` leftover.
+
+</Reveal>
+
+</div>
+
+## Part B — Options
+
+<div className="task">
+
+### 6. Context / escaping
+
+Render `bioHtml` twice: once so the bold/italic format, once so the tags show as literal text.
+
+<Reveal>
+
+```html
+<div>${bioHtml @ context='html'}</div>   <!-- bold/italic render -->
+<div>${bioHtml @ context='text'}</div>   <!-- tags shown as text -->
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 7. Join
+
+Render the `tags` on one line as `ai · math · history`.
+
+<Reveal>
+
+```html
+${tags @ join=' · '}
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 8. Format with a number
+
+Render `Talk length: 45 min` using `durationMinutes`.
+
+<Reveal>
+
+```html
+${'Talk length: {0} min' @ format=[durationMinutes]}
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 9. i18n
+
+Render a button whose label `Register now` goes through the translation dictionary.
+
+<Reveal>
+
+```html
+<button>${'Register now' @ i18n}</button>
+```
+
+With no dictionary it simply prints the original string.
+
+</Reveal>
+
+</div>
+
+## Part C — Loops, reuse, comments
+
+<div className="task">
+
+### 10. List + itemList
+
+Render `agenda` as an ordered list (`<ol>`), appending ` ← last` to the final item only.
+
+<Reveal>
+
+```html
+<ol data-sly-list.step="${agenda}">
+  <li>${step}<sly data-sly-test="${stepList.last}"> ← last</sly></li>
+</ol>
+```
+
+HTL has no arithmetic, so `index + 1` is impossible — `<ol>` numbers for you.
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 11. Template + call
+
+Define a reusable `pill` template and use it for every tag.
+
+<Reveal>
+
+```html
+<template data-sly-template.pill="${@ label}">
+  <span class="pill">${label}</span>
+</template>
+<sly data-sly-list.tag="${tags}">
+  <sly data-sly-call="${pill @ label=tag}"></sly>
+</sly>
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 12. Comments
+
+Add one developer note that must **not** reach the browser, and one comment that **does**.
+
+<Reveal>
+
+```html
+<!--/* removed at compile time, never sent */-->
+<!-- this HTML comment IS sent to the browser -->
+```
+
+</Reveal>
+
+</div>
+
+## Challenge
+
+<div className="task">
+
+### 13. One-line summary
+
+In a single expression, render `Ada Lovelace — Weaving Algorithms (45 min) [KEYNOTE]` (the `[KEYNOTE]` part empty when not a keynote).
+
+<Reveal>
+
+```html
+${'{0} {1} — {2} ({3} min) {4}' @ format=[
+  firstName, lastName, talkTitle, durationMinutes,
+  isKeynote ? '[KEYNOTE]' : ''
+]}
+```
+
+</Reveal>
+
+</div>
+
+---
+
+## Advanced — Part D
+
+Real data is rows of records, but **HTL has no inline map/object literal** — so a list of
+records is modelled with **parallel arrays read by the loop index**, a pattern you meet when
+data arrives pre-shaped from Java.
+
+### Advanced GIVEN — paste this for Part D
+
+```html
+<sly data-sly-test.sessionTitles="${['Intro to HTL', 'Sling Models Deep Dive', 'Style Guide Clinic']}"/>
+<sly data-sly-test.sessionSpeakers="${['Ada', 'Linus', 'Grace']}"/>
+<sly data-sly-test.sessionRooms="${['A1', 'B2', 'A1']}"/>
+<sly data-sly-test.sessionMinutes="${[30, 60, 45]}"/>
+<sly data-sly-test.featuredIndex="${1}"/>
+<sly data-sly-test.priceCents="${4250}"/>
+<sly data-sly-test.currency="${'EUR'}"/>
+<sly data-sly-test.outlineSections="${['Syntax', 'Reuse']}"/>
+<sly data-sly-test.outlineItems="${[['Blocks', 'Expressions'], ['Use', 'Include', 'Template']]}"/>
+```
+
+<div className="task">
+
+### 14. Records via parallel arrays
+
+Render a `<table>` with one row per session: title, speaker, room — lined up by loop index.
+
+<Reveal>
+
+```html
+<table data-sly-list.title="${sessionTitles}">
+  <tr>
+    <td>${title}</td>
+    <td>${sessionSpeakers[titleList.index]}</td>
+    <td>${sessionRooms[titleList.index]}</td>
+  </tr>
+</table>
+```
+
+Alternative: `<tr data-sly-repeat.title="${sessionTitles}">` repeats the row itself.
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 15. Dynamic class
+
+Give the row whose index equals `featuredIndex` the class `featured` (no empty `class=""` otherwise).
+
+<Reveal>
+
+```html
+<table data-sly-list.title="${sessionTitles}">
+  <tr class="${titleList.index == featuredIndex ? 'featured' : ''}">
+    <td>${title}</td>
+  </tr>
+</table>
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 16. Condition inside a loop
+
+In each row show the duration and append ` — LONG` only for sessions longer than 45 minutes.
+
+<Reveal>
+
+```html
+<table data-sly-list.title="${sessionTitles}">
+  <tr>
+    <td>${title}</td>
+    <td>${sessionMinutes[titleList.index]} min<sly
+        data-sly-test="${sessionMinutes[titleList.index] > 45}"> — LONG</sly></td>
+  </tr>
+</table>
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 17. Template with computed params
+
+Define a `row` template taking `title, speaker, room, featured`, then call it once per session — computing `featured` as you call it.
+
+<Reveal>
+
+```html
+<template data-sly-template.row="${@ title, speaker, room, featured}">
+  <tr class="${featured ? 'featured' : ''}">
+    <td>${title}</td><td>${speaker}</td><td>${room}</td>
+  </tr>
+</template>
+<table>
+  <sly data-sly-list.title="${sessionTitles}">
+    <sly data-sly-call="${row @
+      title=title,
+      speaker=sessionSpeakers[titleList.index],
+      room=sessionRooms[titleList.index],
+      featured=titleList.index == featuredIndex}"></sly>
+  </sly>
+</table>
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 18. Conditional unwrap
+
+Render every session title, but wrap **only the featured** one in `<strong>`. Use `data-sly-unwrap`.
+
+<Reveal>
+
+```html
+<sly data-sly-list.title="${sessionTitles}">
+  <strong data-sly-unwrap="${titleList.index != featuredIndex}">${title}</strong>
+</sly>
+```
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 19. The limit
+
+Render the price as `42.50 EUR` from `priceCents` (= 4250). Try it — then explain *why pure HTL can't*.
+
+<Reveal>
+
+<Callout type="warn">**Not possible in pure HTL.** There is no division (4250 / 100) — HTL has no arithmetic at all. Formatting money belongs in a Sling Model.</Callout>
+
+```html
+<!-- model.getDisplayPrice() returns "42.50" -->
+${model.displayPrice} ${currency}
+```
+
+`@ format` can format a number but cannot divide it.
+
+</Reveal>
+
+</div>
+
+<div className="task">
+
+### 20. Nested loops
+
+Render an outline: each `outlineSections` entry as a heading, followed by its matching `outlineItems` sub-array as a `<ul>`.
+
+<Reveal>
+
+```html
+<sly data-sly-list.section="${outlineSections}">
+  <h4>${section}</h4>
+  <ul data-sly-list.item="${outlineItems[sectionList.index]}">
+    <li>${item}</li>
+  </ul>
+</sly>
+```
+
+Relies on nested array literals — works on HTL 1.4+ (AEM 6.4+/Cloud). On older instances, return the nested list from a Sling Model.
+
+</Reveal>
+
+</div>
+
+<ReplLink>Open the HTL REPL ↗</ReplLink>

@@ -1,0 +1,70 @@
+export const meta = {
+  order: 9,
+  num: '09',
+  title: 'Modern CSS',
+  topics: '<code>:has()</code> · <code>:is()/:where()</code> · logical properties · <code>calc()</code> · <code>aspect-ratio</code> · new units'
+};
+
+A tour of the CSS that removed long-standing JavaScript and hacks. All widely supported today.
+
+## `:has()` — the "parent" selector
+
+Style an element based on what it **contains** (or what follows it):
+
+```css
+.card:has(img) { padding-top: 0; }          /* cards that contain an image */
+label:has(+ input:required)::after { content: " *"; }
+```
+
+## `:is()` and `:where()` — grouping
+
+Both group selectors; the difference is **specificity**: `:is()` takes the highest specificity
+of its arguments, `:where()` always contributes **zero**.
+
+```css
+:is(h1, h2, h3) { margin-block: 0.5em; }
+:where(.prose a) { color: var(--brand); }   /* easy to override — 0 specificity */
+```
+
+## Logical properties
+
+Direction-aware properties that adapt to writing mode / RTL — use these instead of
+physical `left/right/top/bottom`:
+
+```css
+.box {
+  margin-inline: auto;          /* left+right (LTR) / start+end       */
+  padding-block: 1rem;          /* top+bottom                          */
+  border-inline-start: 2px solid;  /* "left" in LTR, "right" in RTL    */
+}
+```
+
+## `calc()`, `min()`, `max()`, `clamp()`
+
+Compute values, mix units, and build fluid sizing without media queries:
+
+```css
+.container { width: min(100% - 2rem, 1180px); }
+.title     { font-size: clamp(1.5rem, 4vw, 3rem); }  /* fluid type */
+```
+
+## `aspect-ratio`
+
+Reserve space and keep proportions — great for images/embeds and avoiding layout shift:
+
+```css
+.thumb { aspect-ratio: 16 / 9; width: 100%; object-fit: cover; }
+```
+
+## New units
+
+| Unit | Meaning |
+|---|---|
+| `dvh` / `svh` / `lvh` | dynamic / small / large viewport height (mobile-toolbar safe) |
+| `vi` / `vb` | viewport inline / block size (writing-mode aware) |
+| `cqw` / `cqi` | container query width / inline size |
+| `rem` / `ch` | root font size / "0" character width |
+
+<Callout type="do">Reach for these before JavaScript: `:has()` replaces many "add a class with JS" patterns, `clamp()` replaces breakpoint-heavy type scales, and `aspect-ratio` replaces the old padding-hack.</Callout>
+
+<Callout type="note">Pair with the previous lessons: logical properties + container queries + `clamp()` give you components that adapt to size *and* writing direction with almost no media queries.</Callout>

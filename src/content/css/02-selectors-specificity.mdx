@@ -1,0 +1,71 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Selectors & Specificity',
+  topics: 'Selector types · combinators · pseudo-classes/elements · specificity · BEM'
+};
+
+Selectors connect a DOM element to CSS properties — they're how you tell the browser *which*
+elements a rule applies to.
+
+## Basic selectors
+
+| Selector | Example | Matches |
+|---|---|---|
+| Universal | `* { }` | every element |
+| Type | `p { }` | all `<p>` |
+| Class | `.description { }` | `class="description"` |
+| ID | `#compId { }` | `id="compId"` |
+| Attribute | `[href] { }` | elements with `href` |
+| Attribute value | `[title="x"] { }` | exact / `^=` `$=` `*=` `~=` `\|=` variants |
+
+## Combinators
+
+| Combinator | Example | Meaning |
+|---|---|---|
+| Descendant | `article p` | any `p` inside an `article` |
+| Child | `p > span` | direct child only |
+| Adjacent sibling | `.text + .lead` | immediately after |
+| General sibling | `.text ~ .lead` | any later sibling |
+
+## Pseudo-classes (`:`) and pseudo-elements (`::`)
+
+- **Pseudo-classes** select by state not in the tree: `:hover`, `:focus`, `:active`,
+  `:visited`, `:checked`, `:first-child`, `:nth-child()`, `:first-of-type`…
+- **Pseudo-elements** create sub-parts: `::before`, `::after`, `::first-letter`,
+  `::first-line`, `::selection`.
+
+```css
+.btn:hover { background: #444; }
+.card::before { content: ""; }
+```
+
+## Specificity — who wins
+
+Specificity is a score for each selector. Higher score wins (then order breaks ties). Count:
+
+| | inline style | IDs | classes / attrs / pseudo-classes | elements / pseudo-elements |
+|---|---|---|---|---|
+| weight | 1,0,0,0 | 0,1,0,0 | 0,0,1,0 | 0,0,0,1 |
+
+```css
+ul#nav li.active a   /* 0,1,2,2 */
+.text                /* 0,0,1,0 */
+li                   /* 0,0,0,1 */
+```
+
+<Callout type="warn">An inline `style=""` beats almost everything, and `!important` overrides the lot. Reaching for `!important` is usually a sign the specificity is wrong — fix the selector instead.</Callout>
+
+## BEM — keeping specificity flat
+
+**BEM** (Block / Element / Modifier) is a naming convention that keeps selectors as single
+classes, so specificity stays low and predictable.
+
+```css
+.alert            { }   /* Block    */
+.alert__title     { }   /* Element  */
+.alert__button    { }   /* Element  */
+.alert__button--disabled { }  /* Modifier */
+```
+
+<Callout type="do">Prefer one class per selector (BEM). Flat specificity means styles are easy to override intentionally and hard to break by accident — and it's enforced by this project's stylelint config.</Callout>

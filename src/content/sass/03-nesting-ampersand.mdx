@@ -1,0 +1,85 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Nesting & the & selector',
+  topics: 'Nesting rules · the parent selector <code>&</code> · BEM in SCSS'
+};
+
+## Nesting
+
+You can nest rules inside rules; Sass untangles them into descendant selectors:
+
+```scss
+.nav {
+  padding: 1rem;
+
+  ul { list-style: none; }
+  a  { color: var(--brand); }
+}
+```
+
+compiles to:
+
+```css
+.nav { padding: 1rem; }
+.nav ul { list-style: none; }
+.nav a  { color: var(--brand); }
+```
+
+<Callout type="warn">Don't get carried away. Deep nesting produces long, high-specificity selectors that are hard to override. A good rule of thumb: avoid nesting selectors more than ~2 levels deep.</Callout>
+
+## The `&` parent selector
+
+`&` is replaced by the **parent selector string** — not "the parent element". That's what makes
+it perfect for states and BEM modifiers/elements:
+
+```scss
+.button {
+  &:hover { filter: brightness(1.1); }   /* .button:hover            */
+  &--primary { background: var(--brand); } /* .button--primary        */
+  &__icon { margin-right: .5rem; }         /* .button__icon           */
+}
+```
+
+`&` can also appear *after* something — useful for contextual overrides:
+
+```scss
+.icon {
+  .button & { width: 1em; }   /* .button .icon */
+}
+```
+
+## BEM, nicely
+
+`&` makes the project's BEM convention compact and readable:
+
+```scss
+$module-name: "teaser";
+
+.#{$module-name} {
+  &__title { font-size: 2rem; }      /* .teaser__title  */
+  &__cta   { color: var(--brand); }  /* .teaser__cta    */
+  &--muted { opacity: .7; }          /* .teaser--muted  */
+}
+```
+
+## Practice
+
+Write the rules for a link with its pseudo-states using nesting + `&`:
+
+<Reveal>
+
+```scss
+.link {
+  color: var(--brand);
+  text-decoration: none;
+
+  &:hover  { text-decoration: underline; }
+  &:focus  { outline: 2px solid var(--brand); }
+  &:visited { color: rebeccapurple; }
+}
+```
+
+</Reveal>
+
+<Callout type="do">Reach for `&` to keep all of a block's states and modifiers in one place — but keep the output selectors flat (single classes) for low specificity.</Callout>

@@ -1,0 +1,87 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Events & Event Delegation',
+  topics: 'addEventListener · the event object · delegation · bubbling'
+};
+
+Interactivity is built on **events** — code that listens for activity and runs in response.
+
+## Listening for an event
+
+Pick a target, name the event, give it a callback:
+
+```js
+window.addEventListener('resize', () => {
+  // do something on resize
+});
+```
+
+Pass the **event object** to inspect what happened:
+
+```js
+button.addEventListener('click', (event) => {
+  console.log(event.target);   // the element that was clicked
+});
+```
+
+## 🛠 Practice — a button listener
+
+Add a click listener to `.my-component__button` that logs `"button clicked"`:
+
+<Reveal>
+
+```js
+init() {
+  const button = this.element.querySelector('.my-component__button');
+  button.addEventListener('click', () => console.log('button clicked'));
+}
+```
+
+</Reveal>
+
+## The three phases
+
+An event travels in three phases: **capturing** (top → target), **targeting** (the element
+itself), then **bubbling** (target → up the ancestors). Bubbling is what makes delegation possible.
+
+```mermaid
+flowchart TD
+  C["1 · Capturing<br/>window → target"] --> T["2 · Targeting<br/>the element itself"]
+  T --> B["3 · Bubbling<br/>target → ancestors"]
+  B --> D["Event delegation listens here"]
+```
+
+## Event delegation
+
+Instead of a listener on every child, add **one** listener to a parent and decide what to do from
+`event.target`. Efficient, and it works for elements added later.
+
+```js
+list.addEventListener('click', (event) => {
+  const item = event.target.closest('li');
+  if (!item) return;                 // ignore clicks outside an <li>
+  alert(item.dataset.info);
+});
+```
+
+<Callout type="do">Use delegation for lists and repeated items: one listener on the container beats N listeners on the children, and it keeps working when items are added/removed.</Callout>
+
+## 🛠 Practice — delegated list
+
+One `click` listener on the list; if an `<li>` was clicked, alert its `data-info`:
+
+<Reveal>
+
+```js
+init() {
+  this.element.addEventListener('click', (event) => {
+    const li = event.target.closest('li');
+    if (li) alert(li.dataset.info);
+  });
+}
+```
+
+</Reveal>
+
+<Callout type="note">`event.target` is what was actually clicked; `event.currentTarget` is the element the listener is attached to. `closest()` walks up from the target to find the element you care about.</Callout>

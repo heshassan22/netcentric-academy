@@ -1,0 +1,56 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Responsive & Container Queries',
+  topics: 'Media queries · mobile-first · container queries'
+};
+
+Responsive design delivers a layout that adapts to screen size, platform, and orientation.
+
+## Media queries
+
+Write different CSS for different viewports:
+
+```css
+.grid { display: block; }
+
+@media (min-width: 768px) {
+  .grid { display: grid; grid-template-columns: 1fr 1fr; }
+}
+```
+
+## Mobile-first
+
+Style the mobile layout first, then *add* changes upward with `min-width`:
+
+```css
+.nav { flex-direction: column; }          /* mobile default */
+
+@media (min-width: 900px) {
+  .nav { flex-direction: row; }            /* enhancement for wider screens */
+}
+```
+
+- Mobile is the most-used platform.
+- Mobile styles tend to be simpler, so they make a cleaner base.
+- You only layer on complexity where there's room for it.
+
+<Callout type="do">Before reaching for a media query, see how far the layout gets with intrinsic sizing (Flexbox/Grid, `min()`/`max()`/`clamp()`, `flex-wrap`). The best breakpoint is often *no* breakpoint.</Callout>
+
+## Container queries
+
+Media queries respond to the **viewport**. Container queries respond to the size of a
+**parent container** — so a component can adapt to *where it's placed*, not just the screen.
+
+```css
+.card-list { container-type: inline-size; }      /* declare a query container */
+
+@container (min-width: 480px) {
+  .card { display: grid; grid-template-columns: 120px 1fr; }
+}
+```
+
+<Callout type="note">Container queries are the missing piece for truly reusable components: the same card can be one column in a narrow sidebar and two columns in a wide main area — with no knowledge of the page layout.</Callout>
+
+You can also name containers (`container-name`) and use the new container units
+(`cqw`, `cqi`, `cqb`) to size things relative to the container.

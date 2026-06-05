@@ -1,0 +1,48 @@
+export const meta = {
+  order: 8,
+  num: '08',
+  title: 'Cascade Layers & Scope',
+  topics: '<code>@layer</code> · ordering the cascade · <code>@scope</code>'
+};
+
+Two modern tools for *controlling the cascade itself* — so specificity wars and source order
+stop deciding your styles for you.
+
+## Cascade layers — `@layer`
+
+`@layer` lets you define explicit, ordered buckets. **Layer order beats specificity**: a rule in
+a later layer wins over a rule in an earlier layer, *even if the earlier one is more specific*.
+
+```css
+@layer reset, base, components, utilities;   /* declare order once */
+
+@layer base {
+  a { color: blue; }
+}
+@layer components {
+  .link { color: rebeccapurple; }   /* wins over base, regardless of specificity */
+}
+```
+
+<Callout type="do">Put third-party/reset CSS in an early layer and your own styles in a later one. You can then override a library with a *simple* class instead of escalating specificity or using `!important`.</Callout>
+
+- Unlayered styles count as the **highest** layer (they win over layered styles).
+- `@layer name { }` adds to a layer; re-using the name appends to it.
+
+## Scoped styles — `@scope`
+
+`@scope` limits where rules apply, with a root and an optional lower boundary — useful for
+component styling without leaking out.
+
+```css
+@scope (.card) to (.card__content) {
+  /* applies inside .card, but NOT past a .card__content boundary */
+  img { border-radius: 8px; }
+  a   { color: var(--brand); }
+}
+```
+
+- The first parenthesis is the **scope root**; the `to (…)` is the **scope limit** (a "donut").
+- Proximity matters: in `@scope`, the closest-scoped rule wins on ties.
+
+<Callout type="note">Layers and scope reduce the need for deeply-nested selectors and `!important`. With BEM keeping specificity flat and layers keeping order explicit, the cascade becomes something you *design* rather than fight.</Callout>

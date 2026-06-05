@@ -1,0 +1,57 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'Transitions & Animations',
+  topics: '<code>transition</code> · <code>@keyframes</code> · <code>animation</code> · performance'
+};
+
+Let the browser interpolate the in-between states when something changes — no JS needed.
+
+## Transitions
+
+A transition animates a property *when its value changes* (e.g. on `:hover`).
+
+```css
+.button {
+  background: var(--brand);
+  transition: background 200ms ease, transform 200ms ease;
+}
+.button:hover {
+  background: var(--accent);
+  transform: translateY(-2px);
+}
+```
+
+The longhands: `transition-property`, `transition-duration`, `transition-delay`,
+`transition-timing-function` — or the `transition` shorthand.
+
+## Animations
+
+For multi-step or looping motion, define `@keyframes` and attach with `animation`.
+
+```css
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  animation: fade-in 400ms ease both;
+}
+```
+
+Animation longhands you'll use: `animation-name`, `animation-duration`, `animation-delay`,
+`animation-iteration-count`, `animation-direction`, `animation-timing-function`,
+`animation-fill-mode` — or the `animation` shorthand.
+
+## Performance
+
+<Callout type="warn">Not every property is animatable, and some are **expensive**. Animating `width`, `height`, `top`, or `left` triggers layout on every frame.</Callout>
+
+<Callout type="do">Prefer animating `transform` and `opacity` — the browser can composite them on the GPU without re-laying-out the page. And respect `@media (prefers-reduced-motion: reduce)` for accessibility.</Callout>
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+```

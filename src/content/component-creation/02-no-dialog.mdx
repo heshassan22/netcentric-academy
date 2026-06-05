@@ -1,0 +1,83 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'A Component with No Dialog',
+  topics: 'Static &amp; derived content · Sling Model basics · why it may not appear in the Insert dialog'
+};
+
+Not every component needs a dialog. Plenty render **static markup** or content **derived from
+context** (the page, a service, the current user) rather than from author input. Start here —
+it's the simplest useful component.
+
+## The simplest case: derived content, no authoring
+
+This component shows the current page's title using a **global object** — no dialog, no model:
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<p class="page-meta">You are on: ${currentPage.title}</p>
+```
+
+</Tab>
+<Tab label="Result">
+
+<p>You are on: HTL Workshop</p>
+
+</Tab>
+</Tabs>
+
+## Adding logic: a Sling Model (still no dialog)
+
+When you need real logic, put it in a **Sling Model** — a plain Java class annotated with
+`@Model`. It can read context without any authored field.
+
+```java
+package biz.netcentric.academy.core.models;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
+import com.day.cq.wcm.api.Page;
+
+@Model(adaptables = Resource.class,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class PageMetaModel {
+
+    @ScriptVariable
+    private Page currentPage;
+
+    public String getBreadcrumbLabel() {
+        // Logic lives in Java, not in HTL.
+        return currentPage.getDepth() <= 2 ? "Home" : currentPage.getTitle();
+    }
+}
+```
+
+```html
+<sly data-sly-use.meta="biz.netcentric.academy.core.models.PageMetaModel"/>
+<span class="crumb">${meta.breadcrumbLabel}</span>
+```
+
+- `@Model(adaptables = Resource.class)` — adapt the current resource into this class.
+- `@ScriptVariable` — inject a global object (here `currentPage`).
+- `data-sly-use` instantiates the model; `${meta.breadcrumbLabel}` calls `getBreadcrumbLabel()`.
+
+<Callout type="do">Even with no author input, keep branching/formatting in the model. HTL stays a thin view.</Callout>
+
+## The gotcha: no dialog → not in the Insert dialog
+
+AEM's **Insert New Component** dialog only lists components it considers *editable*. A component
+with **no `_cq_dialog`** typically won't appear there.
+
+<Callout type="warn">If your component is missing from the Insert list, the usual cause is a missing dialog (or a `componentGroup` not allowed by the policy). Add a minimal `_cq_dialog` — even an empty one — to make it selectable.</Callout>
+
+## When "no dialog" is the right choice
+
+- **Structure components** placed by the template (header, footer) and never inserted by hand.
+- Components **fully configured by policy** rather than per-instance content (see *Policies*).
+- Components that render **derived data** only (breadcrumb, current year, a service result).
+
+For everything an author should edit per instance, you need a dialog — next lesson.

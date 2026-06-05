@@ -1,0 +1,119 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Reuse: Include vs Use',
+  topics: '<code>data-sly-use</code> · <code>include</code> · <code>resource</code> · <code>template</code> + <code>call</code>'
+};
+
+Four ways to reuse — and each reuses a different thing.
+
+| Block | Reuses | Use when… |
+|-------|--------|-----------|
+| `data-sly-use` | **logic** | you need a value / behaviour (a Sling Model) |
+| `data-sly-template` + `call` | **markup** | you repeat parameterised markup |
+| `data-sly-include` | **a script** | a static partial, same resource & context |
+| `data-sly-resource` | **a component** | you render a different resource |
+
+## `data-sly-use` — reuse logic from a Sling Model
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<!--/* given: ./audience = "KBC Workshop"
+       GreetingModel.getMessage() returns "Hello, " + audience + "!" */-->
+<sly data-sly-use.greeting="com.example.GreetingModel"/>
+${greeting.message}
+```
+
+</Tab>
+<Tab label="Result">
+
+The string is built in Java — HTL stays free of concatenation: Hello, KBC Workshop!
+
+</Tab>
+<Tab label="When to use it">
+
+Whenever a component needs more than raw properties: formatting (dates, prices), combining fields
+into one value, resolving a linked page's title, calling an OSGi service, or any branching logic.
+It's how every real component gets its data — keeping that logic in testable Java instead of the
+template.
+
+</Tab>
+</Tabs>
+
+## `data-sly-template` + `data-sly-call`
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<template data-sly-template.badge="${@ label}">
+  <span class="pill">${label}</span>
+</template>
+
+<sly data-sly-call="${badge @ label='HTL'}"/>
+<sly data-sly-call="${badge @ label='Templates'}"/>
+<sly data-sly-call="${badge @ label='DRY'}"/>
+```
+
+</Tab>
+<Tab label="Result">
+
+Define once, call many times:
+
+<span className="pill">HTL</span> <span className="pill">Templates</span> <span className="pill">DRY</span>
+
+</Tab>
+<Tab label="When to use it">
+
+To stop copy-pasting markup. Define a card, badge, icon, or CTA once and call it wherever needed
+with parameters; move shared templates into a library file to reuse across components. It's also
+the tool for **recursion** — a self-calling template that renders a nested navigation tree.
+
+</Tab>
+</Tabs>
+
+Templates can live in another file (a *template library*) and be loaded with `data-sly-use`:
+
+```html
+<sly data-sly-use.cards="partials/card-template.html"/>
+<sly data-sly-call="${cards.card @ heading='Hi', text='…'}"/>
+```
+
+## `data-sly-include` vs `data-sly-use`
+
+```html
+<sly data-sly-include="partials/info-fragment.html"/>
+```
+
+<Callout type="note">`include` pastes another script's **output** (same resource & context); `use` gives you an **object** to read from. Reach for a model (`use`) when you need data; use `include` only for a static markup partial.</Callout>
+
+<Callout type="when">**When to use it** — to split one large component's HTL into smaller, readable partials that share the same resource and context, or to drop in a static markup fragment used in a few places. If you need data, reach for `use`; to render a *different* resource, reach for `resource`.</Callout>
+
+## `data-sly-resource`
+
+```html
+<div data-sly-resource="${'child' @ resourceType='academy/components/text'}"></div>
+```
+
+Unlike `include`, `resource` switches to a **new resource** and renders it through its own
+component — this is what the responsive grid does for every component you drop on a page.
+
+<Callout type="when">**When to use it** — composition: render another resource *the way it knows how to render itself*. It powers containers/parsys (authors drop components in), rendering a child component, pulling in an Experience Fragment or a shared/referenced content node, or forcing a `resourceType` on a resource.</Callout>
+
+## 🧪 Try it in the HTL REPL
+
+Templates are self-contained:
+
+```html
+<template data-sly-template.badge="${@ label, tone}">
+  <span>[${tone}] ${label}</span>
+</template>
+<sly data-sly-call="${badge @ label='Reusable', tone='info'}"/>
+<sly data-sly-call="${badge @ label='DRY', tone='tip'}"/>
+```
+
+<Callout type="note">`data-sly-use` of a model and `data-sly-include` need a deployed model / a target script — try those on a real page rather than in the REPL.</Callout>
+
+<ReplLink />

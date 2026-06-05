@@ -1,0 +1,111 @@
+export const meta = {
+  order: 1,
+  num: '01',
+  title: 'JavaScript Basics',
+  topics: 'Variables · scope · types · operators · control flow · functions · classes'
+};
+
+JavaScript adds interactivity to a website. The language core is compact; on top of it sit
+browser APIs, third-party APIs, and frameworks.
+
+## Variables & constants
+
+Declare with `let` or `const` (avoid `var`). Assign, then optionally reassign.
+
+```js
+let name = 'John';       // declare + assign
+name = 'Bob';            // ok
+
+const id = 42;           // can't be reassigned
+// id = 7;               // TypeError
+
+const list = [];         // the binding is constant, the contents aren't
+list.push('hello');      // ['hello']  ← fine
+```
+
+<Callout type="do">Default to `const`; use `let` only when you must reassign. Never `var`.</Callout>
+
+## Scope
+
+- **Global** — accessible everywhere
+- **Function** — visible only inside the function
+- **Block** — `let`/`const` inside `{ }` (if, for, while) are visible only in that block
+
+**Lexical scope:** an inner function can read variables from its enclosing scope.
+
+```mermaid
+flowchart TD
+  subgraph G["Global scope"]
+    subgraph F["Function scope"]
+      subgraph B["Block scope — if / for / while"]
+        V["let / const declared here<br/>visible only inside the block"]
+      end
+    end
+  end
+```
+
+Inner scopes can read outward; outer scopes cannot read in.
+
+```js
+const name = 'John';
+function outer() {
+  const surname = 'Wick';
+  // inner can see name + surname
+  return `${name} ${surname}`;
+}
+// surname is NOT visible out here
+```
+
+## Data types
+
+`String`, `Number`, `Boolean`, `Array`, and `Object` (functions, DOM nodes — everything else — are objects).
+
+## Operators
+
+```js
+6 + 9;            // 15      (also string concat: 'a' + 'b')
+20 / 2;           // 10
+let n = 4;
+n === 3;          // false   (strict equality)
+n !== 3;          // true
+```
+
+## Control flow & loops
+
+```js
+if (food === 'ice cream') { /* … */ } else { /* … */ }
+
+for (let i = 0; i < 5; i++) { /* runs 5 times */ }
+```
+
+Also: `switch`, `while`, `do…while`, `for…of` (values), `for…in` (keys), and
+`return` / `break` / `continue`.
+
+## Functions
+
+```js
+function sum(a, b) { return a + b; }
+sum(3, 5); // 8
+```
+
+## Classes & `this`
+
+A class is a template for objects (instances). `this` is the instance created with `new`.
+
+```js
+class Greeter {
+  constructor(name) { this.name = name; }
+  greet() { console.log(`Hello ${this.name}`); }
+}
+const g = new Greeter('World');
+g.greet(); // Hello World
+```
+
+## Events (a first look)
+
+```js
+const button = document.querySelector('.button');
+button.addEventListener('click', () => console.log('clicked'));
+```
+
+<Callout type="note">These fundamentals power everything in the next lessons — especially classes + events, which the Netcentric component pattern is built on.</Callout>

@@ -1,0 +1,121 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Expressions & Options',
+  topics: 'Operators · ternary · options <code>@ format / context / i18n / join</code>'
+};
+
+Everything between `${` and `}` is an expression. Options after an `@` change how the value is
+produced or escaped.
+
+## Operators
+
+HTL supports a deliberately small set — and **no arithmetic and no string concatenation**.
+Anything more complex belongs in a Sling Model.
+
+- **Logical:** `&&` `||` `!`
+- **Comparison:** `==` `!=` `<` `>` `<=` `>=`
+- **Ternary:** `condition ? a : b`
+
+<Callout type="warn">There is no <code>+ - * /</code> in HTL. Build strings and do maths in Java — see Lesson 07.</Callout>
+
+## Ternary & comparison
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<!--/* given: properties.onSale = true, properties.price = 42 */-->
+${properties.onSale ? 'On sale!' : 'Full price'}
+${properties.price > 100}
+```
+
+</Tab>
+<Tab label="Result">
+
+With `onSale = true`, `price = 42`:
+
+**On sale!** · false
+
+<Callout type="warn">If `price` is *null* (never authored), `${price > 100}` throws — always guard comparisons against missing values.</Callout>
+
+</Tab>
+</Tabs>
+
+## `@ format` — substitute placeholders
+
+Since there is no `+`, you join values with `format` and `{0}, {1}…` placeholders.
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<!--/* given: properties.name = "Ticket", properties.price = 42 */-->
+${'{0} costs {1} EUR' @ format=[properties.name, properties.price]}
+```
+
+</Tab>
+<Tab label="Result">
+
+With `name = "Ticket"`, `price = 42`: Ticket costs 42 EUR
+
+</Tab>
+</Tabs>
+
+## `@ context` — output escaping (your XSS safety net)
+
+HTL escapes every expression using a context inferred from where it sits. Override it only with intent.
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<!--/* given: properties.rich = "<b>bold</b>" */-->
+${properties.rich @ context='text'}   <!-- shows tags as text -->
+${properties.rich @ context='html'}   <!-- allows safe markup -->
+```
+
+</Tab>
+<Tab label="Result">
+
+With `rich = "<b>bold</b>"`:
+
+`text`: `<b>bold</b>` · `html`: <b>bold</b>
+
+</Tab>
+</Tabs>
+
+<Callout type="dont">Never reach for <code>@ context='unsafe'</code> to "make it work" — that disables XSS protection.</Callout>
+
+## `@ i18n` and `@ join`
+
+<Tabs>
+<Tab label="Code">
+
+```html
+${'Add to cart' @ i18n}
+${['HTL', 'Sling', 'Style Guide'] @ join=' · '}
+```
+
+</Tab>
+<Tab label="Result">
+
+i18n returns the original string when no dictionary entry exists:
+
+Add to cart · HTL · Sling · Style Guide
+
+</Tab>
+</Tabs>
+
+## 🧪 Try it in the HTL REPL
+
+```html
+Ternary:  ${(8 > 5) ? 'bigger' : 'smaller'}
+Format:   ${'{0} costs {1} EUR' @ format=['Ticket', 42]}
+Join:     ${['HTL', 'Sling', 'Style Guide'] @ join=' · '}
+i18n:     ${'Add to cart' @ i18n}
+text:     ${'<b>tag</b>' @ context='text'}
+html:     ${'<b>tag</b>' @ context='html'}
+```
+
+<ReplLink />
