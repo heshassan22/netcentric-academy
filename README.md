@@ -9,7 +9,7 @@ Interactive learning site for the Netcentric Academy tech tracks. Built with
 |-------|--------|
 | **HTL** (HTML Template Language / Sightly) | ✅ 7 lessons + hands-on assignment |
 | **AEM Component Creation** | ✅ 6 lessons (structure → no-dialog → dialog → clientlibs → policies → Style System) |
-| **HTML** | ✅ 11 lessons (fundamentals → DOM/attributes → semantics → text/links → lists/tables → forms → media → iframe → metadata/SEO → accessibility → standards + capstone) |
+| **HTML** | ✅ 10 lessons (fundamentals → DOM/attributes → semantics → text/links → lists/tables → forms → media → iframe → metadata/SEO → standards + capstone) |
 | **CSS** | ✅ 9 lessons (cascade → selectors → box model → custom props → responsive/container queries → Flexbox/Grid → transitions → layers/scope → modern CSS) |
 | **Sass / SCSS** | ✅ 4 lessons (preprocessor → values/operators → nesting/& → functions/mixins) |
 | **JavaScript** | ✅ 6 lessons (basics → modern ES → component loader → params/DOM → events → custom events) |
