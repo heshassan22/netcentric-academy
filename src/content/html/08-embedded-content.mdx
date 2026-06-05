@@ -1,0 +1,40 @@
+export const meta = {
+  order: 8,
+  num: '08',
+  title: 'Embedded Content (iframe)',
+  topics: '<code>iframe</code> · title · sandbox · loading · security'
+};
+
+An **`<iframe>`** embeds another HTML document inside your page — a map, a video player, a
+third-party widget, a payment form.
+
+```html
+<iframe
+  src="https://www.openstreetmap.org/export/embed.html"
+  title="Map of our office"
+  width="600" height="400"
+  loading="lazy"
+  referrerpolicy="no-referrer"
+  sandbox="allow-scripts allow-same-origin">
+</iframe>
+```
+
+## The attributes that matter
+
+| Attribute | Why |
+|---|---|
+| **`title`** | **Required for accessibility** — screen readers announce it as the frame's name |
+| `src` | the embedded document's URL |
+| `width` / `height` | reserve space (or size with CSS) |
+| `loading="lazy"` | defer off-screen iframes — they're heavy |
+| `sandbox` | restrict what the embedded page can do (scripts, forms, popups…) |
+| `allow` | feature permissions (`allow="fullscreen; autoplay"`) |
+| `referrerpolicy` | control what referrer info is sent |
+
+## Security & performance
+
+<Callout type="warn">An iframe loads a **whole other page** — it's heavy and a security surface. Only embed sources you trust, and tighten it with `sandbox` (start with nothing allowed, then add the minimum, e.g. `sandbox="allow-scripts"`). Note that `allow-scripts` + `allow-same-origin` together can let the frame remove its own sandbox.</Callout>
+
+<Callout type="do">Prefer a native element when one exists — `<video>` for your own video, an SVG/`<img>` for graphics. Reach for `<iframe>` for genuinely external documents (maps, embeds, third-party widgets), always with a `title` and `loading="lazy"`.</Callout>
+
+<Callout type="note">Sites can block being framed (via `X-Frame-Options` / CSP `frame-ancestors`). If an embed shows blank, the source is likely refusing to be iframed.</Callout>

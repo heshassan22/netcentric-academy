@@ -1,0 +1,66 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Text & Links',
+  topics: 'Text-level semantics · anchors · relative vs absolute · mailto / tel / fragments · target + rel'
+};
+
+## Text-level semantics
+
+Inline elements carry meaning, not just style. Pick by intent:
+
+| Element | Means | Not just… |
+|---|---|---|
+| `<strong>` | strong importance | bold (`<b>`) |
+| `<em>` | stressed emphasis | italic (`<i>`) |
+| `<mark>` | highlighted/relevant | — |
+| `<time datetime="2026-06-05">` | a machine-readable date/time | — |
+| `<abbr title="…">` | an abbreviation with expansion | — |
+| `<code>` / `<pre>` / `<kbd>` | code / preformatted / keyboard input | — |
+| `<blockquote>` + `<cite>` | a quotation + its source | — |
+| `<sub>` / `<sup>` | subscript / superscript | — |
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<p>Ship it by <time datetime="2026-06-30">June 30</time>.
+   This is <strong>critical</strong> — see the
+   <abbr title="Request for Comments">RFC</abbr>.</p>
+```
+
+</Tab>
+<Tab label="Result">
+
+<p style={{margin:'.2rem 0'}}>Ship it by <time dateTime="2026-06-30">June 30</time>. This is <strong>critical</strong> — see the <abbr title="Request for Comments">RFC</abbr>.</p>
+
+</Tab>
+</Tabs>
+
+<Callout type="do">Use `<strong>`/`<em>` for *meaning* (a screen reader emphasises them); use `<b>`/`<i>` only for styling with no added importance. In practice you'll rarely need `<b>`/`<i>`.</Callout>
+
+## Links — the `<a>` element
+
+```html
+<a href="/docs/intro">Relative link (same site)</a>
+<a href="https://example.com">Absolute link</a>
+<a href="#section-2">Jump to a fragment (an id on the page)</a>
+<a href="mailto:team@example.com">Email us</a>
+<a href="tel:+3211223344">Call us</a>
+<a href="/report.pdf" download>Download the PDF</a>
+```
+
+- **Relative** (`/docs`, `../img.png`) stays within your site; **absolute** (`https://…`) points
+  anywhere.
+- **Fragment** links (`#id`) scroll to the element with that `id` — the basis of in-page nav and
+  "skip to content" links.
+
+## Opening in a new tab — safely
+
+```html
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">Opens in new tab</a>
+```
+
+<Callout type="warn">When you use `target="_blank"`, add `rel="noopener noreferrer"`. Without `noopener`, the new page can access `window.opener` and redirect your page (a phishing vector). Modern browsers do this by default now, but be explicit.</Callout>
+
+<Callout type="note">Link text should make sense on its own — screen-reader users often jump link-to-link. Avoid "click here"; write "read the install guide".</Callout>

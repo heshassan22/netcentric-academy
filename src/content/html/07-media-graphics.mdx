@@ -1,0 +1,73 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'Media & Graphics',
+  topics: 'img &amp; alt · responsive images (srcset / picture) · audio · video + captions · inline SVG'
+};
+
+## Images
+
+```html
+<img src="logo.svg" alt="Acme logo" width="120" height="40" loading="lazy">
+```
+
+- **`alt`** is required — describe the image, or use `alt=""` for purely decorative images (so
+  screen readers skip them). See the Accessibility lesson.
+- **`width`/`height`** let the browser reserve space → no layout shift (CLS) while loading.
+- **`loading="lazy"`** defers off-screen images for performance.
+
+## Responsive images
+
+Serve the right size/format for each device.
+
+**`srcset` + `sizes`** — same image, multiple resolutions; the browser picks:
+
+```html
+<img
+  src="photo-800.jpg"
+  srcset="photo-400.jpg 400w, photo-800.jpg 800w, photo-1600.jpg 1600w"
+  sizes="(max-width: 600px) 100vw, 50vw"
+  alt="Sunset over the bay">
+```
+
+**`<picture>`** — *art direction* (different crops) or *format fallback* (modern formats with a
+safe fallback):
+
+```html
+<picture>
+  <source srcset="hero.avif" type="image/avif">
+  <source srcset="hero.webp" type="image/webp">
+  <img src="hero.jpg" alt="Team photo">
+</picture>
+```
+
+<Callout type="do">Always keep a plain `<img>` inside `<picture>` — it's the fallback and the element that actually carries `alt`.</Callout>
+
+## Audio & video
+
+```html
+<audio controls src="podcast.mp3"></audio>
+
+<video controls width="640" poster="cover.jpg">
+  <source src="clip.webm" type="video/webm">
+  <source src="clip.mp4" type="video/mp4">
+  <track kind="captions" src="clip.en.vtt" srclang="en" label="English" default>
+  Your browser doesn't support video.
+</video>
+```
+
+- Multiple `<source>`s let the browser choose a supported format.
+- **`<track kind="captions">`** adds captions/subtitles — important for accessibility.
+- `poster` shows a placeholder image before playback.
+
+## Inline SVG
+
+SVG is vector graphics in markup — sharp at any size, styleable with CSS, scriptable:
+
+```html
+<svg viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Star">
+  <path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z" fill="currentColor" />
+</svg>
+```
+
+<Callout type="note">Use **inline SVG** when you need to style/animate parts or use `currentColor`; use **`<img src="icon.svg">`** for simple, cacheable icons you don't need to manipulate.</Callout>

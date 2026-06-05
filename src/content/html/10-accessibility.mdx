@@ -1,0 +1,64 @@
+export const meta = {
+  order: 10,
+  num: '10',
+  title: 'Accessibility Essentials',
+  topics: 'alt &amp; title · labels · landmarks · ARIA basics · keyboard &amp; focus'
+};
+
+Accessibility (**a11y**) means everyone — including people using screen readers, keyboards, or
+magnifiers — can use your page. Most of it comes free from the HTML you've already learned.
+
+## Semantic HTML is 90% of a11y
+
+A `<button>`, `<a>`, `<label>`, `<nav>`, and a correct heading outline are accessible **by
+default**: focusable, announced with the right role, keyboard-operable. Re-creating them from
+`<div>`s throws all of that away.
+
+<Callout type="dont">`<div class="btn" onclick="…">` — not focusable, not keyboard-operable, announced as nothing.</Callout>
+<Callout type="do">`<button type="button">` — focusable, Enter/Space work, announced as "button". Use the real element.</Callout>
+
+## Images: `alt`
+
+```html
+<img src="chart.png" alt="Revenue grew 20% from Q1 to Q2">  <!-- informative -->
+<img src="divider.svg" alt="">                              <!-- decorative: skip it -->
+```
+
+- Describe the image's **purpose/content**, not "image of…".
+- **Empty `alt=""`** marks it decorative so screen readers ignore it. Omitting `alt` entirely is a
+  bug (some readers announce the file name).
+
+## `title` is not a label
+
+The `title` attribute (tooltip) is unreliable: not shown on touch, not focusable, inconsistently
+read. **Never** rely on it for essential info — use visible text or a proper label.
+
+## Labels & landmarks
+
+- Every form control needs a `<label>` (lesson 06).
+- The semantic landmarks (lesson 03) let screen-reader users jump between regions.
+- Add a **"skip to main content"** link as the first focusable element on the page.
+
+## ARIA — only when HTML can't
+
+ARIA attributes add roles/state when no native element fits (custom widgets like tabs, comboboxes):
+
+```html
+<button aria-expanded="false" aria-controls="menu">Menu</button>
+<nav aria-label="Breadcrumb">…</nav>
+<span aria-hidden="true">★</span>            <!-- hide decorative content from AT -->
+```
+
+Common ones: `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-expanded`, `aria-hidden`,
+`role`.
+
+<Callout type="warn">**First rule of ARIA: don't use ARIA.** If a native element does the job, use it — a wrong or redundant ARIA role is worse than none. Reach for ARIA only to fill genuine gaps in custom components.</Callout>
+
+## Keyboard & focus
+
+- Everything interactive must be reachable and operable with the **keyboard** (Tab / Enter / Space).
+- Keep a **visible focus style** (don't `outline: none` without a replacement; prefer `:focus-visible`).
+- `tabindex="0"` adds a custom element to tab order; `tabindex="-1"` makes it programmatically
+  focusable; avoid positive `tabindex`.
+
+<Callout type="note">Quick checks: navigate the page with **Tab** only, run **Lighthouse**/**axe**, and verify text **contrast** (≥ 4.5:1 for body text). These catch most issues early.</Callout>

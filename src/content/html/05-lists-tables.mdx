@@ -1,0 +1,106 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Lists & Tables',
+  topics: 'ul / ol / dl · nesting · accessible tables (caption, thead, th scope)'
+};
+
+## Lists
+
+| List | For |
+|---|---|
+| `<ul>` | unordered items (order doesn't matter) |
+| `<ol>` | ordered items (steps, rankings) — supports `start`, `reversed`, `type` |
+| `<dl>` | description lists: term (`<dt>`) + description (`<dd>`) |
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<ol start="2">
+  <li>Preheat</li>
+  <li>Mix
+    <ul>
+      <li>flour</li>
+      <li>sugar</li>
+    </ul>
+  </li>
+</ol>
+
+<dl>
+  <dt>HTML</dt>
+  <dd>The structure layer of the web.</dd>
+</dl>
+```
+
+</Tab>
+<Tab label="Result">
+
+<ol start="2">
+<li>Preheat</li>
+<li>Mix — flour, sugar</li>
+</ol>
+
+<dl>
+<dt><strong>HTML</strong></dt>
+<dd>The structure layer of the web.</dd>
+</dl>
+
+</Tab>
+</Tabs>
+
+<Callout type="do">Use a real list element, not a stack of `<div>`s. Screen readers announce "list, 3 items" and let users navigate item-to-item.</Callout>
+
+## Tables — for tabular data only
+
+Tables are for **data with rows and columns**, never for page layout (that's CSS Grid/Flexbox).
+An accessible table uses `<caption>`, header cells (`<th>`) with a `scope`, and section grouping.
+
+<Tabs>
+<Tab label="Code">
+
+```html
+<table>
+  <caption>Q2 revenue by region</caption>
+  <thead>
+    <tr>
+      <th scope="col">Region</th>
+      <th scope="col">Revenue</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">EMEA</th>
+      <td>€1.2M</td>
+    </tr>
+    <tr>
+      <th scope="row">APAC</th>
+      <td>€0.9M</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+</Tab>
+<Tab label="Result">
+
+<table>
+<caption style={{captionSide:'top',textAlign:'left',fontWeight:700}}>Q2 revenue by region</caption>
+<thead>
+<tr><th scope="col">Region</th><th scope="col">Revenue</th></tr>
+</thead>
+<tbody>
+<tr><th scope="row">EMEA</th><td>€1.2M</td></tr>
+<tr><th scope="row">APAC</th><td>€0.9M</td></tr>
+</tbody>
+</table>
+
+</Tab>
+</Tabs>
+
+- **`<caption>`** names the table for everyone, including screen readers.
+- **`<th scope="col">` / `scope="row">`** ties data cells to their headers so a screen reader can
+  announce "EMEA, Revenue, €1.2M".
+- **`<thead>` / `<tbody>` / `<tfoot>`** group rows; `colspan` / `rowspan` merge cells.
+
+<Callout type="dont">Don't use tables to lay out a page, and don't fake a table with `<div>`s when the content is genuinely tabular — you'd lose all the built-in semantics.</Callout>

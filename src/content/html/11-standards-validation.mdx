@@ -1,0 +1,131 @@
+export const meta = {
+  order: 11,
+  num: '11',
+  title: 'Standards, Validation & Best Practices',
+  topics: 'W3C validation · conventions · browser compatibility · performance · a full document'
+};
+
+The finish line: writing HTML that is **valid, conventional, compatible, and fast** — then putting
+the whole track together in one document.
+
+## Validate
+
+Run your markup through the **[W3C validator](https://validator.w3.org/)**. It catches unclosed
+tags, duplicate `id`s, misnested elements, and invalid attributes — bugs that cause subtle,
+cross-browser rendering and accessibility problems.
+
+## Coding conventions
+
+- Lowercase tags and attributes; always quote attribute values.
+- One UTF-8 encoding, declared first.
+- Indent to show nesting; one block-level element per line.
+- Meaningful `class` names (the project uses **BEM** — see the CSS track).
+- Don't rely on the browser auto-fixing sloppy markup.
+
+## Browser compatibility
+
+- Check support on **[caniuse.com](https://caniuse.com/)** before using a newer feature.
+- **Progressive enhancement**: start with HTML that works everywhere, then layer on CSS and JS.
+  The content is readable even if CSS/JS fail.
+- **Graceful degradation / fallbacks**: `<picture>` fallback `<img>`, `<video>` fallback text,
+  `<noscript>` for no-JS.
+
+## Performance basics
+
+- `width`/`height` (or `aspect-ratio`) on media → no layout shift.
+- `loading="lazy"` on off-screen images and iframes.
+- `defer` your scripts; `preconnect`/`preload` critical resources.
+- Keep the DOM lean — fewer, more meaningful elements.
+
+## Capstone — a complete, accessible HTML5 document
+
+Everything from this track in one file:
+
+<Reveal title="Show the full document">
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Espresso Guide — Acme Coffee</title>
+  <meta name="description" content="A practical guide to pulling great espresso at home.">
+  <link rel="canonical" href="https://acme.example/espresso">
+  <meta property="og:title" content="Espresso Guide">
+  <meta property="og:image" content="https://acme.example/og.png">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header>
+    <a href="/"><img src="/logo.svg" alt="Acme Coffee" width="120" height="40"></a>
+    <nav aria-label="Primary">
+      <ul>
+        <li><a href="/guides">Guides</a></li>
+        <li><a href="/shop">Shop</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <article>
+      <h1>Pulling great espresso</h1>
+      <p>Published <time datetime="2026-06-05">June 5, 2026</time>.</p>
+
+      <section>
+        <h2>What you need</h2>
+        <ul>
+          <li>Fresh beans</li>
+          <li>A burr grinder</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Steps</h2>
+        <ol>
+          <li>Dose 18&nbsp;g</li>
+          <li>Tamp level</li>
+          <li>Pull 36&nbsp;g in 28&nbsp;s</li>
+        </ol>
+        <figure>
+          <picture>
+            <source srcset="/shot.avif" type="image/avif">
+            <img src="/shot.jpg" alt="A balanced espresso shot" width="640" height="360" loading="lazy">
+          </picture>
+          <figcaption>A balanced shot.</figcaption>
+        </figure>
+      </section>
+
+      <aside>
+        <h2>Related</h2>
+        <a href="/guides/milk">Steaming milk</a>
+      </aside>
+    </article>
+
+    <section>
+      <h2>Get the newsletter</h2>
+      <form action="/subscribe" method="post">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Acme Coffee</p>
+  </footer>
+</body>
+</html>
+```
+
+</Reveal>
+
+<Callout type="do">That document is semantic, accessible, responsive, shareable, and valid — and it works before a single line of CSS or JS loads. That's the goal: **HTML first**.</Callout>
+
+You now have the full picture. Continue with the **CSS** and **JavaScript** tracks to add
+presentation and behaviour on top of this foundation.

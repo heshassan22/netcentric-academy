@@ -18,6 +18,14 @@ export const TRACKS = [
     ready: true
   },
   {
+    id: 'html',
+    label: 'HTML',
+    badge: '<>',
+    title: 'HTML',
+    blurb: 'From the document skeleton to semantic structure, forms, media, embeds, and accessible, valid HTML5.',
+    ready: true
+  },
+  {
     id: 'css',
     label: 'CSS',
     badge: 'C',

@@ -1,0 +1,71 @@
+export const meta = {
+  order: 9,
+  num: '09',
+  title: 'Metadata, SEO & the <head>',
+  topics: 'meta tags · Open Graph · canonical · structured data · resource hints'
+};
+
+The `<head>` is invisible but decides how your page is **indexed, shared, and loaded**.
+
+## Core metadata
+
+```html
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Espresso Guide — Acme Coffee</title>
+  <meta name="description" content="A practical guide to pulling great espresso at home.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://acme.example/guides/espresso">
+</head>
+```
+
+- **`<title>`** and **`<meta name="description">`** are your search-result snippet — write them for
+  humans.
+- **`robots`** controls indexing (`noindex`, `nofollow`).
+- **`canonical`** points search engines to the "real" URL when the same content is reachable
+  via several URLs (avoids duplicate-content penalties).
+
+## Social sharing — Open Graph & Twitter
+
+What shows when the page is pasted into Slack, LinkedIn, X, etc.:
+
+```html
+<meta property="og:title" content="Espresso Guide">
+<meta property="og:description" content="Pull great espresso at home.">
+<meta property="og:image" content="https://acme.example/og/espresso.png">
+<meta property="og:type" content="article">
+<meta name="twitter:card" content="summary_large_image">
+```
+
+## Structured data (schema.org / JSON-LD)
+
+Machine-readable facts that power rich results (ratings, breadcrumbs, FAQs):
+
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Espresso Guide",
+  "author": { "@type": "Person", "name": "Ada Lovelace" },
+  "datePublished": "2026-06-05"
+}
+</script>
+```
+
+## Resource hints & script loading
+
+```html
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.example">
+<link rel="preload" href="/hero.avif" as="image">
+<script src="/app.js" defer></script>
+```
+
+- **`preconnect`/`dns-prefetch`** warm up connections to third-party origins.
+- **`preload`** fetches a critical asset early.
+- **`defer`** (run after HTML parses, in order) and **`async`** (run as soon as ready) keep scripts
+  from blocking rendering. Prefer `defer` for app scripts.
+
+<Callout type="do">Minimum viable `<head>`: charset, viewport, title, description. Add canonical + Open Graph for anything public-facing, and JSON-LD where rich results matter.</Callout>
