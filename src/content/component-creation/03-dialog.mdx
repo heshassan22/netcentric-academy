@@ -75,9 +75,9 @@ public class HelloModel {
 </Tab>
 <Tab label="Result">
 
-With `name = "KBC"` authored in the dialog:
+With `name = "World"` authored in the dialog:
 
-<h2>Hello, KBC!</h2>
+<h2>Hello, World!</h2>
 
 </Tab>
 </Tabs>
@@ -88,10 +88,10 @@ For trivial cases you can skip the model and read the property directly: `${prop
 
 ```mermaid
 flowchart TD
-  D["Dialog field<br/>name = ./name"] -->|author types KBC and saves| C["Content node<br/>./name = KBC"]
+  D["Dialog field<br/>name = ./name"] -->|author types World and saves| C["Content node<br/>./name = World"]
   C -->|ValueMapValue injects it| M["Sling Model<br/>getGreeting"]
   M -->|data-sly-use| H["HTL expression<br/>hello.greeting"]
-  H --> O["Hello, KBC!"]
+  H --> O["Hello, World!"]
 ```
 
 ## Common field types

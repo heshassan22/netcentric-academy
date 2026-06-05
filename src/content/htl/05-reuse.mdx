@@ -20,7 +20,7 @@ Four ways to reuse — and each reuses a different thing.
 <Tab label="Code">
 
 ```html
-<!--/* given: ./audience = "KBC Workshop"
+<!--/* given: ./audience = "Academy"
        GreetingModel.getMessage() returns "Hello, " + audience + "!" */-->
 <sly data-sly-use.greeting="com.example.GreetingModel"/>
 ${greeting.message}
@@ -29,7 +29,7 @@ ${greeting.message}
 </Tab>
 <Tab label="Result">
 
-The string is built in Java — HTL stays free of concatenation: Hello, KBC Workshop!
+The string is built in Java — HTL stays free of concatenation: Hello, Academy!
 
 </Tab>
 <Tab label="When to use it">

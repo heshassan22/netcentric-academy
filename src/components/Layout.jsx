@@ -34,7 +34,7 @@ export default function Layout() {
         <Outlet />
       )}
       <footer className="site-footer">
-        Netcentric Academy · built for the KBC workshop ·{' '}
+        Netcentric Academy · hands-on learning tracks ·{' '}
         <a href="https://github.com/Netcentric/aem-htl-style-guide">HTL Style Guide</a> ·{' '}
         <a href="https://github.com/adobe/aem-htl-repl">HTL REPL</a>
       </footer>
