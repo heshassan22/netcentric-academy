@@ -1,0 +1,77 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Optimize Web Fonts',
+  topics: 'font-display · discovery · preload · inline @font-face · self-host · WOFF2'
+};
+
+Web fonts affect performance at **load time** (large files delay First Contentful Paint) and
+**render time** (the wrong `font-display` causes layout shifts that hurt CLS).
+
+## How fonts are discovered
+
+A font is defined with `@font-face`. To save bandwidth, the browser **only downloads it once it
+knows the layout needs it** — i.e. after it has parsed the CSS *and* found an element using that
+family.
+
+```css
+@font-face {
+  font-family: "Open Sans";
+  src: url(/fonts/open-sans.woff2) format("woff2");
+  font-display: swap;
+}
+```
+
+<Callout type="note"><code>font-display: swap</code> shows fallback text immediately and swaps in the web font when ready — avoiding invisible text (FOIT) and reducing layout-shift impact.</Callout>
+
+## `preload` fonts
+
+If `@font-face` lives in an **external** stylesheet, the browser can only start downloading the font
+*after* that stylesheet arrives — making fonts **late-discovered**. Preload to start the request
+early:
+
+```html
+<link rel="preload" href="/fonts/open-sans.woff2" as="font" type="font/woff2" crossorigin>
+```
+
+<Callout type="warn">Fonts are **CORS** resources — you must include `crossorigin` when preloading, even when self-hosting. And preload sparingly: over-preloading fonts diverts bandwidth and may fetch fonts the page doesn't use.</Callout>
+
+## Inline `@font-face`
+
+Inlining the render-blocking CSS — including `@font-face` — in a `<style>` in the `<head>` lets the
+browser discover fonts **without** waiting for an external stylesheet:
+
+```html
+<head>
+  <style>
+    @font-face { font-family: "Open Sans"; src: url(/fonts/open-sans.woff2) format("woff2"); font-display: swap; }
+  </style>
+</head>
+```
+
+Advantage over `preload`: the browser only downloads the fonts **actually needed** for the current
+page — no risk of fetching unused fonts. (Note: the font still waits for all render-blocking
+resources to load first, so if the rest of your CSS is external, that external file still gates it.)
+
+## Self-host your fonts
+
+Third-party font services (e.g. Google Fonts) require opening a connection to **another origin**
+before the font can download, delaying discovery.
+
+```html
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+```
+
+Better still, **self-host**: it's usually faster than a cross-origin fetch. If you do, make sure your
+site uses a CDN, **HTTP/2 or HTTP/3**, and correct **caching headers** for the font files.
+
+## Use WOFF2 — and WOFF2 only
+
+[WOFF2](https://caniuse.com/woff2) has wide browser support and the best compression — up to **30%
+smaller than WOFF**. For modern browsers it's typically the **only format you need**.
+
+```css
+src: url(/fonts/open-sans.woff2) format("woff2");
+```
+
+<Callout type="do">Self-host WOFF2 with `font-display: swap`, preload only the one or two fonts above the fold, and set long cache headers. That covers the bulk of font performance.</Callout>

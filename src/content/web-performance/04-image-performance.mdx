@@ -1,0 +1,69 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Image Performance',
+  topics: 'Right-sizing &amp; DPR · srcset · sizes · the picture element'
+};
+
+Images are usually the **heaviest and most common** resource on a page, so optimising them moves the
+needle the most. Mostly that means **sending fewer bytes** — and serving images **sized for the
+user's device**.
+
+## Right-size the image (and mind DPR)
+
+An image shown in a 500×500 CSS-pixel container is optimally **500×500** — *considering no other
+variables*. But devices have a **device pixel ratio (DPR)**: on a DPR-2 screen, one CSS pixel is 2
+device pixels, so that same container wants a **1000×1000** image; at DPR 3, **1500×1500**.
+
+<Callout type="warn">Serving one large image to everyone wastes bytes on small/low-DPR devices; serving one small image looks blurry on high-DPR screens. The fix is letting the browser choose — `srcset`.</Callout>
+
+## `srcset` — by pixel density
+
+Offer several sources and let the browser pick by DPR:
+
+```html
+<img
+  src="image-500.jpg"
+  srcset="image-500.jpg 1x, image-1000.jpg 2x, image-1500.jpg 3x"
+  alt="…">
+```
+
+Use this when the image is displayed at the **same CSS size** on every viewport.
+
+## `sizes` — by layout width
+
+When the displayed size changes with the layout, combine **width descriptors** (`w`) in `srcset`
+with a `sizes` attribute that describes the rendered width:
+
+```html
+<img
+  srcset="image-500.jpg 500w, image-1000.jpg 1000w, image-1500.jpg 1500w"
+  sizes="(min-width: 768px) 500px, 100vw"
+  src="image-500.jpg"
+  alt="…">
+```
+
+- `1000w` declares the image's **intrinsic width** (1000px).
+- `sizes` says: above 768px viewport, the image renders at **500px**; otherwise at **100vw** (full
+  width). The browser combines this with DPR to pick the best candidate.
+
+## The `<picture>` element
+
+`<picture>` gives you the most control — multiple candidates with **art direction** (different crops)
+or **format fallbacks** (modern formats first):
+
+```html
+<picture>
+  <source media="(min-width: 768px)" srcset="hero-wide.avif" type="image/avif">
+  <source srcset="hero.avif" type="image/avif">
+  <source srcset="hero.webp" type="image/webp">
+  <img src="hero.jpg" alt="…" width="800" height="450">
+</picture>
+```
+
+- A `<picture>` **requires** a nested `<img>` — it carries `alt`, `width`, `height`, and is the
+  fallback when no `<source>` matches.
+- `<source>` supports `media`, `srcset`, and `sizes`. A `media` query here is a **command** the
+  browser must follow, whereas `srcset` is a **hint**.
+
+<Callout type="do">Always set `width`/`height` (or `aspect-ratio`) so the browser reserves space and avoids layout shift (CLS). For a deep dive on formats and workflows, see web.dev's [Learn Images](https://web.dev/learn/images).</Callout>

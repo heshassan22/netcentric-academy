@@ -1,0 +1,86 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Optimize Resource Loading',
+  topics: 'Preload scanner · minification · unused CSS · @import · critical CSS · render-blocking JS'
+};
+
+Once you know what's on the critical path, the next job is to make those resources **smaller,
+fewer, and more discoverable**.
+
+## The preload scanner
+
+As a page loads, the browser runs a secondary parser — the **preload scanner** — that scans the raw
+HTML and speculatively fetches resources *before* the main parser reaches them (e.g. it can start
+downloading an image or script while the parser is blocked on CSS).
+
+To benefit, **critical resources must be in the HTML markup the server sends**. The preload scanner
+**cannot** discover:
+
+- Images set via CSS `background-image`.
+- Scripts/modules injected by JavaScript or `import()`.
+- Markup rendered on the client by JavaScript.
+- Resources pulled in by CSS `@import`.
+
+## Minification
+
+**Minifying** removes spaces, comments, and other invisible characters to shrink files so they
+download faster.
+
+- **CSS** minification strips whitespace/comments.
+- **JavaScript** minification goes further — it also shortens symbol names ("uglification").
+
+<Callout type="do">Minification is a build-time concern. In this project the front-end build (and AEM clientlibs) minify CSS/JS for you — make sure it's enabled for production.</Callout>
+
+## Remove unused CSS
+
+Before rendering, the browser must download **and parse all stylesheets** — including rules unused
+on the current page. If a bundler combines everything into one file, users download far more CSS
+than they need.
+
+Removing unused CSS helps twice: less to **download**, and a smaller **render tree** to build.
+
+<Callout type="note">Use Chrome DevTools' **Coverage** tool (and Lighthouse "unused CSS") to see how much of your CSS a page actually uses.</Callout>
+
+## Avoid CSS `@import`
+
+```css
+/* Don't do this: */
+@import url('style.css');
+```
+
+An `@import` lets one stylesheet pull in another — but the imported file is only discovered **after**
+the first stylesheet downloads and parses. That makes it a **late-discovered, render-blocking**
+resource the preload scanner can't see.
+
+<Callout type="do">Use a `<link rel="stylesheet">` in the HTML instead — it's part of the HTML response, so it's discovered far sooner.</Callout>
+
+## Inline critical CSS
+
+**Critical CSS** is the styling needed to render the content in the initial viewport. Inlining it in
+a `<style>` in the `<head>` removes a network request and can speed up first load (especially on a
+cold cache); the rest of the CSS is loaded asynchronously or appended at the end of the body.
+
+The trade-offs are real:
+
+- Which styles are "critical", and for which viewport(s)? Can it be automated?
+- Inlined CSS adds bytes to every HTML response and **isn't cached** across pages the way an
+  external stylesheet is.
+
+<Callout type="warn">Critical CSS can be hard to extract and maintain. Measure before and after — the win has to be worth the complexity.</Callout>
+
+## Render-blocking JavaScript
+
+A `<script>` without `defer` or `async` **blocks parsing and rendering** until it downloads, parses,
+and executes. Inline scripts block the parser too.
+
+```html
+<script src="app.js" defer></script>   <!-- runs after HTML is parsed, in order -->
+<script src="analytics.js" async></script>  <!-- runs as soon as it's downloaded -->
+```
+
+- **`async`** — parsed/executed immediately once downloaded (order not guaranteed).
+- **`defer`** — executed only after HTML parsing finishes, in document order.
+- `<script type="module">` is deferred automatically.
+
+<Callout type="do">Keep blocking scripts out of the `<head>`. Prefer `defer` for app scripts that depend on the DOM; use `async` for independent, order-agnostic scripts like analytics.</Callout>

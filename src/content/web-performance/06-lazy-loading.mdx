@@ -1,0 +1,40 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'Lazy Loading Images & Iframes',
+  topics: 'Why lazy-load · the loading attribute · don\'t lazy-load above the fold'
+};
+
+Images and `<iframe>`s often consume more bandwidth than anything else — and iframes add real
+processing time. **Deferring off-screen** ones frees bandwidth for the critical resources in the
+initial viewport, which can improve **LCP** on poor connections.
+
+## The `loading` attribute
+
+Add `loading` to `<img>` and `<iframe>` to tell the browser when to fetch them:
+
+```html
+<img src="below-the-fold.jpg" loading="lazy" alt="…">
+<iframe src="https://maps.example/embed" title="Map" loading="lazy"></iframe>
+```
+
+- **`eager`** (default) — load immediately, even off-screen.
+- **`lazy`** — defer until the element is within a browser-defined distance of the viewport (tuned
+  so it's usually loaded by the time you scroll to it).
+
+<Callout type="note">With `<picture>`, put `loading="lazy"` on the nested <code>&lt;img&gt;</code> — not on `<picture>` or the `<source>`s. The chosen candidate is applied to the `<img>`, which is what actually loads.</Callout>
+
+## Don't lazy-load what's in the initial viewport
+
+Only add `loading="lazy"` to elements **outside** the initial viewport. It's hard to know an
+element's exact position before render (different viewports, aspect ratios, devices) — but some
+cases are clear-cut.
+
+<Callout type="dont">Never lazy-load **hero images** or anything likely **above the fold** — especially **LCP candidates**.</Callout>
+
+Why it hurts: a lazy image must wait for the browser to finish **layout** to know whether it's in the
+viewport. So a visible `loading="lazy"` image is only requested **after all CSS is downloaded,
+parsed, and applied** — instead of being fetched as soon as the **preload scanner** sees it in the
+raw markup. For an LCP image, that delay directly worsens LCP.
+
+<Callout type="do">Rule of thumb: **eager (omit `loading`) for above-the-fold and LCP images; `lazy` for everything below the fold and for non-critical iframes.**</Callout>

@@ -1,0 +1,61 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Resource Hints',
+  topics: 'preconnect · preload · prefetch · the Fetch Priority API'
+};
+
+Resource hints let you **assist the browser**: connect early, fetch critical things sooner, or
+fetch likely-next things ahead of time.
+
+## `preconnect`
+
+Opens a connection to **another origin** you'll fetch critical resources from (a CDN, a font host)
+**as early as possible**, before the parser or preload scanner would otherwise do it.
+
+```html
+<link rel="preconnect" href="https://cdn.example.com">
+```
+
+<Callout type="do">If a page has many cross-origin resources, `preconnect` only the **most critical** origins — each open connection has a cost.</Callout>
+
+## `preload`
+
+Initiates an **early, high-priority** request for a resource needed to render the current page:
+
+```html
+<link rel="preload" href="/fonts/open-sans.woff2" as="font" type="font/woff2" crossorigin>
+```
+
+Use it for **late-discovered critical resources** — font files, CSS pulled via `@import`, or a
+`background-image` that's the LCP element — things the preload scanner can't find because they're
+referenced inside other resources.
+
+<Callout type="warn">Don't over-preload. Too many `preload`s steal bandwidth from other critical resources, and you may fetch things the page doesn't need.</Callout>
+
+## `prefetch`
+
+Initiates a **low-priority** request for a resource likely needed on a **future navigation**:
+
+```html
+<link rel="prefetch" href="/next-page.css" as="style">
+```
+
+Same shape as `preload`, but `rel="prefetch"` — and it's **speculative**: the next navigation may or
+may not happen, so it runs at low priority.
+
+## Fetch Priority API
+
+The `fetchpriority` attribute raises (or lowers) a resource's priority. It works on `<img>`,
+`<link>`, and `<script>`:
+
+```html
+<img src="hero.jpg" fetchpriority="high" alt="…">   <!-- e.g. the LCP image -->
+<img src="thumb.jpg" fetchpriority="low" alt="…">
+```
+
+By default images fetch at **low** priority; after layout, an in-viewport image is bumped to **high**.
+`fetchpriority="high"` tells the browser to download the **LCP image** at high priority immediately —
+a big LCP win for little effort — while de-prioritising less important images.
+
+<Callout type="note">Hints are *suggestions*, not commands. Measure with WebPageTest / Lighthouse to confirm each hint actually helps — misused hints can hurt.</Callout>

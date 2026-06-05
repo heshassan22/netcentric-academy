@@ -50,6 +50,14 @@ export const TRACKS = [
     ready: true
   },
   {
+    id: 'web-performance',
+    label: 'Web Performance',
+    badge: '🚀',
+    title: 'Web Performance',
+    blurb: 'Make pages fast: the critical rendering path, resource loading, hints, images, fonts, and lazy-loading — plus a hands-on challenge.',
+    ready: true
+  },
+  {
     id: 'unit-testing',
     label: 'Unit Testing',
     badge: 'T',

@@ -1,0 +1,51 @@
+export const meta = {
+  order: 7,
+  num: '★',
+  title: 'Exercise: Web Performance Challenge',
+  topics: 'Find &amp; fix real issues on a deliberately slow site'
+};
+
+Time to apply everything. The **Web Performance & Accessibility Challenge** is a real site,
+deployed on GitHub Pages, **deliberately full of bad practices**. Your job: find and fix as many
+issues as you can.
+
+- 🔗 **Live site:** [netcentric.github.io/web-performance-challenge](https://netcentric.github.io/web-performance-challenge)
+- 📦 **Repository:** [github.com/netcentric/web-performance-challenge](https://github.com/netcentric/web-performance-challenge)
+
+## How to do it
+
+1. **Fork / clone** the repository.
+2. **Measure first** — get a baseline before changing anything. Run it through
+   [Lighthouse](https://developer.chrome.com/docs/lighthouse/) (Chrome DevTools) and
+   [WebPageTest](https://www.webpagetest.org/), and note the Core Web Vitals (LCP, CLS, INP).
+3. **Find issues** — read the HTML/CSS/JS with this track's lessons in mind.
+4. **Fix them** one at a time, **re-measuring** after each change so you can see the impact.
+5. **Deploy** your fork to GitHub Pages (publish with a GitHub Actions workflow — see the
+   [Pages docs](https://docs.github.com/en/pages)) and compare against the baseline.
+
+<Callout type="do">Always **measure before and after**. Performance work without numbers is guesswork — the goal is a measurable improvement in the Core Web Vitals.</Callout>
+
+## What to look for
+
+Map each lesson to things to hunt down on the challenge site:
+
+<Reveal title="Show the checklist">
+
+- **Critical rendering path** — render-blocking CSS/JS in the `<head>`; scripts missing `defer`/`async`.
+- **Resource loading** — unminified CSS/JS; unused CSS; CSS `@import`; opportunities to inline critical CSS.
+- **Resource hints** — missing `preconnect` to third-party origins; LCP image not `preload`ed or not `fetchpriority="high"`.
+- **Images** — oversized images; missing `srcset`/`sizes`/`<picture>`; missing `width`/`height` (causing CLS); legacy formats instead of WebP/AVIF.
+- **Web fonts** — render-blocking font CSS; no `font-display: swap`; not preloaded; missing `crossorigin`; not WOFF2.
+- **Lazy loading** — below-the-fold images/iframes not `loading="lazy"`; **hero/LCP image wrongly lazy-loaded**.
+
+</Reveal>
+
+## Measure with
+
+- **Lighthouse** — quick lab audit + specific opportunities, right in DevTools.
+- **WebPageTest** — detailed waterfall, filmstrip, and Core Web Vitals from real locations/devices.
+- **Chrome DevTools** — Coverage (unused CSS/JS), Network (waterfall, priorities), Performance panel.
+
+<Callout type="note">The original challenge also includes **accessibility** issues. Performance is the focus here; a dedicated Accessibility track will cover the a11y side in depth.</Callout>
+
+<Callout type="do">Goal: a faster site with better Core Web Vitals than your baseline — and the ability to **explain *why*** each fix helped, using the concepts from lessons 01–06.</Callout>
