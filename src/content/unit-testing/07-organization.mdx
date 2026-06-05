@@ -1,0 +1,73 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'Test Organization',
+  topics: 'File location &amp; naming · structuring suites · readable test names · DRY setup'
+};
+
+Tests are code you'll read far more than you write. Keep them **discoverable, consistent, and
+readable**.
+
+## Where tests live & how they're named
+
+Two common conventions (Jest finds both by default):
+
+```text
+# 1) next to the source (co-located)
+src/utils/format.js
+src/utils/format.test.js
+
+# 2) in a __tests__ folder
+src/utils/__tests__/format.test.js
+```
+
+- Use `.test.js` (or `.spec.js`) so Jest picks them up.
+- **Co-locating** tests next to the source keeps them visible and easy to update together.
+
+## Structure a suite to mirror the code
+
+Use `describe` per unit, and nested `describe`s per scenario:
+
+```js
+describe('formatPrice()', () => {
+  describe('with a valid amount', () => {
+    it('formats with two decimals', () => { /* … */ });
+    it('adds the currency symbol', () => { /* … */ });
+  });
+
+  describe('with invalid input', () => {
+    it('throws on a negative amount', () => { /* … */ });
+  });
+});
+```
+
+## Write test names as sentences
+
+The name should describe **behaviour**, so a failure reads like a spec:
+
+<Callout type="dont">`test('test1')` · `test('formatPrice works')` — tells you nothing when it fails.</Callout>
+<Callout type="do">`it('adds the currency symbol after the amount')` — reads as "formatPrice → with a valid amount → it adds the currency symbol after the amount".</Callout>
+
+## Keep tests DRY — but readable
+
+Factor repeated setup into `beforeEach` or small helpers/factories, but keep each test's **intent**
+obvious at a glance:
+
+```js
+function makeUser(overrides = {}) {
+  return { id: 1, name: 'Ada', active: true, ...overrides };
+}
+
+test('inactive users are hidden', () => {
+  expect(isVisible(makeUser({ active: false }))).toBe(false);
+});
+```
+
+<Callout type="warn">Don't over-abstract. A test with so much shared setup that you can't tell what it does is worse than a little duplication. Optimise for **readability over DRY** in tests.</Callout>
+
+## One reason to fail
+
+Prefer a focused assertion (or a few closely-related ones) per test. If a test checks five
+unrelated things, a failure doesn't tell you which behaviour broke.
+
+<Callout type="do">A clean test reads top-to-bottom as **Arrange → Act → Assert** (lesson 01), with a name that states the expected behaviour.</Callout>

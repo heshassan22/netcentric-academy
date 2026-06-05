@@ -1,0 +1,69 @@
+export const meta = {
+  order: 8,
+  num: '08',
+  title: 'Coverage & Quality',
+  topics: 'Reading coverage · thresholds · what to test · meaningful vs vanity tests'
+};
+
+The last piece: knowing **how much** of your code is tested, and making sure those tests are
+**meaningful** — not just there to hit a number.
+
+## Measuring coverage
+
+```bash
+npx jest --coverage
+```
+
+Jest reports four metrics:
+
+| Metric | Means |
+|---|---|
+| **Statements** | % of statements executed |
+| **Branches** | % of `if`/`else`/ternary/`&&` paths taken |
+| **Functions** | % of functions called |
+| **Lines** | % of lines executed |
+
+**Branches** is the most revealing — it's easy to run a line without testing both sides of its
+conditions.
+
+## Enforcing a threshold
+
+Fail the build if coverage drops below a bar (in `jest.config.js`):
+
+```js
+export default {
+  collectCoverage: true,
+  coverageThreshold: {
+    global: { branches: 80, functions: 80, lines: 80, statements: 80 }
+  }
+};
+```
+
+## Coverage is a guide, not a goal
+
+<Callout type="warn">100% coverage does **not** mean bug-free. A test can *execute* a line without asserting anything meaningful about it. Coverage tells you what's **not** tested; it can't tell you whether what *is* tested is tested **well**.</Callout>
+
+```js
+// 100% coverage, 0% value — no assertion about behaviour
+test('renders', () => { render(); });
+```
+
+## What's worth testing
+
+<Callout type="do">Prioritise: <strong>business logic</strong> (calculations, formatting, validation), <strong>edge cases</strong> (empty, null, zero, boundary, error paths), and <strong>component behaviour</strong> (what happens on a click/input). These are where bugs live and where tests pay off.</Callout>
+<Callout type="dont">Don't chase coverage on trivial code (plain getters, config objects), don't test the framework or the language, and don't assert on implementation details that change on every refactor.</Callout>
+
+## Signs of meaningful tests
+
+- They **fail** when you introduce a real bug (try it — break the code and watch a test go red).
+- Each test name states a behaviour a user or caller relies on.
+- They survive a refactor that preserves behaviour.
+- A failure points you straight at **what** broke.
+
+<Callout type="note">A quick gut-check: temporarily break a line of production code. If no test fails, that line isn't *meaningfully* covered — regardless of what the coverage report says.</Callout>
+
+## You've completed the track
+
+Fundamentals → Jest basics → matchers → mocking → async → DOM → organization → coverage. You can now
+write fast, isolated, meaningful unit tests for front-end logic and components — and know when to
+reach for integration or E2E instead.

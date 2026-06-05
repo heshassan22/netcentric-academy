@@ -62,9 +62,8 @@ export const TRACKS = [
     label: 'Unit Testing',
     badge: 'T',
     title: 'Unit Testing',
-    blurb: 'Testing Java (JUnit / AEM Mocks) and front-end code with confidence.',
-    ready: false,
-    icon: '✅'
+    blurb: 'Front-end unit testing with Jest: structure, matchers, mocking, async, DOM testing, and coverage.',
+    ready: true
   }
 ];
 

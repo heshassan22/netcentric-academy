@@ -1,0 +1,86 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Mocking',
+  topics: 'jest.fn · spies · jest.mock (modules) · mocking fetch/APIs'
+};
+
+To test a unit in **isolation**, you replace its dependencies (other modules, network, timers) with
+**mocks** — fake versions you control and can inspect.
+
+## Mock functions — `jest.fn()`
+
+```js
+const onClick = jest.fn();
+
+button.addEventListener('click', onClick);
+button.click();
+
+expect(onClick).toHaveBeenCalled();
+expect(onClick).toHaveBeenCalledTimes(1);
+expect(onClick).toHaveBeenCalledWith(expect.any(Event));
+```
+
+Control what a mock returns:
+
+```js
+const getUser = jest.fn()
+  .mockReturnValue({ name: 'Ada' });        // sync
+const fetchUser = jest.fn()
+  .mockResolvedValue({ name: 'Ada' });       // resolves a promise
+const failing = jest.fn()
+  .mockRejectedValue(new Error('boom'));     // rejects
+```
+
+## Spying — `jest.spyOn`
+
+Wrap a **real** method so you can assert on it (and optionally replace it):
+
+```js
+const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+doThing();
+expect(spy).toHaveBeenCalledWith('deprecated');
+spy.mockRestore();   // put the real one back
+```
+
+## Mocking modules — `jest.mock`
+
+Replace an entire imported module:
+
+```js
+import { sendEvent } from './analytics.js';
+jest.mock('./analytics.js');   // auto-mock: every export becomes a jest.fn()
+
+test('tracks a click', () => {
+  handleClick();
+  expect(sendEvent).toHaveBeenCalledWith('cta_click');
+});
+```
+
+Or provide a custom factory:
+
+```js
+jest.mock('./config.js', () => ({ API_BASE: 'https://test.local' }));
+```
+
+## Mocking an API (fetch)
+
+```js
+beforeEach(() => {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ id: 1, name: 'Ada' })
+  });
+});
+afterEach(() => jest.resetAllMocks());
+
+test('loads the user', async () => {
+  const user = await loadUser(1);
+  expect(fetch).toHaveBeenCalledWith('/api/users/1');
+  expect(user.name).toBe('Ada');
+});
+```
+
+<Callout type="do">Reset mocks between tests — `jest.clearAllMocks()` (clears calls) or `jest.resetAllMocks()` (clears calls *and* implementations) in `afterEach` — so call counts don't leak across tests.</Callout>
+
+<Callout type="warn">Mock at the **boundary** (network, timers, third-party modules), not your own logic. If you mock the very thing you're testing, the test proves nothing. Over-mocking also makes tests brittle and detached from reality.</Callout>

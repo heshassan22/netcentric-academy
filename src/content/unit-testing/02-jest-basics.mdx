@@ -1,0 +1,70 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Jest Basics',
+  topics: 'describe / test / it · expect · running tests · the test lifecycle'
+};
+
+**Jest** is the de-facto test runner for JavaScript front ends. It finds your test files, runs them,
+and reports results — batteries included (assertions, mocking, coverage, a DOM environment).
+
+## Anatomy of a test
+
+```js
+import { sum } from './math.js';
+
+describe('sum()', () => {
+  test('adds two positive numbers', () => {
+    expect(sum(2, 3)).toBe(5);
+  });
+
+  it('handles negative numbers', () => {   // it() is an alias for test()
+    expect(sum(-2, 3)).toBe(1);
+  });
+});
+```
+
+- **`describe(name, fn)`** — groups related tests into a suite (you can nest them).
+- **`test(name, fn)`** / **`it(name, fn)`** — a single test case. `it` reads nicely:
+  *"it handles negative numbers"*.
+- **`expect(value)`** — wraps a value so you can assert on it with a **matcher** (next lesson).
+
+## Running tests
+
+```bash
+npx jest                 # run all tests once
+npx jest --watch         # re-run on change (only related to git changes)
+npx jest math.test.js    # run one file
+npx jest -t "negative"   # run tests whose name matches
+```
+
+A typical `package.json`:
+
+```json
+{
+  "scripts": { "test": "jest", "test:watch": "jest --watch" }
+}
+```
+
+## The lifecycle hooks
+
+Run setup/teardown around tests so each one starts clean:
+
+```js
+beforeAll(() => { /* once, before all tests in this file/suite */ });
+beforeEach(() => { /* before every test — reset state here */ });
+afterEach(() => { /* after every test — clean up */ });
+afterAll(() => { /* once, after all tests */ });
+```
+
+<Callout type="do">Put shared setup in `beforeEach` so every test is **independent** — tests must pass in any order and never rely on state left by another test.</Callout>
+
+## Skipping & focusing (temporary)
+
+```js
+test.only('just this one', () => { /* … */ });   // run only this
+test.skip('not yet', () => { /* … */ });          // skip this
+test.todo('write the empty-input case');          // a reminder
+```
+
+<Callout type="warn">Never commit `test.only` / `test.skip` — they silently hide the rest of the suite or a missing test. Many teams lint against them in CI.</Callout>

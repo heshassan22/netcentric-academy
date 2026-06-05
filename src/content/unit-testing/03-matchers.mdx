@@ -1,0 +1,81 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Matchers',
+  topics: 'Values · objects &amp; arrays · truthiness · exceptions · DOM matchers'
+};
+
+A **matcher** is the assertion after `expect(...)`. Picking the right one makes failures readable.
+
+## Values: `toBe` vs `toEqual`
+
+```js
+expect(2 + 2).toBe(4);                    // Object.is — primitives & same reference
+expect({ a: 1 }).toEqual({ a: 1 });       // deep (recursive) equality — use for objects/arrays
+expect({ a: 1, b: undefined }).toStrictEqual({ a: 1 }); // strict: also checks undefined props/type
+```
+
+<Callout type="warn">`toBe` compares **identity**, so `expect({a:1}).toBe({a:1})` **fails** — two different objects. Use `toEqual` for objects and arrays.</Callout>
+
+## Numbers & strings
+
+```js
+expect(value).toBeGreaterThan(3);
+expect(value).toBeGreaterThanOrEqual(3.5);
+expect(0.1 + 0.2).toBeCloseTo(0.3);       // floats — don't use toBe
+expect('Netcentric').toMatch(/centric/);  // regex / substring
+```
+
+## Arrays & objects
+
+```js
+expect(['a', 'b', 'c']).toContain('b');
+expect([{ id: 1 }]).toContainEqual({ id: 1 });   // deep contain
+expect(list).toHaveLength(3);
+expect(user).toHaveProperty('address.city', 'Berlin');
+expect(user).toMatchObject({ name: 'Ada' });     // subset match
+```
+
+## Truthiness & nullish
+
+```js
+expect(value).toBeTruthy();
+expect(value).toBeFalsy();
+expect(value).toBeNull();
+expect(value).toBeUndefined();
+expect(value).toBeDefined();
+```
+
+## Exceptions
+
+```js
+expect(() => parse('')).toThrow();                 // throws anything
+expect(() => parse('')).toThrow('empty input');    // message contains
+expect(() => parse('')).toThrow(ValidationError);  // error type
+```
+
+<Callout type="note">Pass a **function** to `expect` when testing throws — <code>expect(parse('')).toThrow()</code> would run `parse` *before* expect sees it, so the error escapes the test.</Callout>
+
+## Negation
+
+Any matcher can be inverted with `.not`:
+
+```js
+expect(value).not.toBe(0);
+expect(list).not.toContain('x');
+```
+
+## DOM matchers (jest-dom)
+
+The `@testing-library/jest-dom` package adds expressive matchers for DOM nodes (more in the DOM
+testing lesson):
+
+```js
+expect(button).toBeInTheDocument();
+expect(button).toBeDisabled();
+expect(el).toHaveTextContent('Subscribe');
+expect(el).toHaveClass('is-active');
+expect(input).toHaveValue('hello');
+```
+
+<Callout type="do">Choose the **most specific** matcher — `toHaveLength(3)` fails with a clearer message than `toBe(3)` on `list.length`, and `toBeInTheDocument()` reads better than `not.toBeNull()`.</Callout>

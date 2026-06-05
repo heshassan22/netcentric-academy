@@ -1,0 +1,74 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Async Testing',
+  topics: 'Promises · async/await · resolves/rejects · fake timers'
+};
+
+Front-end code is full of async work — fetches, timeouts, animations. The golden rule: **the test
+must wait** for the async work, or it passes before the assertion even runs.
+
+## async / await (preferred)
+
+```js
+test('loads the user', async () => {
+  const user = await loadUser(1);
+  expect(user.name).toBe('Ada');
+});
+```
+
+## Returning a promise
+
+If you don't `await`, **return** the promise so Jest waits:
+
+```js
+test('resolves', () => {
+  return loadUser(1).then((user) => {
+    expect(user.name).toBe('Ada');
+  });
+});
+```
+
+<Callout type="warn">Forgetting to `await`/`return` is the #1 async-test bug: the test finishes and **passes before** the assertion runs. If a test "can't fail", check that you awaited the async call.</Callout>
+
+## `.resolves` / `.rejects`
+
+Assert on a promise's outcome directly:
+
+```js
+await expect(loadUser(1)).resolves.toMatchObject({ name: 'Ada' });
+await expect(loadUser(0)).rejects.toThrow('not found');
+```
+
+## Testing rejections
+
+```js
+test('throws on bad id', async () => {
+  await expect(loadUser(-1)).rejects.toThrow(ValidationError);
+});
+```
+
+## Fake timers
+
+Don't make tests wait real seconds for `setTimeout`/`setInterval` — **fake the clock** and advance it:
+
+```js
+test('debounce fires once after 300ms', () => {
+  jest.useFakeTimers();
+  const fn = jest.fn();
+  const debounced = debounce(fn, 300);
+
+  debounced(); debounced(); debounced();
+  expect(fn).not.toHaveBeenCalled();
+
+  jest.advanceTimersByTime(300);   // fast-forward
+  expect(fn).toHaveBeenCalledTimes(1);
+
+  jest.useRealTimers();
+});
+```
+
+Useful timer controls: `jest.advanceTimersByTime(ms)`, `jest.runAllTimers()`,
+`jest.runOnlyPendingTimers()`.
+
+<Callout type="do">Use fake timers for anything time-based (debounce, throttle, polling, auto-dismiss). Tests stay **fast and deterministic** instead of sleeping for real.</Callout>

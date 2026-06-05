@@ -1,0 +1,88 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'DOM Testing',
+  topics: 'jsdom environment · rendering markup · events · testing a component'
+};
+
+Front-end units often touch the **DOM**. Jest runs them in **jsdom** — a JavaScript implementation
+of the browser DOM — so you can create elements, dispatch events, and assert on the result without a
+real browser.
+
+## The jsdom environment
+
+```js
+/**
+ * @jest-environment jsdom
+ */
+```
+
+Add that comment at the top of a DOM test file, or set it globally in `jest.config.js`:
+
+```js
+export default { testEnvironment: 'jsdom' };
+```
+
+In jsdom you get `document`, `window`, events, `querySelector`, etc.
+
+## Render markup, then assert
+
+```js
+test('renders the label', () => {
+  document.body.innerHTML = `
+    <button class="cta">Subscribe</button>
+  `;
+  const button = document.querySelector('.cta');
+  expect(button).toHaveTextContent('Subscribe');   // jest-dom matcher
+});
+```
+
+## Testing events
+
+```js
+test('toggles open state on click', () => {
+  document.body.innerHTML = `<button class="menu" aria-expanded="false">Menu</button>`;
+  const button = document.querySelector('.menu');
+
+  button.addEventListener('click', () => {
+    const open = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', String(!open));
+  });
+
+  button.click();
+  expect(button).toHaveAttribute('aria-expanded', 'true');
+});
+```
+
+## Testing a component (the loader pattern)
+
+The JavaScript track's components take an `element` + `options`. That makes them easy to unit-test —
+render markup, instantiate the class, assert on the DOM:
+
+```js
+import MyComponent from './my-component.js';
+
+test('writes the param text into the element', () => {
+  document.body.innerHTML = `<div><span class="my-component__text"></span></div>`;
+  const el = document.querySelector('div');
+
+  new MyComponent(el, { text: 'Hello' });
+
+  expect(el.querySelector('.my-component__text')).toHaveTextContent('Hello');
+});
+```
+
+## A note on Testing Library
+
+Most teams pair Jest with **[Testing Library](https://testing-library.com/)** (`@testing-library/dom`
+and its framework flavours). It encourages querying the way a user would — by **role, label, and
+text** — instead of by CSS class:
+
+```js
+import { screen } from '@testing-library/dom';
+screen.getByRole('button', { name: 'Subscribe' });
+```
+
+<Callout type="do">Test what the **user experiences** — visible text, roles, attributes, and behaviour after an interaction — not internal structure. That keeps tests stable when you refactor the markup.</Callout>
+
+<Callout type="warn">jsdom is **not a real browser**: no real layout, no painting, limited support for some APIs (e.g. `getBoundingClientRect` returns zeros). For true rendering/visual behaviour, use an E2E tool (Playwright/Cypress) — that's the top of the pyramid, not unit testing.</Callout>

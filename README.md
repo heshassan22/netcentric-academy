@@ -14,7 +14,7 @@ Interactive learning site for the Netcentric Academy tech tracks. Built with
 | **Sass / SCSS** | ✅ 4 lessons (preprocessor → values/operators → nesting/& → functions/mixins) |
 | **JavaScript** | ✅ 6 lessons (basics → modern ES → component loader → params/DOM → events → custom events) |
 | **Web Performance** | ✅ 7 lessons (critical rendering path → resource loading → resource hints → images → web fonts → lazy loading → challenge) |
-| **Unit Testing** | 🚧 Coming soon |
+| **Unit Testing** | ✅ 8 lessons (fundamentals → Jest basics → matchers → mocking → async → DOM testing → organization → coverage & quality) |
 
 ## Develop
 
