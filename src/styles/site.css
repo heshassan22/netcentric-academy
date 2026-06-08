@@ -151,6 +151,12 @@ details.reveal .reveal-body > :first-child { margin-top: .75rem; }
 .empty-state h1 { margin: 1rem 0 .5rem; }
 .empty-state p { color: var(--text-soft); max-width: 520px; margin: 0 auto 1.5rem; }
 
+/* inline code/result toggle (table cells, prose) */
+.inline-demo { display: inline-flex; align-items: center; gap: .45rem; }
+.inline-demo__code { font-family: var(--mono); font-size: .85em; background: var(--bg-soft); border: 1px solid var(--border); padding: .05em .4em; border-radius: 6px; white-space: pre; }
+.inline-demo__toggle { flex: 0 0 auto; font-size: .68rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: .08rem .45rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-soft); color: var(--text-soft); cursor: pointer; }
+.inline-demo__toggle:hover { color: var(--accent); border-color: var(--accent-2); }
+
 /* mermaid diagrams */
 .mermaid-diagram { margin: 1.5rem 0; padding: 1rem; text-align: center; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-soft); }
 .mermaid-diagram svg { max-width: 100%; height: auto; }

@@ -9,17 +9,19 @@ export const meta = {
 
 Inline elements carry meaning, not just style. Pick by intent:
 
-| Element | Means | Example (rendered) |
+Toggle each example between its **source** and the **rendered result**:
+
+| Element | Means | Example (toggle code / result) |
 |---|---|---|
-| `<strong>` | strong importance | <strong>important</strong> |
-| `<em>` | stressed emphasis | <em>emphasised</em> |
-| `<mark>` | highlighted / relevant | <mark>highlighted</mark> |
-| `<time>` | machine-readable date/time | <time dateTime="2026-06-30">June 30</time> |
-| `<abbr>` | abbreviation + expansion | <abbr title="HyperText Markup Language">HTML</abbr> |
-| `<code>` | inline code | <code>const x = 1</code> |
-| `<kbd>` | keyboard input | <kbd>Ctrl</kbd> + <kbd>C</kbd> |
-| `<sub>` / `<sup>` | subscript / superscript | H<sub>2</sub>O · E=mc<sup>2</sup> |
-| `<blockquote>` + `<cite>` | quotation + source | "Stay curious" — <cite>Ada</cite> |
+| `<strong>` | strong importance | <InlineDemo html='<strong>important</strong>' /> |
+| `<em>` | stressed emphasis | <InlineDemo html='<em>emphasised</em>' /> |
+| `<mark>` | highlighted / relevant | <InlineDemo html='<mark>highlighted</mark>' /> |
+| `<time>` | machine-readable date/time | <InlineDemo html='<time datetime="2026-06-30">June 30</time>' /> |
+| `<abbr>` | abbreviation + expansion | <InlineDemo html='<abbr title="HyperText Markup Language">HTML</abbr>' /> |
+| `<code>` | inline code | <InlineDemo html='<code>const x = 1</code>' /> |
+| `<kbd>` | keyboard input | <InlineDemo html='<kbd>Ctrl</kbd> + <kbd>C</kbd>' /> |
+| `<sub>` / `<sup>` | subscript / superscript | <InlineDemo html='H<sub>2</sub>O, E=mc<sup>2</sup>' /> |
+| `<blockquote>` + `<cite>` | quotation + source | <InlineDemo html='"Stay curious" — <cite>Ada</cite>' /> |
 
 <Tabs>
 <Tab label="Code">
