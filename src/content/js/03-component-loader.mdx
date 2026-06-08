@@ -2,11 +2,12 @@ export const meta = {
   order: 3,
   num: '03',
   title: 'JS Components & the Component Loader',
-  topics: 'The Netcentric component loader · <code>register</code> · the class pattern · first steps'
+  topics: 'What the loader does · what you need (checklist) · register · the class pattern'
 };
 
 In Netcentric/AEM projects, JavaScript is initialised through the **Component Loader** — an
-open-source library that wires DOM elements to JS classes.
+open-source library that wires DOM elements to JS classes. You don't call your component yourself;
+you **register** it, mark up an element, and the loader creates an instance for you.
 
 ## What it does
 
@@ -15,9 +16,28 @@ open-source library that wires DOM elements to JS classes.
 - Keeps watching the DOM and initialises **new** elements added later — essential for a WYSIWYG
   CMS like AEM, where authors add components live.
 
-## Registering a component
+## What you need to wire up a component
 
-Every component is a class, registered with the loader:
+For the loader to pick up and run your component, **five things** must line up. Miss one and
+nothing happens (no error) — so it's worth knowing them all.
+
+1. **A class that accepts `(element, options)`.** The loader calls `new YourClass(element, options)`
+   for every match. Keep the constructor tiny: store them and call `init()`.
+2. **Register the class** with `register({ MyComponent })`. The **name you register**
+   (`MyComponent`) is the exact name the loader will look for in the HTML.
+3. **Make sure the build includes it** — export it from the publish entry (`index.js`) so the
+   bundler ships it. Code that's never imported never runs. (See *Shipping Component JS*.)
+4. **Mark up the element** with `data-nc="MyComponent"`. The value must match the registered name
+   **exactly** (it's case-sensitive).
+5. **The loader runtime must run on the page** — `run()` + `observe()`, loaded via the publish JS
+   bundle. Without it, nothing initialises at all.
+
+Optional, but common:
+
+6. **Pass configuration** with `data-nc-params-MyComponent='{ … }'` (valid JSON). It arrives in the
+   constructor as `options` — covered in the next lesson.
+
+## Registering a component
 
 ```js
 import { register } from '@netcentric/component-loader';
@@ -39,7 +59,7 @@ register({ MyComponent });
 
 ## Wiring it from HTML
 
-The loader matches a registered name to elements carrying the `data-nc` attribute:
+The loader matches the registered name to elements carrying the `data-nc` attribute:
 
 ```html
 <div class="mycomponent__base"
@@ -62,21 +82,25 @@ flowchart TD
 
 <Callout type="do">Keep the constructor tiny — store `element`/`options`, then call `init()`. Put real setup (queries, listeners) in `init()` so the flow is easy to read.</Callout>
 
-## 🛠 Practice — your first component
+## Why isn't my component running?
 
-1. Add `data-nc="MyComponent"` to the component's HTML so the loader picks it up.
-2. In `my-component.clientlib.js`, register the class.
-3. In `init()`, set the text of `.my-component__text` to `"Hello My Component"`:
+When a component silently does nothing (and there's **no error**), it's almost always one of the
+five requirements above:
 
-<Reveal>
+- the `data-nc` value **doesn't match** the registered name (typo or wrong case);
+- the class is **never imported/exported**, so the build left it out;
+- the **publish JS bundle isn't loaded** on the page, so the loader never runs;
+- the `data-nc-params-…` value is **not valid JSON** (single quotes, trailing comma) and fails to parse.
 
-```js
-init() {
-  const text = this.element.querySelector('.my-component__text');
-  if (text) text.innerHTML = 'Hello My Component';
-}
-```
+<Callout type="warn">A mismatch produces **no error** — the loader just finds nothing to do. When in doubt, walk the checklist below: it's nearly always a name mismatch or a missing bundle.</Callout>
 
-</Reveal>
+## Quick checklist
+
+- [ ] A class that takes `(element, options)` and does setup in `init()`
+- [ ] `register({ MyComponent })`
+- [ ] Exported from the publish entry so the build bundles it
+- [ ] `data-nc="MyComponent"` on the element — name matches **exactly**
+- [ ] Publish JS bundle (loader `run()` / `observe()`) loaded on the page
+- [ ] *(optional)* config via `data-nc-params-MyComponent='{ … }'` as valid JSON
 
 <Callout type="note">The loader is open source — you can read and contribute to it. Next we'll pass data in (parameters) and find inner elements (DOM references).</Callout>

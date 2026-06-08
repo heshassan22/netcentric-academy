@@ -2,7 +2,7 @@ export const meta = {
   order: 2,
   num: '02',
   title: 'Modern JS (ES2020–2024)',
-  topics: 'Optional chaining · nullish coalescing · modules · promises · newer array/object methods'
+  topics: 'Optional chaining · logical assignment · dynamic import · promises · arrays/objects · modules'
 };
 
 A tour of the most useful recent additions — shown as **before → after** so the win is obvious.
@@ -26,27 +26,6 @@ onChange?.();
 ```
 
 <Callout type="when">**When to use it** — reading data that might be missing: API responses, optional config, `el?.dataset?.id`, or calling an optional callback. It replaces long `a && a.b && a.b.c` guards.</Callout>
-
-## Nullish coalescing `??` (2020)
-
-A default **only** when the left side is `null`/`undefined` — unlike `||`, which also triggers on
-`0`, `''`, and `false`.
-
-**Before**
-
-```js
-const age = user.age || 18;       // bug: 0 becomes 18
-const name = user.name || 'Guest';
-```
-
-**After**
-
-```js
-const age = user.age ?? 18;        // only null/undefined falls back
-const name = user.name ?? 'Guest';
-```
-
-<Callout type="when">**When to use it** — defaulting a value where `0`, `''`, or `false` are **valid** and must be kept. Use `||` only when every falsy value should fall back.</Callout>
 
 ## Logical assignment `&&=` `||=` `??=` (2021)
 
@@ -129,29 +108,6 @@ const sorted = arr.toSorted();    // immutable — original untouched
 
 <Callout type="when">**When to use it** — `replaceAll` to swap every occurrence without a global regex; `.at(-1)` for the last item; the **immutable** `toSorted`/`toReversed`/`with` when you must not mutate a shared/state array; `Object.groupBy` to bucket records by a key.</Callout>
 
-## Class fields (2022)
-
-**Before**
-
-```js
-class Counter {
-  constructor() { this._count = 0; }   // "_" is a convention, not real privacy
-  increment() { this._count++; }
-}
-```
-
-**After**
-
-```js
-class Counter {
-  #count = 0;              // truly private — inaccessible outside the class
-  static label = 'demo';   // belongs to the class, not an instance
-  increment() { this.#count++; }
-}
-```
-
-<Callout type="when">**When to use it** — `#private` for genuine encapsulation (internal state callers shouldn't touch); `static` for constants or factory helpers that belong to the class, not an instance.</Callout>
-
 ## Module syntax
 
 **Before (CommonJS)**
@@ -173,4 +129,4 @@ import add, { name } from './math.js';
 
 <Callout type="when">**When to use it** — **named** exports for a collection of utilities (better refactoring/autocomplete); a **default** export for a module's single main thing (a component class); **re-exports** to build a barrel like the component `index.js`.</Callout>
 
-<Callout type="do">`?.` and `??` together eliminate most defensive `if (x && x.y)` checks. Reach for the immutable array methods (`toSorted`, `with`) when you must not mutate shared data.</Callout>
+<Callout type="do">`?.` eliminates most defensive `if (x && x.y)` checks. Reach for the immutable array methods (`toSorted`, `with`) when you must not mutate shared data.</Callout>
