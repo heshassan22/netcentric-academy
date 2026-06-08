@@ -8,6 +8,8 @@ export const meta = {
 Custom events let **independent components talk to each other** without direct references — one
 dispatches, any number listen.
 
+<Callout type="when">**When to use it** — to decouple components that shouldn't know about each other: a filter telling unrelated result lists to refresh, a global "close all menus" broadcast, or an "add to cart" signal many widgets react to. For a direct parent↔child relationship, a plain method call or callback is simpler — reach for custom events when a direct reference would create tight coupling.</Callout>
+
 ## Create, listen, dispatch
 
 ```js
@@ -43,6 +45,9 @@ custom events dispatched on `window`; each bulb toggles `light-bulb__base--on` i
 
 <Reveal>
 
+<Tabs>
+<Tab label="Code">
+
 ```js
 // buttons dispatch
 onButton.addEventListener('click', () => window.dispatchEvent(new Event('bulb:on')));
@@ -54,6 +59,15 @@ init() {
   window.addEventListener('bulb:off', () => this.element.classList.remove('light-bulb__base--on'));
 }
 ```
+
+</Tab>
+<Tab label="Result">
+
+Clicking **On** dispatches `bulb:on`, and **every** bulb on the page (not just one) adds
+`light-bulb__base--on` and lights up — that's the broadcast decoupling. **Off** removes it from all.
+
+</Tab>
+</Tabs>
 
 </Reveal>
 

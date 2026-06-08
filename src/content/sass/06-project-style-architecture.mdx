@@ -1,0 +1,77 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'Project Style Architecture',
+  topics: 'Shared variables · <code>@use</code>/<code>@forward</code> · design tokens · custom properties for theming'
+};
+
+A maintainable AEM front end shares **one source of truth** for design decisions — colours,
+breakpoints, spacing, fonts, z-index — and every component imports from it instead of hard-coding
+values.
+
+## The shared `common/styles` layer
+
+```text
+ui.frontend/src/main/frontend/academy/common/styles/
+├── variables/
+│   ├── colors.scss
+│   ├── breakpoints.scss
+│   ├── fonts.scss
+│   ├── grid.scss
+│   └── z_index.scss
+└── variables.scss        ← aggregates them with @use/@forward
+```
+
+The build's SASS `includePaths` point at `common/styles`, so any component can `@use` these without
+long relative paths:
+
+```scss
+@use "variables/colors" as *;
+@use "variables/breakpoints" as bp;
+
+.teaser__title {
+  color: $brand;
+  @media (min-width: bp.$tablet) { font-size: 2.5rem; }
+}
+```
+
+## `@use` and `@forward` (modern Sass)
+
+- **`@use "file"`** imports a module **once**, namespaced (`bp.$tablet`) — no global leakage, no
+  duplicate output. `@use "file" as *` drops the namespace.
+- **`@forward "file"`** re-exports a module so an aggregator (`variables.scss`) can expose everything
+  through one entry point.
+
+<Callout type="warn">`@import` is **deprecated** in Sass — it re-includes files (duplication) and dumps everything into the global scope. Use `@use`/`@forward` in new code.</Callout>
+
+## Design tokens → Sass vs CSS custom properties
+
+Two kinds of "variable", and they're complementary:
+
+| | Sass `$var` | CSS `--var` |
+|---|---|---|
+| Resolved | at **build time** | **live** in the browser |
+| Good for | breakpoints, maps, build-time math | theming, runtime changes, per-component overrides |
+| Cascades/inherits | no | yes |
+
+A common pattern: define brand tokens as **CSS custom properties** (so they can be themed/overridden
+live), and keep build-time concerns (breakpoints, maps) as **Sass variables**:
+
+```scss
+:root {
+  --brand: #6b2fb3;
+  --space: 1rem;
+}
+.teaser { padding: var(--space); border-color: var(--brand); }
+```
+
+## Theming with custom properties
+
+Because custom properties are live, a single switch re-themes everything — e.g. a brand/section
+theme set by a class the author picks (think AEM **Style System**, see the Components track):
+
+```scss
+.theme--dark { --brand: #b794ec; --bg: #14141c; }
+```
+
+<Callout type="do">Components should consume **shared tokens**, never hard-coded hex/px. Change a value once in `common/styles` (or a custom property) and the whole site follows.</Callout>

@@ -1,0 +1,70 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'BEM in AEM Components',
+  topics: 'The <code>$module-name</code> pattern · naming · low specificity · stylelint enforcement'
+};
+
+This project styles components with **BEM** (Block · Element · Modifier), enforced by stylelint. BEM
+keeps selectors flat (single classes), so styles are easy to override on purpose and hard to break
+by accident — which matters when authors compose many components on a page.
+
+## The convention
+
+```text
+.teaser              Block      — the component root
+.teaser__title       Element    — a part of the block
+.teaser--featured    Modifier   — a variant of the block
+.teaser__title--big  Element modifier
+```
+
+## The `$module-name` pattern
+
+Components define the block name once and build selectors with `&`:
+
+```scss
+$module-name: "teaser";
+
+.#{$module-name} {
+  display: grid;
+
+  &__title { font-size: 2rem; }          // .teaser__title
+  &__cta   { text-decoration: underline; } // .teaser__cta
+
+  &--featured {                          // .teaser--featured
+    .#{$module-name}__title { color: var(--brand); }
+  }
+}
+```
+
+Rename the component once (`$module-name`) and every selector follows.
+
+## Match the markup
+
+The HTL carries the same classes, so markup and styles line up one-to-one:
+
+```html
+<section class="teaser teaser--featured">
+  <h2 class="teaser__title">${teaser.title}</h2>
+  <a class="teaser__cta" href="${teaser.url}">Read more</a>
+</section>
+```
+
+## Keep specificity flat
+
+<Callout type="dont">Deeply nested selectors (`.teaser .body .title a span`) — high specificity, hard to override, brittle when an author reorders components.</Callout>
+<Callout type="do">One class per element. Nest at most ~2 levels, and only to scope a modifier (`.teaser--featured .teaser__title`). The output selector should stay a single class wherever possible.</Callout>
+
+## Stylelint enforces it
+
+The project's stylelint config requires kebab-case BEM class names and flags violations in the
+build:
+
+```js
+// stylelint.config.js (project)
+'selector-class-pattern': '^[a-z]([a-z0-9-]+)?(__([a-z0-9-]+))?(--([a-z0-9-]+))?$'
+```
+
+<Callout type="warn">A class that doesn't match the BEM pattern fails lint. Stick to `block__element--modifier`, all lowercase, kebab-case — no camelCase, no IDs for styling.</Callout>
+
+<Callout type="note">BEM pairs with the **Style System** (Components track): a `cq:styleGroups` entry simply toggles a BEM **modifier** class (e.g. `teaser--featured`) that your SCSS already defines — author-driven variants, no new code.</Callout>

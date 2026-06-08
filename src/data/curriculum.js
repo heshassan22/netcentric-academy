@@ -38,7 +38,7 @@ export const TRACKS = [
     label: 'Sass',
     badge: 'S',
     title: 'Sass / SCSS',
-    blurb: 'The preprocessor superpowers: variables, operators, nesting, functions, and mixins.',
+    blurb: 'Preprocessor superpowers — variables, nesting, functions, mixins — plus styling AEM components: clientlibs, BEM, architecture, and best practices.',
     ready: true
   },
   {
@@ -46,7 +46,7 @@ export const TRACKS = [
     label: 'JavaScript',
     badge: 'J',
     title: 'JavaScript',
-    blurb: 'Core language, modern ES features, and the Netcentric component-loader patterns.',
+    blurb: 'Core language, modern ES, the Netcentric component-loader patterns, and AEM front-end best practices.',
     ready: true
   },
   {

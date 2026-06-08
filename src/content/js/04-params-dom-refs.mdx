@@ -57,6 +57,9 @@ Read a `text` param and write it into `.my-component__text`:
 
 <Reveal>
 
+<Tabs>
+<Tab label="Code">
+
 ```html
 <div data-nc="MyComponent"
      data-nc-params-MyComponent='{"text":"Hello My Component (from params)"}'>
@@ -70,5 +73,15 @@ init() {
   if (el) el.innerHTML = this.options.text;
 }
 ```
+
+</Tab>
+<Tab label="Result">
+
+The loader parses the param and your code writes it into the empty span:
+
+<p><strong>Hello My Component (from params)</strong></p>
+
+</Tab>
+</Tabs>
 
 </Reveal>

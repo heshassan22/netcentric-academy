@@ -1,0 +1,61 @@
+export const meta = {
+  order: 9,
+  num: '09',
+  title: 'CSS Best Practices for AEM',
+  topics: 'Scope to the component · low specificity · clientlib deps/embed · performance · do/don\'t'
+};
+
+Pages are composed from many independently-authored components. These practices keep one
+component's CSS from breaking another's — and keep pages fast.
+
+## Scope styles to the component
+
+<Callout type="dont">Bare element selectors leak across the whole page: `h2 { color: red; }`, `ul { margin: 0; }`, `a { … }`. Any other component's `h2`/`ul`/`a` is now affected.</Callout>
+<Callout type="do">Namespace everything under the component's block class: `.teaser h2` or, better, `.teaser__title`. A component should only ever style **its own** subtree.</Callout>
+
+## Keep specificity low and flat
+
+- One class per element (BEM). Avoid IDs and long descendant chains.
+- Never reach for `!important` to win a fight — fix the selector or use a modifier class. (If you
+  must override a library, prefer **cascade layers** — see the CSS track.)
+
+## Manage clientlib relationships
+
+- **`dependencies`** — categories that must load **before** this one (e.g. a base/atomic lib).
+- **`embed`** — inline another category's output **into** this one (fewer requests; use deliberately).
+- **`allowProxy`** — serve under `/etc.clientlibs` so `/apps` stays private.
+
+```text
+# a component clientlib that needs the atomic colors first
+dependencies = [academy.publish.atomic.colors]
+```
+
+<Callout type="do">Use `dependencies` for shared bases so order is guaranteed; reserve `embed` for combining a few small libs into one request. Don't embed large shared libs into every component — you'd duplicate them.</Callout>
+
+## Performance (ties into the Web Performance track)
+
+- Ship only what a page needs — per-component clientlibs beat one giant global stylesheet.
+- CSS is **render-blocking**: keep it lean, minified (the build does this), and consider
+  **critical CSS** for above-the-fold content.
+- Style media with `width`/`height` or `aspect-ratio` to avoid layout shift (CLS).
+- Prefer animating `transform`/`opacity` (compositor-friendly) over layout properties.
+
+## Theming & variants
+
+- Expose brand/spacing as **CSS custom properties** so themes and the **Style System** can override
+  them live, without recompiling.
+- Author-selectable variants = BEM **modifier** classes toggled by `cq:styleGroups` (Components
+  track) — no per-variant code.
+
+## Responsive
+
+- Mobile-first: base styles for small screens, layer up with `min-width` media queries using the
+  **shared breakpoints** (`common/styles`).
+- For components that must adapt to *where they're placed* (sidebar vs main), reach for
+  **container queries** (CSS track) rather than viewport media queries.
+
+## Quick checklist
+
+<Callout type="do">Before you commit a component's SCSS, check: scoped to the block class · BEM, low specificity · no `!important` · uses shared tokens, not hard-coded values · author-only styles behind `wcmmode` · media sized to avoid CLS · passes stylelint.</Callout>
+
+<Callout type="note">Together with the Components track (clientlibs, policies, Style System) and the Web Performance track (critical CSS, fonts, images), this is the full picture of styling AEM components well.</Callout>

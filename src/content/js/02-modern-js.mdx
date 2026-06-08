@@ -5,85 +5,172 @@ export const meta = {
   topics: 'Optional chaining · nullish coalescing · modules · promises · newer array/object methods'
 };
 
-A tour of the most useful recent additions — the "edge JS" you'll see in modern codebases.
+A tour of the most useful recent additions — shown as **before → after** so the win is obvious.
 
 ## Optional chaining `?.` (2020)
 
 Short-circuits to `undefined` instead of throwing when something in the chain is null/undefined.
 
+**Before**
+
 ```js
-const name = person?.name;          // no error if person is null
-const city = person?.address?.city;
-maybeFn?.();                        // call only if it exists
+const city = person && person.address && person.address.city;
+onChange && onChange();
 ```
+
+**After**
+
+```js
+const city = person?.address?.city;
+onChange?.();
+```
+
+<Callout type="when">**When to use it** — reading data that might be missing: API responses, optional config, `el?.dataset?.id`, or calling an optional callback. It replaces long `a && a.b && a.b.c` guards.</Callout>
 
 ## Nullish coalescing `??` (2020)
 
-A default **only** when the left side is `null`/`undefined` (unlike `||`, which also triggers on
-`0`, `''`, `false`).
+A default **only** when the left side is `null`/`undefined` — unlike `||`, which also triggers on
+`0`, `''`, and `false`.
+
+**Before**
 
 ```js
-console.log(user.age ?? 18);   // 18 only if age is null/undefined
+const age = user.age || 18;       // bug: 0 becomes 18
+const name = user.name || 'Guest';
 ```
+
+**After**
+
+```js
+const age = user.age ?? 18;        // only null/undefined falls back
+const name = user.name ?? 'Guest';
+```
+
+<Callout type="when">**When to use it** — defaulting a value where `0`, `''`, or `false` are **valid** and must be kept. Use `||` only when every falsy value should fall back.</Callout>
 
 ## Logical assignment `&&=` `||=` `??=` (2021)
 
+Combine a logical operator with assignment — "set only if…".
+
+**Before**
+
 ```js
-a ||= 3;    // a = a || 3
-a ??= 7;    // a = a ?? 7
+if (!opts.mode) opts.mode = 'auto';
+this._cache = this._cache || new Map();
 ```
+
+**After**
+
+```js
+opts.mode ||= 'auto';
+this._cache ??= new Map();
+```
+
+<Callout type="when">**When to use it** — concise "set only if missing": lazy-init (`this._cache ??= new Map()`) or apply a default option (`opts.mode ||= 'auto'`).</Callout>
 
 ## Dynamic imports & top-level await (2020 / 2024)
 
-```js
-const mod = await import('./module.js');   // load on demand
-// In a module you can also: const data = await fetchData();
-```
-
-## Promise helpers
+**Before**
 
 ```js
-// allSettled (2020) — wait for all, never short-circuits on rejection
-const results = await Promise.allSettled([p1, p2]);
+import Chart from './vendor/chart.js';   // always bundled, even if rarely used
 
-// any (2021) — first to fulfil wins; AggregateError if all reject
-const first = await Promise.any([p1, p2]);
-
-// withResolvers (2023) — promise + its resolve/reject in one go
-const { promise, resolve, reject } = Promise.withResolvers();
+(async () => {                            // async work wrapped in an IIFE
+  const data = await fetchData();
+})();
 ```
 
-## Strings & arrays
+**After**
 
 ```js
-'a+b+c'.replaceAll('+', ' ');     // 2021
-[1, 2, 3].at(-1);                 // 3   (2022)
-
-// Immutable array ops (2023) — return a copy, original untouched
-[3, 1, 2].toSorted();             // [1, 2, 3]
-[1, 2, 3].toReversed();           // [3, 2, 1]
-[10, 20, 30].with(1, 99);         // [10, 99, 30]
-
-// Group by a key (2023)
-Object.groupBy(animals, (a) => a.type);
+const { default: Chart } = await import('./vendor/chart.js'); // loaded on demand
+const data = await fetchData();           // top-level await (in a module)
 ```
+
+<Callout type="when">**When to use it** — defer heavy or rarely-used code (a chart library, a modal) so it isn't in the initial bundle — a key performance lever (see the Performance Patterns lesson). Top-level `await` suits module-level setup like loading config.</Callout>
+
+## Promise helpers (2020–2023)
+
+**Before**
+
+```js
+// Promise.all rejects as soon as ONE fails — you lose the other results
+const [a, b] = await Promise.all([p1, p2]);   // throws if p2 rejects
+```
+
+**After**
+
+```js
+const results = await Promise.allSettled([p1, p2]); // every outcome, success or fail
+const first   = await Promise.any([p1, p2]);        // first success wins
+const { promise, resolve, reject } = Promise.withResolvers(); // resolve from outside
+```
+
+<Callout type="when">**When to use it** — `allSettled` when you need **every** result even if some fail; `any` for **first success wins** (fallback endpoints); `withResolvers` when something **outside** the promise (an event, a callback) must resolve it.</Callout>
+
+## Strings & arrays (2021–2023)
+
+**Before**
+
+```js
+str.replace(/\+/g, ' ');          // a global regex just to replace all
+arr[arr.length - 1];              // the last item
+const sorted = [...arr].sort();   // copy first, or .sort() mutates the original
+```
+
+**After**
+
+```js
+str.replaceAll('+', ' ');
+arr.at(-1);
+const sorted = arr.toSorted();    // immutable — original untouched
+// also: toReversed(), with(index, value), Object.groupBy(list, item => item.type)
+```
+
+<Callout type="when">**When to use it** — `replaceAll` to swap every occurrence without a global regex; `.at(-1)` for the last item; the **immutable** `toSorted`/`toReversed`/`with` when you must not mutate a shared/state array; `Object.groupBy` to bucket records by a key.</Callout>
 
 ## Class fields (2022)
 
+**Before**
+
 ```js
 class Counter {
-  #count = 0;              // private field
-  static label = 'demo';   // static field
+  constructor() { this._count = 0; }   // "_" is a convention, not real privacy
+  increment() { this._count++; }
+}
+```
+
+**After**
+
+```js
+class Counter {
+  #count = 0;              // truly private — inaccessible outside the class
+  static label = 'demo';   // belongs to the class, not an instance
   increment() { this.#count++; }
 }
 ```
 
-## New export syntax
+<Callout type="when">**When to use it** — `#private` for genuine encapsulation (internal state callers shouldn't touch); `static` for constants or factory helpers that belong to the class, not an instance.</Callout>
+
+## Module syntax
+
+**Before (CommonJS)**
 
 ```js
-export const name = 'John';            // named
-export default function add(a, b) {}   // default
-export { name as myName } from './m.js'; // re-export + rename
+const add = (a, b) => a + b;
+module.exports = { add, name: 'John' };
+const { add } = require('./math.js');
 ```
+
+**After (ES modules)**
+
+```js
+export const name = 'John';               // named
+export default function add(a, b) {}       // default
+export { name as myName } from './m.js';   // re-export + rename
+import add, { name } from './math.js';
+```
+
+<Callout type="when">**When to use it** — **named** exports for a collection of utilities (better refactoring/autocomplete); a **default** export for a module's single main thing (a component class); **re-exports** to build a barrel like the component `index.js`.</Callout>
 
 <Callout type="do">`?.` and `??` together eliminate most defensive `if (x && x.y)` checks. Reach for the immutable array methods (`toSorted`, `with`) when you must not mutate shared data.</Callout>

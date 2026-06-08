@@ -1,0 +1,64 @@
+export const meta = {
+  order: 9,
+  num: '09',
+  title: 'Author Mode & Re-initialization',
+  topics: 'WYSIWYG re-init · idempotent init · guarding double-init · cleanup'
+};
+
+AEM is a **WYSIWYG** CMS: authors add, edit, move, and delete components live. The component loader
+`observe()`s the DOM and **initialises new components as they appear** — which means your JS can run
+in situations a plain website never sees.
+
+## What changes in author mode
+
+- A component can be **(re)initialised at any time**, not just on page load.
+- The same logical component may be **torn down and re-inserted** when an author edits its dialog.
+- Editor chrome (overlays, the decoration wrapper) surrounds your element.
+
+## Make `init()` idempotent
+
+Guard against initialising the same element twice — otherwise you get **duplicate event listeners**
+and doubled behaviour:
+
+```js
+init() {
+  if (this.element.dataset.ncInit === 'true') return;  // already done
+  this.element.dataset.ncInit = 'true';
+
+  this.button = this.element.querySelector('.my-component__button');
+  this.onClick = () => this.toggle();
+  this.button.addEventListener('click', this.onClick);
+}
+```
+
+<Callout type="warn">Adding a listener in `init()` without a guard means every re-init stacks another listener — one click then fires the handler 2×, 3×, … A classic author-mode bug.</Callout>
+
+## Prefer patterns that survive re-init
+
+- **Event delegation** (one listener on `this.element`) is naturally idempotent-friendly and keeps
+  working as inner DOM changes — see the Events lesson.
+- Keep references to your handlers so you **can** remove them:
+
+```js
+destroy() {
+  this.button?.removeEventListener('click', this.onClick);
+}
+```
+
+## Don't fight the editor
+
+<Callout type="dont">Don't mutate or remove the wrapper/editor nodes, don't rely on `this.element` being the outermost element, and don't assume your siblings are stable — authors reorder components.</Callout>
+<Callout type="do">Scope everything to `this.element`, only touch your own subtree, and treat init as something that may happen more than once.</Callout>
+
+## Author vs publish behaviour
+
+If a behaviour shouldn't run while authoring (autoplay, redirects, analytics), detect author/edit
+mode and skip it. The body carries WCM-mode classes, or you can pass a flag from HTL:
+
+```js
+const isEditor = document.body.classList.contains('cq-Editable-dom') ||
+                 document.documentElement.classList.contains('aem-AuthorLayer-Edit');
+if (isEditor) return;   // don't run this in author mode
+```
+
+<Callout type="note">Cleaner still: pass `wcmmode` from HTL into the component as a `data-nc-params` flag, so the JS doesn't sniff editor-specific classes that can change between AEM versions.</Callout>

@@ -1,0 +1,69 @@
+export const meta = {
+  order: 10,
+  num: '10',
+  title: 'Performance Patterns',
+  topics: 'Lazy init with IntersectionObserver · debounce/throttle · dynamic import · efficient DOM'
+};
+
+Component JS runs on every page that uses the component, so small inefficiencies multiply. These
+patterns keep the front end fast (and tie directly into the Web Performance track).
+
+## Lazy-initialise with IntersectionObserver
+
+Don't do expensive work for components far below the fold. Defer until they're near the viewport:
+
+```js
+import observe from '../../modules/intersection-observer.js';
+
+init() {
+  observe(this.element, () => this.start(), true);  // run once when visible
+}
+start() {
+  // heavy work: build a carousel, fetch data, init a map…
+}
+```
+
+This is also how a **lazy-loading image** component works: create the `<img>` and set its `src`
+only once the element intersects the viewport — and reserve space with an aspect-ratio placeholder
+to avoid layout shift (CLS).
+
+## Debounce & throttle high-frequency events
+
+`resize`, `scroll`, `input`, and `mousemove` can fire dozens of times a second. Limit the work:
+
+```js
+function debounce(fn, wait = 200) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
+}
+
+window.addEventListener('resize', debounce(() => this.recalc(), 200));
+```
+
+- **Debounce** — run *after* activity stops (search-as-you-type, resize).
+- **Throttle** — run *at most once per interval* (scroll position updates).
+
+<Callout type="do">Add `{ passive: true }` to `scroll`/`touch` listeners so the browser doesn't wait for your handler before scrolling: `el.addEventListener('scroll', onScroll, { passive: true })`.</Callout>
+
+## Dynamic import for heavy/rare code
+
+Don't ship a big dependency in the main bundle if only some pages need it — load it on demand:
+
+```js
+async start() {
+  const { default: Chart } = await import('./vendor/chart.js');  // separate chunk, fetched now
+  new Chart(this.element);
+}
+```
+
+## Touch the DOM efficiently
+
+- **Cache** queries in `init()` (`this.items = this.element.querySelectorAll(...)`) instead of
+  re-querying on every event.
+- **Batch** DOM writes; avoid reading a layout property (`offsetWidth`) then writing in a loop
+  (layout thrashing). Read first, then write.
+- Build markup off-DOM (a `DocumentFragment`) and insert once.
+
+<Callout type="warn">Reading `getBoundingClientRect()`/`offsetHeight` forces the browser to recalculate layout. Doing that inside a loop that also writes styles causes "layout thrashing" — slow, janky frames.</Callout>
+
+<Callout type="note">These map straight onto Core Web Vitals: lazy init and dynamic import protect LCP/INP, aspect-ratio placeholders protect CLS, and passive/debounced listeners keep interactions smooth. See the Web Performance track.</Callout>
