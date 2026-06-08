@@ -90,16 +90,63 @@ sum(3, 5); // 8
 
 ## Classes & `this`
 
-A class is a template for objects (instances). `this` is the instance created with `new`.
+A **class** is a blueprint for creating objects. Each object you build from it is an **instance**.
+Use a class when you have several things that share the same shape and behaviour — like every
+component on a page.
 
 ```js
 class Greeter {
-  constructor(name) { this.name = name; }
-  greet() { console.log(`Hello ${this.name}`); }
+  // The constructor runs once, when you create an instance with `new`.
+  // It sets up the instance's starting data (its "state").
+  constructor(name) {
+    this.name = name;        // store a property ON this instance
+  }
+
+  // A method — a function that belongs to the class.
+  greet() {
+    console.log(`Hello ${this.name}`);
+  }
 }
-const g = new Greeter('World');
-g.greet(); // Hello World
+
+const g = new Greeter('World'); // `new` builds an instance and runs the constructor
+g.greet();                      // Hello World
 ```
+
+Three words to be clear on:
+
+- **`new`** — creates a fresh, empty instance and runs the `constructor`.
+- **property** (`this.name`) — a piece of data stored on the instance. **method** (`greet`) — a
+  function the instance can run.
+- **`this`** — inside the class, `this` refers to **the specific instance you're working with**.
+  Each instance has its own.
+
+### `this` is per-instance
+
+Make two instances and `this.name` is different in each — the methods are shared, the data is not:
+
+```js
+const a = new Greeter('Ada');
+const b = new Greeter('Linus');
+
+a.greet(); // Hello Ada
+b.greet(); // Hello Linus
+```
+
+<Callout type="warn">**The classic `this` gotcha.** When you pass a method as a callback, it can lose its `this`:
+
+```js
+button.addEventListener('click', g.greet);   // ❌ inside greet, `this` is no longer `g`
+```
+
+Fix it with an **arrow function** (arrows keep the surrounding `this`) or `.bind`:
+
+```js
+button.addEventListener('click', () => g.greet());  // ✅
+button.addEventListener('click', g.greet.bind(g));  // ✅
+```
+</Callout>
+
+<Callout type="note">This is exactly how the components in the next lessons work: each one is a **class**, and the loader creates an **instance** per element with `new MyComponent(element, options)` — so `this.element` is *that* element, and every component keeps its own state.</Callout>
 
 ## Events (a first look)
 
