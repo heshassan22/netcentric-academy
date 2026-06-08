@@ -9,16 +9,17 @@ export const meta = {
 
 Inline elements carry meaning, not just style. Pick by intent:
 
-| Element | Means | Not just… |
+| Element | Means | Example (rendered) |
 |---|---|---|
-| `<strong>` | strong importance | bold (`<b>`) |
-| `<em>` | stressed emphasis | italic (`<i>`) |
-| `<mark>` | highlighted/relevant | — |
-| `<time datetime="2026-06-05">` | a machine-readable date/time | — |
-| `<abbr title="…">` | an abbreviation with expansion | — |
-| `<code>` / `<pre>` / `<kbd>` | code / preformatted / keyboard input | — |
-| `<blockquote>` + `<cite>` | a quotation + its source | — |
-| `<sub>` / `<sup>` | subscript / superscript | — |
+| `<strong>` | strong importance | <strong>important</strong> |
+| `<em>` | stressed emphasis | <em>emphasised</em> |
+| `<mark>` | highlighted / relevant | <mark>highlighted</mark> |
+| `<time>` | machine-readable date/time | <time dateTime="2026-06-30">June 30</time> |
+| `<abbr>` | abbreviation + expansion | <abbr title="HyperText Markup Language">HTML</abbr> |
+| `<code>` | inline code | <code>const x = 1</code> |
+| `<kbd>` | keyboard input | <kbd>Ctrl</kbd> + <kbd>C</kbd> |
+| `<sub>` / `<sup>` | subscript / superscript | H<sub>2</sub>O · E=mc<sup>2</sup> |
+| `<blockquote>` + `<cite>` | quotation + source | "Stay curious" — <cite>Ada</cite> |
 
 <Tabs>
 <Tab label="Code">
