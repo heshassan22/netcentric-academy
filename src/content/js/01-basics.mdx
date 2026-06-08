@@ -132,19 +132,18 @@ a.greet(); // Hello Ada
 b.greet(); // Hello Linus
 ```
 
-<Callout type="warn">**The classic `this` gotcha.** When you pass a method as a callback, it can lose its `this`:
+### The classic `this` gotcha
+
+When you pass a method as a callback, it can **lose its `this`** — inside `greet`, `this` is no
+longer the instance:
 
 ```js
-button.addEventListener('click', g.greet);   // ❌ inside greet, `this` is no longer `g`
+button.addEventListener('click', g.greet);          // ❌ `this` is lost
+button.addEventListener('click', () => g.greet());  // ✅ arrow keeps the surrounding `this`
+button.addEventListener('click', g.greet.bind(g));  // ✅ bind locks `this` to g
 ```
 
-Fix it with an **arrow function** (arrows keep the surrounding `this`) or `.bind`:
-
-```js
-button.addEventListener('click', () => g.greet());  // ✅
-button.addEventListener('click', g.greet.bind(g));  // ✅
-```
-</Callout>
+<Callout type="warn">Passing `obj.method` as a callback detaches it from `obj`. Wrap it in an **arrow function** (`() => obj.method()`) or use **`.bind(obj)`** so `this` still points at the instance.</Callout>
 
 <Callout type="note">This is exactly how the components in the next lessons work: each one is a **class**, and the loader creates an **instance** per element with `new MyComponent(element, options)` — so `this.element` is *that* element, and every component keeps its own state.</Callout>
 
