@@ -11,6 +11,8 @@ export const meta = {
 <img src="logo.svg" alt="Acme logo" width="120" height="40" loading="lazy">
 ```
 
+🔗 **Try it on W3Schools:** [HTML Images](https://www.w3schools.com/html/html_images.asp)
+
 - **`alt`** is required — describe the image, or use `alt=""` for purely decorative images.
 - **`width`/`height`** let the browser reserve space → no layout shift (CLS) while loading.
 - **`loading="lazy"`** defers off-screen images for performance.
@@ -40,6 +42,8 @@ safe fallback):
 </picture>
 ```
 
+🔗 **Try it on W3Schools:** [Responsive images](https://www.w3schools.com/html/html_responsive.asp) · [Picture element](https://www.w3schools.com/html/html_images_picture.asp)
+
 <Callout type="do">Always keep a plain `<img>` inside `<picture>` — it's the fallback and the element that actually carries `alt`.</Callout>
 
 ## Audio & video
@@ -55,6 +59,8 @@ safe fallback):
 </video>
 ```
 
+🔗 **Try it on W3Schools:** [HTML Video](https://www.w3schools.com/html/html_video.asp) · [HTML Audio](https://www.w3schools.com/html/html_audio.asp)
+
 - Multiple `<source>`s let the browser choose a supported format.
 - **`<track kind="captions">`** adds captions/subtitles — important for accessibility.
 - `poster` shows a placeholder image before playback.
@@ -68,5 +74,7 @@ SVG is vector graphics in markup — sharp at any size, styleable with CSS, scri
   <path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z" fill="currentColor" />
 </svg>
 ```
+
+🔗 **Try it on W3Schools:** [SVG](https://www.w3schools.com/html/html5_svg.asp)
 
 <Callout type="note">Use **inline SVG** when you need to style/animate parts or use `currentColor`; use **`<img src="icon.svg">`** for simple, cacheable icons you don't need to manipulate.</Callout>
