@@ -49,6 +49,32 @@ flowchart TD
 `<div class="header">` `<div class="nav">` `<div class="main">`. Screen readers and crawlers see nothing but boxes.</Callout>
 <Callout type="do">Use the landmark that matches the role. They become **navigable landmarks** for screen-reader users and are understood by search engines out of the box.</Callout>
 
+Edit the markup — the same semantic regions, lightly styled so you can see the structure:
+
+<Playground
+  html={`<header>Header / banner</header>
+<nav>Nav: Home · Guides · Shop</nav>
+<main>
+  <article>
+    <h1>Article title</h1>
+    <p>The main content lives here.</p>
+  </article>
+  <aside>Related links</aside>
+</main>
+<footer>© 2026</footer>`}
+  css={`header, nav, main, article, aside, footer {
+  padding: .6rem .8rem;
+  margin: .3rem 0;
+  border-radius: 6px;
+}
+header { background: #6b2fb3; color: #fff; }
+nav    { background: #ece6f6; }
+main   { display: flex; gap: .5rem; }
+article{ background: #f7f7fb; flex: 1; }
+aside  { background: #fbf3da; width: 32%; }
+footer { background: #1c1c28; color: #fff; }`}
+/>
+
 ## Heading hierarchy (h1–h6)
 
 Headings form the document **outline** — the table of contents assistive tech and search engines

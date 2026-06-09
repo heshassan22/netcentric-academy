@@ -26,6 +26,32 @@ A flex container distributes space among its items along a **main axis**, with a
 
 **Terminology:** flex container · flex items · flex-direction · main axis · cross axis.
 
+Try it — change `justify-content`, `gap`, or `flex-direction` and watch the layout react:
+
+<Playground
+  html={`<div class="toolbar">
+  <span>Logo</span>
+  <span class="spacer"></span>
+  <button>Login</button>
+</div>`}
+  css={`.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .75rem 1rem;
+  background: #f0ebf6;
+  border-radius: 8px;
+}
+.spacer { flex: 1; }            /* pushes the button to the right */
+button {
+  border: 0;
+  padding: .5rem 1rem;
+  border-radius: 6px;
+  background: #6b2fb3;
+  color: #fff;
+}`}
+/>
+
 ## CSS Grid
 
 Grid lays out items into a 2-D grid of **tracks** (rows/columns) and **areas**.

@@ -17,8 +17,6 @@ that is built into HTML.
 </form>
 ```
 
-🔗 **Try it on W3Schools:** [HTML Forms](https://www.w3schools.com/html/html_forms.asp)
-
 - **`action`** — where the data goes. **`method`** — how:
   - **GET** appends data to the URL (search, bookmarkable, non-sensitive).
   - **POST** sends data in the request body (changes state, larger/sensitive data).
@@ -63,7 +61,29 @@ Plus the multi-line and choice controls:
 </select>
 ```
 
-🔗 **Try it on W3Schools:** [Input types](https://www.w3schools.com/html/html_form_input_types.asp) · [Form elements](https://www.w3schools.com/html/html_form_elements.asp)
+Build a form live — try different input `type`s, then submit it empty to see native validation:
+
+<Playground
+  html={`<form>
+  <label for="email">Email</label>
+  <input id="email" type="email" required placeholder="you@example.com">
+
+  <label for="size">Size</label>
+  <select id="size">
+    <option>Small</option>
+    <option>Large</option>
+  </select>
+
+  <label class="check"><input type="checkbox"> Subscribe</label>
+
+  <button type="submit">Sign up</button>
+</form>`}
+  css={`form { display: grid; gap: .6rem; max-width: 320px; }
+label { font-weight: 600; }
+.check { font-weight: 400; }
+input, select, button { padding: .5rem; font: inherit; }
+button { background: #6b2fb3; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }`}
+/>
 
 ## Grouping & built-in validation
 

@@ -129,4 +129,16 @@ import add, { name } from './math.js';
 
 <Callout type="when">**When to use it** — **named** exports for a collection of utilities (better refactoring/autocomplete); a **default** export for a module's single main thing (a component class); **re-exports** to build a barrel like the component `index.js`.</Callout>
 
+Try it — tweak the values and watch the console:
+
+<Playground
+  html={`<p>Results appear in the console below 👇</p>`}
+  js={`const user = { name: 'Ada' };           // note: no 'age' property
+
+console.log('?.  →', user?.address?.city);  // undefined — no error
+console.log('??  →', user.age ?? 18);        // 18
+console.log('toSorted →', [3, 1, 2].toSorted());
+console.log('at(-1)   →', [10, 20, 30].at(-1));`}
+/>
+
 <Callout type="do">`?.` eliminates most defensive `if (x && x.y)` checks. Reach for the immutable array methods (`toSorted`, `with`) when you must not mutate shared data.</Callout>

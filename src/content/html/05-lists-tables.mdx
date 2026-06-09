@@ -51,6 +51,23 @@ export const meta = {
 
 <Callout type="do">Use a real list element, not a stack of `<div>`s. Screen readers announce "list, 3 items" and let users navigate item-to-item.</Callout>
 
+Play with the list types — swap `<ul>`↔`<ol>`, change `start`, or nest another list:
+
+<Playground
+  html={`<ol start="2">
+  <li>Preheat</li>
+  <li>Mix
+    <ul>
+      <li>flour</li>
+      <li>sugar</li>
+    </ul>
+  </li>
+  <li>Bake</li>
+</ol>`}
+  css={`ol { color: #1c1c28; }
+ul { color: #6b2fb3; }`}
+/>
+
 ## Tables — for tabular data only
 
 Tables are for **data with rows and columns**, never for page layout (that's CSS Grid/Flexbox).
@@ -102,5 +119,24 @@ An accessible table uses `<caption>`, header cells (`<th>`) with a `scope`, and 
 - **`<th scope="col">` / `scope="row">`** ties data cells to their headers so a screen reader can
   announce "EMEA, Revenue, €1.2M".
 - **`<thead>` / `<tbody>` / `<tfoot>`** group rows; `colspan` / `rowspan` merge cells.
+
+Edit the table — add a row, change the `caption`, or try `colspan` on a cell:
+
+<Playground
+  html={`<table>
+  <caption>Q2 revenue by region</caption>
+  <thead>
+    <tr><th scope="col">Region</th><th scope="col">Revenue</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">EMEA</th><td>€1.2M</td></tr>
+    <tr><th scope="row">APAC</th><td>€0.9M</td></tr>
+  </tbody>
+</table>`}
+  css={`table { border-collapse: collapse; }
+caption { text-align: left; font-weight: 700; margin-bottom: .4rem; }
+th, td { border: 1px solid #d8d8e0; padding: .4rem .7rem; text-align: left; }
+thead { background: #f0ebf6; }`}
+/>
 
 <Callout type="dont">Don't use tables to lay out a page, and don't fake a table with `<div>`s when the content is genuinely tabular — you'd lose all the built-in semantics.</Callout>

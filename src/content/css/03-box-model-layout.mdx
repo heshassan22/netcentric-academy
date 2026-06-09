@@ -32,6 +32,19 @@ From the inside out:
 *, *::before, *::after { box-sizing: border-box; }
 ```
 
+Try it — flip `box-sizing` between `content-box` and `border-box`, or change the padding/border, and watch the box's total size change:
+
+<Playground
+  html={`<div class="box">200px wide?</div>`}
+  css={`.box {
+  width: 200px;
+  padding: 20px;
+  border: 6px solid #6b2fb3;
+  box-sizing: content-box;   /* try: border-box */
+  background: #f0ebf6;
+}`}
+/>
+
 ## `position`
 
 | Value | Behaviour |

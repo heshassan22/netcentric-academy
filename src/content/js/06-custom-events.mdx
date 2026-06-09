@@ -71,6 +71,31 @@ Clicking **On** dispatches `bulb:on`, and **every** bulb on the page (not just o
 
 </Reveal>
 
+A working version — both bulbs react to the **same** broadcast event:
+
+<Playground
+  html={`<button class="on">All on</button>
+<button class="off">All off</button>
+<div class="bulbs">
+  <span class="bulb">💡</span>
+  <span class="bulb">💡</span>
+  <span class="bulb">💡</span>
+</div>`}
+  css={`button { margin-right: .4rem; padding: .4rem .8rem; cursor: pointer; }
+.bulbs { margin-top: 1rem; font-size: 2rem; }
+.bulb { filter: grayscale(1) opacity(.35); }
+.bulb.on { filter: none; }`}
+  js={`document.querySelector('.on').addEventListener('click',
+  () => window.dispatchEvent(new Event('bulb:on')));
+document.querySelector('.off').addEventListener('click',
+  () => window.dispatchEvent(new Event('bulb:off')));
+
+document.querySelectorAll('.bulb').forEach((bulb) => {
+  window.addEventListener('bulb:on',  () => bulb.classList.add('on'));
+  window.addEventListener('bulb:off', () => bulb.classList.remove('on'));
+});`}
+/>
+
 ## Reusing logic — modules
 
 When a piece of code is useful in several components, extract it into a **module** and import it.

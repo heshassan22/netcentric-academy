@@ -40,6 +40,22 @@ init() {
 
 </Reveal>
 
+A working version — click the button and watch the DOM update live:
+
+<Playground
+  html={`<button class="btn">Click me</button>
+<p class="count">0 clicks</p>`}
+  css={`.btn { padding: .5rem 1rem; border: 0; border-radius: 6px; background: #6b2fb3; color: #fff; cursor: pointer; }
+.count { font-weight: 700; }`}
+  js={`let n = 0;
+const btn = document.querySelector('.btn');
+const out = document.querySelector('.count');
+btn.addEventListener('click', () => {
+  n++;
+  out.textContent = n + (n === 1 ? ' click' : ' clicks');
+});`}
+/>
+
 ## The three phases
 
 An event travels in three phases: **capturing** (top → target), **targeting** (the element

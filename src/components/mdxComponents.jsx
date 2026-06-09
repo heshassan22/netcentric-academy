@@ -5,6 +5,7 @@ import Callout from './Callout.jsx';
 import Reveal from './Reveal.jsx';
 import ReplLink from './ReplLink.jsx';
 import InlineDemo from './InlineDemo.jsx';
+import Playground from './Playground.jsx';
 
 // MDX renders fenced code as <pre><code class="language-xxx">{string}</code></pre>.
 // A ```mermaid fence becomes a rendered diagram; everything else becomes a
@@ -21,4 +22,4 @@ function Pre(props) {
   return <CodeBlock code={code} lang={lang} />;
 }
 
-export const mdxComponents = { pre: Pre, Tabs, Tab, Callout, Reveal, ReplLink, InlineDemo };
+export const mdxComponents = { pre: Pre, Tabs, Tab, Callout, Reveal, ReplLink, InlineDemo, Playground };

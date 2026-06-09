@@ -75,6 +75,15 @@ SVG is vector graphics in markup — sharp at any size, styleable with CSS, scri
 </svg>
 ```
 
-🔗 **Try it on W3Schools:** [SVG](https://www.w3schools.com/html/html5_svg.asp)
+Edit the SVG — change the shapes, `viewBox`, or `fill`, and watch it redraw:
+
+<Playground
+  html={`<svg viewBox="0 0 100 100" width="140" height="140" role="img" aria-label="Logo">
+  <circle cx="50" cy="50" r="45" fill="#6b2fb3" />
+  <rect x="30" y="30" width="40" height="40" rx="6" fill="#fff" />
+  <text x="50" y="86" text-anchor="middle" font-size="12" fill="#1c1c28">SVG</text>
+</svg>`}
+  css={`svg { background: #f7f7fb; border-radius: 8px; }`}
+/>
 
 <Callout type="note">Use **inline SVG** when you need to style/animate parts or use `currentColor`; use **`<img src="icon.svg">`** for simple, cacheable icons you don't need to manipulate.</Callout>
