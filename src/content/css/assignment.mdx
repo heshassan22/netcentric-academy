@@ -1,0 +1,67 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Style a UI',
+  topics: 'Beginner → advanced · ~3–4 hours · everything from this track'
+};
+
+Take a plain HTML page (use your **HTML assignment** page, or the starter below) and turn it into a
+**responsive, themed UI** — using only CSS. Budget **~3–4 hours**. Try pieces in the lesson
+playgrounds first, then build it for real in your editor.
+
+<Callout type="note">Style by **meaning**: namespace everything under component classes (BEM), keep specificity flat, and use custom properties for anything you'd want to theme.</Callout>
+
+## Part 1 — Foundations (Beginner, ~1h)
+
+- [ ] A small reset: `*, *::before, *::after { box-sizing: border-box; }` + sensible `body` defaults
+- [ ] Define design tokens as **custom properties** on `:root` (`--brand`, `--fg`, `--bg`, `--space`)
+- [ ] Type & color: a readable font stack, line-height, and colors pulled from your tokens
+- [ ] **BEM** class names for each component (e.g. `.card`, `.card__title`, `.card--featured`)
+
+**Acceptance:** no bare element selectors leaking globally; values come from tokens, not hard-coded hex/px; passes a quick mental "specificity stays flat" check.
+
+## Part 2 — Layout (Intermediate, ~1–1.5h)
+
+- [ ] A **Flexbox** header/nav (logo left, links right, a `spacer` that grows)
+- [ ] A **Grid** main area (content + sidebar) and a **card gallery** using `repeat(auto-fit, minmax(…, 1fr))`
+- [ ] Use `gap` for spacing (never margins between items)
+- [ ] Reserve media space with `aspect-ratio` (no layout shift)
+
+**Acceptance:** the card gallery reflows responsively **without a media query**; header aligns with Flexbox; no CLS from images.
+
+## Part 3 — Responsive, theming & modern CSS (Advanced, ~1–1.5h)
+
+- [ ] **Mobile-first** media queries that enhance upward, using a small set of breakpoints
+- [ ] A **container query** on a reusable card so it adapts to its container, not just the viewport
+- [ ] A **light/dark theme** toggled by a class (`[data-theme="dark"]`) that only overrides custom properties
+- [ ] **Transitions** on interactive elements (buttons/links) — animate `transform`/`opacity`, not layout
+- [ ] One **modern-CSS** touch: `clamp()` fluid type, and `:has()` for a stateful style (e.g. a card with an image)
+
+**Acceptance:** layout holds from 320px to wide desktop; dark theme is one class flip; motion respects `prefers-reduced-motion`.
+
+## Stretch goals
+
+- Use **cascade layers** (`@layer reset, components, utilities`) so overrides never need `!important`.
+- Add a print-friendly tweak with `@media print`.
+- Replace a "JS would do this" interaction with pure `:has()`.
+
+<Reveal title="Starter HTML to style">
+
+```html
+<header class="site">
+  <a class="site__logo" href="/">Acme</a>
+  <nav class="site__nav"><a href="#">Guides</a> <a href="#">Shop</a></nav>
+</header>
+<main class="layout">
+  <section class="gallery">
+    <article class="card"><div class="card__media"></div><h3 class="card__title">Card</h3></article>
+    <article class="card"><div class="card__media"></div><h3 class="card__title">Card</h3></article>
+    <article class="card"><div class="card__media"></div><h3 class="card__title">Card</h3></article>
+  </section>
+  <aside class="layout__aside">Sidebar</aside>
+</main>
+```
+
+</Reveal>
+
+<Callout type="do">Done when: the same markup looks polished and responsive from mobile to desktop, themes with a single class, and you didn't reach for `!important` once.</Callout>

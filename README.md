@@ -9,12 +9,12 @@ Interactive learning site for the Netcentric Academy tech tracks. Built with
 |-------|--------|
 | **HTL** (HTML Template Language / Sightly) | ✅ 7 lessons + hands-on assignment |
 | **AEM Component Creation** | ✅ 6 lessons (structure → no-dialog → dialog → clientlibs → policies → Style System) |
-| **HTML** | ✅ 10 lessons (fundamentals → DOM/attributes → semantics → text/links → lists/tables → forms → media → iframe → metadata/SEO → standards + capstone) |
-| **CSS** | ✅ 9 lessons (cascade → selectors → box model → custom props → responsive/container queries → Flexbox/Grid → transitions → layers/scope → modern CSS) |
-| **Sass / SCSS** | ✅ 9 lessons (preprocessor → values/operators → nesting/& → functions/mixins → styling an AEM component → project style architecture → BEM in AEM → author mode & decoration tag → AEM CSS best practices) |
-| **JavaScript** | ✅ 11 lessons (basics → modern ES → component loader → params/DOM → events → custom events → shipping component JS → modules/organization → author mode & re-init → performance patterns → AEM JS best practices) |
+| **HTML** | ✅ 10 lessons (fundamentals → DOM/attributes → semantics → text/links → lists/tables → forms → media → iframe → metadata/SEO → standards + capstone) + assignment |
+| **CSS** | ✅ 9 lessons (cascade → selectors → box model → custom props → responsive/container queries → Flexbox/Grid → transitions → layers/scope → modern CSS) + assignment |
+| **Sass / SCSS** | ✅ 9 lessons (preprocessor → values/operators → nesting/& → functions/mixins → styling an AEM component → project style architecture → BEM in AEM → author mode & decoration tag → AEM CSS best practices) + assignment |
+| **JavaScript** | ✅ 11 lessons (basics → modern ES → component loader → params/DOM → events → custom events → shipping component JS → modules/organization → author mode & re-init → performance patterns → AEM JS best practices) + assignment |
 | **Web Performance** | ✅ 7 lessons (critical rendering path → resource loading → resource hints → images → web fonts → lazy loading → challenge) |
-| **Unit Testing** | ✅ 8 lessons (fundamentals → Jest basics → matchers → mocking → async → DOM testing → organization → coverage & quality) |
+| **Unit Testing** | ✅ 8 lessons (fundamentals → Jest basics → matchers → mocking → async → DOM testing → organization → coverage & quality) + assignment |
 
 ## Develop
 

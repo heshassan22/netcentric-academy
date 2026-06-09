@@ -106,3 +106,20 @@ Also available: `@while`, plus `@use` / `@forward` to organise files (the modern
 </Reveal>
 
 <Callout type="do">Use **functions** to compute values (sizes, colors from a map) and **mixins** to stamp out reusable blocks of CSS. A function can feed a mixin — that's the most flexible combo.</Callout>
+
+One mixin, two buttons — edit the `@mixin` and both update (compiled live):
+
+<Playground
+  html={`<button class="btn">Primary</button>
+<button class="btn btn--ghost">Ghost</button>`}
+  scss={`@mixin button($bg, $fg: #fff) {
+  padding: .5rem 1rem;
+  border: 1px solid $bg;
+  border-radius: 6px;
+  background: $bg;
+  color: $fg;
+  cursor: pointer;
+}
+.btn { @include button(#6b2fb3); }
+.btn--ghost { @include button(transparent, #6b2fb3); }`}
+/>

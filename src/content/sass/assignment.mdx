@@ -1,0 +1,71 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Refactor to SCSS',
+  topics: 'Beginner → advanced · ~3–4 hours · everything from this track'
+};
+
+Take the CSS from your **CSS assignment** and refactor it into a **maintainable SCSS
+architecture** — variables, nesting, partials, functions, and mixins — that compiles to the same
+(or better) CSS. Budget **~3–4 hours**. Experiment in the lesson playgrounds, then build it in your
+project's `ui.frontend` SCSS.
+
+<Callout type="note">The goal isn't "more Sass" — it's **less repetition and one source of truth**. The compiled CSS should stay lean; SCSS is how you author it comfortably.</Callout>
+
+## Part 1 — Variables & nesting (Beginner, ~1h)
+
+- [ ] Convert hard-coded colors/spacing to **`$` variables**
+- [ ] Use **nesting + `&`** to express your BEM blocks (`&__element`, `&--modifier`, `&:hover`)
+- [ ] Keep nesting shallow (≤ ~2 levels) so output selectors stay flat
+
+**Acceptance:** no magic numbers/hex repeated; the compiled selectors are still single-class BEM.
+
+## Part 2 — Architecture (Intermediate, ~1–1.5h)
+
+- [ ] Split into **partials**: `_variables.scss`, `_mixins.scss`, component partials
+- [ ] Wire them with **`@use` / `@forward`** (no `@import`) — namespaced where it helps
+- [ ] Put your tokens in a **map** (e.g. `$spacing: (sm: .5rem, md: 1rem, lg: 2rem)`) and read with `map.get`
+- [ ] Generate a spacing/utility set with **`@each`**
+
+**Acceptance:** one entry point forwards the shared layer; components `@use` tokens instead of redefining them; no `@import`.
+
+## Part 3 — Functions & mixins (Advanced, ~1–1.5h)
+
+- [ ] A **`@mixin button($bg, $fg)`** with default args, used for ≥ 2 button variants
+- [ ] A **`@function rem($px)`** (or similar) used for sizing
+- [ ] A **`@mixin`** for a media-query/breakpoint helper driven by your breakpoints map
+- [ ] Use **`@if`/`@else`** for a small theming or variant decision
+
+**Acceptance:** changing a token or a mixin updates every consumer; functions return values, mixins emit CSS; no copy-pasted blocks remain.
+
+## Stretch goals
+
+- A typography mixin (`font-size` + `line-height` from a scale).
+- Organise files ITCSS-style (settings → tools → components).
+- Add a `map`-driven theme and switch it with `@each`.
+
+<Reveal title="Starter snippets">
+
+```scss
+// _variables.scss
+$brand: #6b2fb3;
+$spacing: (sm: .5rem, md: 1rem, lg: 2rem);
+
+// _mixins.scss
+@use "sass:map";
+@mixin button($bg, $fg: #fff) {
+  padding: map.get($spacing, sm) map.get($spacing, md);
+  border: 0; border-radius: 6px;
+  background: $bg; color: $fg; cursor: pointer;
+}
+
+// component
+@use "variables" as *;
+@use "mixins" as *;
+.btn { @include button($brand); }
+.btn--ghost { @include button(transparent, $brand); border: 1px solid $brand; }
+```
+
+</Reveal>
+
+<Callout type="do">Done when: a single change (a token, a mixin) ripples through the whole stylesheet, the file structure reads clearly, and the compiled CSS is no bigger than your hand-written version.</Callout>

@@ -67,4 +67,17 @@ Reserve space and keep proportions — great for images/embeds and avoiding layo
 
 <Callout type="do">Reach for these before JavaScript: `:has()` replaces many "add a class with JS" patterns, `clamp()` replaces breakpoint-heavy type scales, and `aspect-ratio` replaces the old padding-hack.</Callout>
 
+Tick the checkbox — the panel restyles itself with **`:has()`**, no JavaScript:
+
+<Playground
+  html={`<label><input type="checkbox"> Enable highlight</label>
+<div class="panel">I react to the checkbox above via :has().</div>`}
+  css={`.panel {
+  margin-top: .75rem; padding: 1rem; border-radius: 8px;
+  background: #eee; transition: background .2s ease;
+}
+/* style the panel based on a checkbox elsewhere in the page */
+body:has(input:checked) .panel { background: #6b2fb3; color: #fff; }`}
+/>
+
 <Callout type="note">Pair with the previous lessons: logical properties + container queries + `clamp()` give you components that adapt to size *and* writing direction with almost no media queries.</Callout>

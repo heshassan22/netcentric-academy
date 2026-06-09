@@ -54,3 +54,23 @@ Media queries respond to the **viewport**. Container queries respond to the size
 
 You can also name containers (`container-name`) and use the new container units
 (`cqw`, `cqi`, `cqb`) to size things relative to the container.
+
+**Drag the preview's right edge** to resize the container and watch the card switch from one
+column to two — no viewport media query involved:
+
+<Playground
+  html={`<div class="list">
+  <div class="card">
+    <div class="thumb"></div>
+    <div class="body"><strong>Card title</strong><p>Resize me →</p></div>
+  </div>
+</div>`}
+  css={`.list { container-type: inline-size; }
+.card { padding: 1rem; background: #f0ebf6; border-radius: 8px; }
+.thumb { height: 70px; background: #6b2fb3; border-radius: 6px; }
+.body p { margin: .25rem 0 0; }
+@container (min-width: 420px) {
+  .card { display: grid; grid-template-columns: 120px 1fr; gap: 1rem; align-items: center; }
+  .thumb { height: 100%; }
+}`}
+/>

@@ -51,4 +51,26 @@ body { background: var(--bg); color: var(--fg); }
 
 <Callout type="note">This site's light/dark toggle is exactly this: it flips `data-theme` on `<html>`, and every `var(--…)` updates instantly — no extra CSS per component.</Callout>
 
+Same component, re-themed by overriding the custom properties on a class — edit the values live:
+
+<Playground
+  html={`<div class="card">
+  <h3>Card</h3>
+  <button>Action</button>
+</div>
+<div class="card card--dark">
+  <h3>Same card</h3>
+  <button>Action</button>
+</div>`}
+  css={`.card {
+  --brand: #6b2fb3;
+  --bg: #f3f0f8;
+  --fg: #1c1c28;
+  background: var(--bg); color: var(--fg);
+  padding: 1rem; border-radius: 8px; margin: .5rem 0;
+}
+.card button { background: var(--brand); color: #fff; border: 0; padding: .4rem .8rem; border-radius: 6px; }
+.card--dark { --bg: #14141c; --fg: #e8e8f2; --brand: #b794ec; }`}
+/>
+
 <Callout type="do">Expose component "knobs" as custom properties (`--gap`, `--columns`). It makes components themeable and overridable without touching their internals.</Callout>

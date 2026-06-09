@@ -55,3 +55,22 @@ Animation longhands you'll use: `animation-name`, `animation-duration`, `animati
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 ```
+
+Hover the button (transition) and watch the badge (keyframe animation) — tweak the timings:
+
+<Playground
+  html={`<button class="btn">Hover me</button>
+<span class="badge">live</span>`}
+  css={`.btn {
+  padding: .6rem 1rem; border: 0; border-radius: 6px;
+  background: #6b2fb3; color: #fff; cursor: pointer;
+  transition: transform .2s ease, background .2s ease;
+}
+.btn:hover { transform: translateY(-3px); background: #9b6dd6; }
+
+@keyframes pulse { from { opacity: .35 } to { opacity: 1 } }
+.badge {
+  display: inline-block; margin-left: 1rem; font-weight: 700; color: #6b2fb3;
+  animation: pulse 1s ease-in-out infinite alternate;
+}`}
+/>

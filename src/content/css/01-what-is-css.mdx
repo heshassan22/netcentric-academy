@@ -60,4 +60,13 @@ descendants. Most layout properties (`margin`, `border`, `width`) do **not**.
 body { color: #333; }   /* every descendant text is #333 unless overridden */
 ```
 
+Three rules target the same element — comment one out to see the cascade pick a different winner:
+
+<Playground
+  html={`<p id="x" class="note">Which color wins?</p>`}
+  css={`p     { color: gray; }           /* type     → 0,0,0,1 */
+.note { color: teal; }           /* class    → 0,0,1,0 */
+#x    { color: rebeccapurple; }  /* id       → 0,1,0,0  → wins */`}
+/>
+
 <Callout type="do">Before debugging "why is this style not applied?", ask: which source, what specificity, and what order? That's the cascade.</Callout>

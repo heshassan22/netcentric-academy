@@ -45,4 +45,19 @@ component styling without leaking out.
 - The first parenthesis is the **scope root**; the `to (…)` is the **scope limit** (a "donut").
 - Proximity matters: in `@scope`, the closest-scoped rule wins on ties.
 
+See layer order beat specificity — the later layer wins even though the other selector is more
+specific. Reorder the `@layer` line and watch the colour flip:
+
+<Playground
+  html={`<p class="note">Layer order beats specificity.</p>`}
+  css={`@layer base, theme;
+
+@layer theme {
+  p { color: rebeccapurple; }   /* later layer */
+}
+@layer base {
+  .note { color: gray; }        /* earlier layer, MORE specific — yet loses */
+}`}
+/>
+
 <Callout type="note">Layers and scope reduce the need for deeply-nested selectors and `!important`. With BEM keeping specificity flat and layers keeping order explicit, the cascade becomes something you *design* rather than fight.</Callout>

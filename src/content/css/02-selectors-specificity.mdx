@@ -68,4 +68,19 @@ classes, so specificity stays low and predictable.
 .alert__button--disabled { }  /* Modifier */
 ```
 
+Try different selectors — `:hover` an item, or change the combinator and class targets:
+
+<Playground
+  html={`<ul>
+  <li>One</li>
+  <li class="lead">Two (lead)</li>
+  <li>Three</li>
+</ul>`}
+  css={`li { padding: .3rem; list-style: none; }
+li:first-child { font-weight: 700; }
+li:hover { background: #f0ebf6; }
+.lead { color: rebeccapurple; }
+li + li { border-top: 1px solid #ddd; }`}
+/>
+
 <Callout type="do">Prefer one class per selector (BEM). Flat specificity means styles are easy to override intentionally and hard to break by accident — and it's enforced by this project's stylelint config.</Callout>

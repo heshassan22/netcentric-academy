@@ -83,3 +83,15 @@ Write the rules for a link with its pseudo-states using nesting + `&`:
 </Reveal>
 
 <Callout type="do">Reach for `&` to keep all of a block's states and modifiers in one place — but keep the output selectors flat (single classes) for low specificity.</Callout>
+
+Hover and focus the link — the `&` states compile to `.link:hover` etc. live:
+
+<Playground
+  html={`<a class="link" href="#">Hover / focus me</a>`}
+  scss={`.link {
+  color: #6b2fb3;
+  text-decoration: none;
+  &:hover  { text-decoration: underline; }
+  &:focus  { outline: 2px solid #6b2fb3; }
+}`}
+/>

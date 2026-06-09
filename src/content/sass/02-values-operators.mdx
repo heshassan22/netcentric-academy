@@ -83,3 +83,19 @@ p.#{$name} {
 ```
 
 <Callout type="do">You especially need `#{}` when mixing Sass variables with CSS custom properties or inside `calc()` — Sass won't reach into those without interpolation.</Callout>
+
+Edit the SCSS — it compiles to CSS live (variables, a colour function, and `&`):
+
+<Playground
+  html={`<div class="box">SCSS, compiled live</div>`}
+  scss={`$brand: #6b2fb3;
+$space: 1rem;
+
+.box {
+  padding: $space;
+  color: #fff;
+  background: $brand;
+  border-radius: 8px;
+  &:hover { background: scale-color($brand, $lightness: 20%); }
+}`}
+/>

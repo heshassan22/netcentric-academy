@@ -159,8 +159,9 @@ details.playground > summary::before { content: "▸ "; }
 details.playground[open] > summary::before { content: "▾ "; }
 details.playground[open] > summary { border-bottom: 1px solid var(--border); }
 .playground__inner { padding: 1rem; }
-.playground__editors { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .75rem; }
-.playground__pane { display: flex; flex-direction: column; min-width: 0; }
+.playground__editors { display: flex; flex-wrap: wrap; gap: .75rem; }
+.playground__pane { flex: 1 1 200px; display: flex; flex-direction: column; min-width: 0; }
+.playground__pane--wide { flex: 2.2 1 320px; }   /* JS pane gets more room */
 .playground__pane span { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-soft); margin-bottom: .25rem; }
 .playground__pane textarea {
   width: 100%; min-height: 130px; resize: vertical;
@@ -177,8 +178,10 @@ details.playground[open] > summary { border-bottom: 1px solid var(--border); }
 }
 .playground__toolbar button:hover { border-color: var(--accent-2); color: var(--accent); }
 .playground__hint { font-size: .8rem; color: var(--text-soft); }
-.playground__preview { width: 100%; height: 240px; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
-@media (max-width: 640px) { .playground__editors { grid-template-columns: 1fr; } }
+.playground__previewwrap { resize: horizontal; overflow: hidden; width: 100%; min-width: 240px; max-width: 100%; border: 1px solid var(--border); border-radius: 6px; }
+.playground__preview { display: block; width: 100%; height: 240px; border: 0; background: #fff; }
+.playground__codepen { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: 1rem; border: 1px dashed var(--border); border-radius: 6px; background: var(--bg-soft); color: var(--text-soft); font-size: .9rem; }
+.playground__codepen button { font-size: .8rem; font-weight: 700; padding: .35rem .8rem; border: 0; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; cursor: pointer; }
 
 /* inline code/result toggle (table cells, prose) */
 .inline-demo { display: inline-flex; align-items: center; gap: .45rem; }
