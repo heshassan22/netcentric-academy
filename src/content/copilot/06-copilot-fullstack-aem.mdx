@@ -1,0 +1,63 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'Copilot for Full-Stack AEM',
+  topics: 'Sling Models · servlets · OSGi · Granite dialogs · AEM Mocks tests'
+};
+
+For full-stack devs, Copilot shines at **Java boilerplate** — Sling Models, getters, builders,
+DTOs — and at the repetitive parts of OSGi and tests. It's shakier on AEM/Sling **API surface** and
+on hand-written **JCR XML**. Same principle as the front end: trust the boilerplate, verify the
+plumbing.
+
+## Sling Models — fast and mostly right
+
+Models are pattern-heavy, so Copilot scaffolds them well. Show it the annotations you use:
+
+```text
+Write a Sling Model `HeroModel` adaptable from Resource, OPTIONAL injection.
+Inject `title` (String), `teaser` (String), and `ctaUrl` (String) via
+@ValueMapValue with @Default. Add a getCtaTarget() returning "_blank" when a
+`newTab` boolean is true, else "_self". Package: …core.models.hero.
+```
+
+<Callout type="note">Be explicit about <code>adaptables</code> — <code>Resource.class</code> for value-map injection, <code>SlingHttpServletRequest.class</code> when you need <code>@ScriptVariable</code> bindings like <code>currentPage</code>. Copilot often defaults to one and you want the other.</Callout>
+
+## Servlets & OSGi — good skeletons, check the annotations
+
+Copilot writes solid `SlingSafeMethodsServlet` / `@Component` skeletons, but **verify the OSGi R7
+annotations and registration properties** — `@SlingServletResourceTypes` vs `@SlingServletPaths`,
+service rankings, config PIDs. These are exactly the details it half-remembers.
+
+```text
+Write a SlingSafeMethodsServlet registered by resourceType for a GET that
+returns JSON of a page's child titles. Use @SlingServletResourceTypes with
+methods=GET and extensions=json. Guard nulls.
+```
+
+## Granite dialogs (`.content.xml`) — generate, then fix the resource types
+
+Copilot can draft a dialog's XML structure, but **the `sling:resourceType` strings are the failure
+point** — one wrong path and the field silently doesn't render. Generate the shape, then paste your
+known-good resource types over the guesses.
+
+<Callout type="warn">Hand-written JCR XML (dialogs, clientlib folders, content nodes) is where hallucinations hurt most because there's no compiler to catch them — the node just doesn't behave. Always cross-check against a working node in the repo.</Callout>
+
+## Tests — a genuine time-saver
+
+This is one of the best ROI uses for full-stack AEM. With **AEM Mocks (`io.wcm.testing` / `aem-mock`)**
+or `sling-mock`, Copilot generates the ceremony around `context.create.resource(...)`,
+`context.currentResource(...)`, and `context.request().adaptTo(...)` quickly:
+
+```text
+Using AemContext (aem-mock, JUnit 5), write a test for HeroModel: create a
+resource with title/teaser/newTab props, adaptTo(HeroModel.class), and assert
+getCtaTarget() returns "_blank" when newTab is true and "_self" otherwise.
+```
+
+<Callout type="do">Select the class under test, then run <code>/tests</code> with a note like "use AemContext and cover the null/default branches". You review and tighten — much faster than writing the harness by hand.</Callout>
+
+## What's next
+
+You've got the AEM-specific uses. Next: the day-to-day **Chat workflows** — explain, fix, refactor,
+debug — that tie it all together.

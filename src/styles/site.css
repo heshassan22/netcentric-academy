@@ -184,8 +184,9 @@ details.playground[open] > summary { border-bottom: 1px solid var(--border); }
 .playground__codepen button { font-size: .8rem; font-weight: 700; padding: .35rem .8rem; border: 0; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; cursor: pointer; }
 
 /* inline code/result toggle (table cells, prose) */
-.inline-demo { display: inline-flex; align-items: center; gap: .45rem; }
-.inline-demo__code { font-family: var(--mono); font-size: .85em; background: var(--bg-soft); border: 1px solid var(--border); padding: .05em .4em; border-radius: 6px; white-space: pre; }
+.inline-demo { display: inline-flex; align-items: flex-start; gap: .45rem; width: 17rem; max-width: 100%; }
+.inline-demo__code, .inline-demo__out { flex: 1 1 auto; min-width: 0; }
+.inline-demo__code { font-family: var(--mono); font-size: .85em; background: var(--bg-soft); border: 1px solid var(--border); padding: .05em .4em; border-radius: 6px; white-space: pre-wrap; word-break: break-word; }
 .inline-demo__toggle { flex: 0 0 auto; font-size: .68rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: .08rem .45rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-soft); color: var(--text-soft); cursor: pointer; }
 .inline-demo__toggle:hover { color: var(--accent); border-color: var(--accent-2); }
 

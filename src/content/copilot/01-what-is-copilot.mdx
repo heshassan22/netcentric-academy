@@ -1,0 +1,45 @@
+export const meta = {
+  order: 1,
+  num: '01',
+  title: 'What Copilot Is (and Isn\'t)',
+  topics: 'Completions vs Chat vs Agent · how it predicts · the verification mindset'
+};
+
+GitHub Copilot is an **AI pair programmer** built into your editor. It doesn't "know" your project —
+it predicts the most likely next code given the **context it can see** (your open files, selection,
+and what you tell it). Treat it as a fast, well-read junior who needs review, not an oracle.
+
+## The three ways you'll use it
+
+<Callout type="note">These overlap, but it helps to know which one you're invoking — each gets a different amount of context and control.</Callout>
+
+| Mode | What it does | Best for |
+|---|---|---|
+| **Completions** (ghost text) | Suggests the next line(s) as you type | Boilerplate, repetitive code, the "obvious" next step |
+| **Chat** | A conversation in a side panel or inline | Explaining, debugging, generating a block, asking "how do I…" |
+| **Edits / Agent** | Multi-file changes from a single instruction | Refactors, "add a field to this component end-to-end" |
+
+## How it actually works (the mental model)
+
+Copilot sends a **prompt** — assembled from your nearby code, open tabs, and your message — to a
+large language model, which returns the statistically likely continuation. Two consequences follow
+that shape everything in this module:
+
+- **Context quality = output quality.** Garbage or missing context → confident but wrong code.
+- **It predicts plausible, not correct.** It will happily invent an API method that doesn't exist
+  (a *hallucination*). That's why AEM — with its niche APIs — needs extra care (lessons 05–06).
+
+<Callout type="warn">Copilot does not run your code, read your runtime, or check AEM's Javadoc. A suggestion that *looks* right can reference a method that was removed, a Granite resource type that doesn't exist, or an HTL block option that was never valid. **You** are the compiler-of-last-resort.</Callout>
+
+## The one habit that makes Copilot safe
+
+**Read every suggestion before you accept it.** The developers who get burned are the ones who
+tab-accept on autopilot; the ones who get a real speed-up read the diff, keep what's right, and
+re-prompt for the rest. We'll build that habit throughout the module.
+
+<Callout type="do">Think of Copilot as **draft-generation + review**, never **generate-and-ship**. Your value shifts from typing to specifying and verifying.</Callout>
+
+## What's next
+
+Next: getting it installed and learning the interfaces — completions, the Chat panel, and inline
+chat — so the rest of the module has something to point at.

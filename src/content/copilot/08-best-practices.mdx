@@ -1,0 +1,55 @@
+export const meta = {
+  order: 8,
+  num: '08',
+  title: 'Best Practices & Guardrails',
+  topics: 'When to use it · reviewing output · security · licensing · client data'
+};
+
+Copilot is a force multiplier *and* a liability if used carelessly. This lesson is the set of habits —
+technical and professional — that let you go fast without shipping bugs, leaking client data, or
+creating licensing problems.
+
+## When it's a great fit — and when it isn't
+
+| Reach for Copilot | Be cautious / do it yourself |
+|---|---|
+| Boilerplate (models, getters, DTOs, test harnesses) | Security-critical logic (auth, access control) |
+| Repetitive transforms (hex → tokens, BEM partials) | Novel architecture decisions |
+| Explaining unfamiliar code | Anything touching AEM/Granite APIs you can't verify |
+| First-draft tests, then you tighten | Hand-written JCR XML you can't sanity-check |
+| "How do I…" lookups grounded in `@workspace` | Code you don't understand and can't review |
+
+## Review everything — the non-negotiable
+
+The cost of Copilot isn't the subscription, it's the bugs that slip through unreviewed. For every
+suggestion: **does it compile, is the API real, does it handle the edge cases, does it match our
+conventions?** If you can't answer those, don't accept it yet.
+
+<Callout type="warn">Accepting code you don't understand is borrowing against your future self. When the bug surfaces in prod, "Copilot wrote it" is not a root-cause analysis.</Callout>
+
+## Security & client-data hygiene
+
+- **Never paste secrets** — credentials, tokens, private keys, customer PII — into a prompt. Treat the prompt like a public channel.
+- **Know your org's data policy.** Business/Enterprise Copilot does not train on your prompts and offers content exclusion; confirm what's configured for the Netcentric org and the specific client engagement before pasting proprietary code.
+- **Respect per-client rules.** Some clients contractually restrict AI tools on their codebase — check the engagement terms, not just GitHub's defaults.
+
+<Callout type="do">If in doubt about whether something can go into a prompt, treat the answer as "no" until you've checked the client/engagement policy. The few minutes of caution is cheaper than a disclosure incident.</Callout>
+
+## Licensing & attribution
+
+Copilot can occasionally reproduce code resembling public sources. Enable the **duplicate-detection
+filter** (blocks suggestions matching public code) in your org settings, and be wary of pasting in
+large, verbatim, recognisable chunks without understanding their provenance.
+
+## Keep your own skills sharp
+
+Use Copilot to go faster at things you *could* do, not as a substitute for understanding. The strongest
+developers use it as a pair — proposing, questioning, and overruling it — not as an autopilot. Your
+judgement is the part that doesn't come from the model.
+
+<Callout type="note">The whole module in one line: <strong>Copilot drafts, you decide.</strong> Specify clearly, give it context, read every suggestion, verify the AEM-specific parts, and never paste what shouldn't leave the building.</Callout>
+
+## What's next
+
+Put it together in the hands-on lab — build a small AEM component end-to-end with Copilot as your
+pair, practising every habit from this module.

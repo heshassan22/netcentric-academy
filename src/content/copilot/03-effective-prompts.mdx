@@ -1,0 +1,82 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Writing Effective Prompts',
+  topics: 'Specificity · comments-as-prompts · examples · iteration · prompt patterns'
+};
+
+The single biggest lever on Copilot's usefulness is **how you ask**. A vague prompt gets a vague,
+generic answer; a specific one — with constraints, examples, and the surrounding context — gets code
+you can almost keep as-is.
+
+## Be specific: say the what, the constraints, and the shape
+
+A weak prompt and a strong prompt for the *same* task:
+
+<Tabs>
+<Tab label="Weak">
+
+```text
+make a function to format a date
+```
+
+You'll get *a* date formatter — probably not your format, locale, or input type.
+
+</Tab>
+<Tab label="Strong">
+
+```text
+Write a JS function formatPublishDate(isoString) that takes an ISO 8601 string
+and returns "12 Jun 2026" (en-GB, day-month-year). Use Intl.DateTimeFormat.
+Return an empty string for null/invalid input. No external libraries.
+```
+
+Name, input, exact output, the API to use, the edge case, and a constraint — little left to guess.
+
+</Tab>
+</Tabs>
+
+## Comments as prompts (the completions workflow)
+
+For ghost-text completions, a precise comment above the cursor is your prompt. The more it reads
+like a spec, the better the draft:
+
+```js
+// Debounce: return a function that calls fn at most once per `wait` ms,
+// firing on the trailing edge. Cancel the pending call on each new invocation.
+function debounce(fn, wait) {
+  // Copilot drafts the body from the comment above
+}
+```
+
+## Give it an example (one-shot prompting)
+
+When you want a specific *style*, show one. Copilot mirrors patterns:
+
+```text
+Here's how we write a Sling Model getter:
+
+  @ValueMapValue @Default(values = "") private String title;
+  public String getTitle() { return title; }
+
+Now add the same pattern for a `linkUrl` String and a `newTab` boolean.
+```
+
+## Iterate — don't restart
+
+The first answer is a draft. Refine it in place instead of re-typing the whole request:
+
+- *"Good — now handle the null case and add JSDoc."*
+- *"Use `const`/arrow functions to match our style."*
+- *"That method doesn't exist on this API — use `getValueMap()` instead."*
+
+<Callout type="do">Treat the conversation as a feedback loop: prompt → read → correct → re-prompt. Three quick iterations beat one giant prompt almost every time.</Callout>
+
+## A reusable prompt skeleton
+
+<Callout type="note">When a request matters, fill in: <strong>Goal</strong> (what), <strong>Inputs/Outputs</strong> (signatures, exact shape), <strong>Constraints</strong> (libraries, style, perf), <strong>Edge cases</strong>, and an <strong>Example</strong> if style matters. You rarely need all five — but naming them stops you writing "make a thing".</Callout>
+
+## What's next
+
+Prompts are only half the picture — Copilot also needs the right **context**. Next: how it sees your
+code, and how to point it at exactly the right files.

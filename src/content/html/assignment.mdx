@@ -1,80 +1,45 @@
 export const meta = {
   order: 99,
   num: '★',
-  title: 'Assignment: Build a Page',
-  topics: 'Beginner → advanced · ~3–4 hours · everything from this track'
+  title: 'Assignment: Finish the Page',
+  topics: 'End of session · ~2h · lessons 06–10 (media, forms, metadata, structured data, validation)'
 };
 
-Build a **complete, accessible recipe page** from scratch — semantic structure, content
-structures, media, a form, and metadata. Work in your own editor; validate as you go with the
-[W3C validator](https://validator.w3.org/). Budget **~3–4 hours**.
+Pick up the **`recipe.html`** you started in the [mid-module checkpoint](checkpoint-assignment) and
+take it to production quality — responsive media, an accessible form, and complete metadata —
+applying everything from lessons **06–10**. Budget **~2 hours**.
 
-<Callout type="note">Each part builds on the last. Aim for HTML that is correct and accessible **before** any CSS — this is an HTML assignment, so don't reach for styling to fake structure.</Callout>
+<Callout type="note">Don't start from scratch — extend the same file. If you skipped the checkpoint, do [Part 1](checkpoint-assignment) first; everything here builds on that semantic skeleton. Keep validating with the [W3C validator](https://validator.w3.org/) as you go.</Callout>
 
-## Part 1 — Structure & semantics (Beginner, ~1h)
+## Part 1 — Media & embedded content (Intermediate, ~45min)
 
-Create `recipe.html` with a valid HTML5 skeleton and a semantic layout for a recipe of your choice.
-
-- [ ] `<!DOCTYPE html>`, `<html lang>`, `<meta charset>`, `<meta name="viewport">`, a real `<title>`
-- [ ] Landmarks: `<header>` (site name + `<nav>`), `<main>`, an `<article>` for the recipe, `<footer>`
-- [ ] A correct heading outline — **one `<h1>`** (the recipe name), `<h2>`/`<h3>` for sections, no skipped levels
-- [ ] An intro paragraph using text-level semantics where they fit (`<strong>`, `<em>`, `<time datetime>`, `<abbr title>`)
-
-**Acceptance:** the page validates, has exactly one `<h1>`, and its outline reads like a sensible table of contents.
-
-## Part 2 — Content structures & media (Intermediate, ~1–1.5h)
-
-- [ ] **Ingredients** as a `<ul>`, **steps** as an `<ol>`
-- [ ] A **nutrition `<table>`** with `<caption>`, `<thead>`, and `<th scope="col">`/`scope="row">`
 - [ ] A hero image with a meaningful `alt`, explicit `width`/`height`, and a responsive `<picture>` (AVIF/WebP with a `<img>` JPG fallback)
-- [ ] A "source" link (`target="_blank"` + `rel="noopener noreferrer"`) and a `mailto:` contact link, both with descriptive text
+- [ ] `loading="lazy"` on any below-the-fold image
+- [ ] **(Optional)** an embedded `<iframe>` (e.g. a map or video) with a `title` and `loading="lazy"`
 
-**Acceptance:** the table is screen-reader-friendly (caption + scoped headers); the image is responsive and reserves space; no "click here" links.
+**Acceptance:** images are responsive, reserve their space (no layout shift), and every image has appropriate `alt` text.
 
-## Part 3 — Form, metadata & validation (Advanced, ~1–1.5h)
+## Part 2 — The review form (Advanced, ~45min)
 
-- [ ] A **"Leave a review" form**: labelled `name`, `email` (`type="email"`), a `rating` `<select>`, and a `comment` `<textarea>`, grouped in a `<fieldset>` + `<legend>`, using native validation (`required`, types, `minlength`)
+- [ ] A **"Leave a review" form**: labelled `name`, `email` (`type="email"`), a `rating` `<select>`, and a `comment` `<textarea>`
+- [ ] Group the controls in a `<fieldset>` + `<legend>`
+- [ ] Use **native validation** (`required`, input types, `minlength`) — no JS
+
+**Acceptance:** every control has an associated `<label>`; the form validates natively; the fieldset/legend describe the group.
+
+## Part 3 — Metadata, structured data & validation (Advanced, ~30min)
+
 - [ ] **Metadata** in `<head>`: `meta description`, Open Graph (`og:title`/`og:description`/`og:image`), a favicon, and a `<link rel="canonical">`
 - [ ] **Structured data**: a JSON-LD `Recipe` block (`@type: Recipe`, name, author, ingredients, steps)
+- [ ] **Performance**: `width`/`height` on all media, `defer` on any script
 - [ ] **Validate** with the W3C validator and fix every error/warning
-- [ ] **Performance**: `loading="lazy"` on below-the-fold images, `width`/`height` on all media, `defer` on any script
 
-**Acceptance:** validator is clean; every form control has a label and validates; Open Graph + JSON-LD are present and well-formed.
+**Acceptance:** validator is clean; Open Graph + JSON-LD are present and well-formed.
 
 ## Stretch goals
 
 - A **"skip to main content"** link as the first focusable element.
 - A breadcrumb `<nav aria-label="Breadcrumb">`.
 - A `<noscript>` fallback for anything you'd later enhance with JS.
-
-<Reveal title="Starter skeleton (only if you're stuck)">
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Best Pancakes — Recipe</title>
-  <meta name="description" content="Fluffy pancakes in 20 minutes.">
-</head>
-<body>
-  <header>
-    <a href="/">My Recipes</a>
-    <nav aria-label="Primary"><a href="/recipes">All recipes</a></nav>
-  </header>
-  <main>
-    <article>
-      <h1>Best Pancakes</h1>
-      <p>Ready in <time datetime="PT20M">20 minutes</time>.</p>
-      <!-- ingredients (ul), steps (ol), nutrition (table), media, review form … -->
-    </article>
-  </main>
-  <footer><p>© 2026</p></footer>
-</body>
-</html>
-```
-
-</Reveal>
 
 <Callout type="do">Done when: it **validates clean**, works and reads correctly with CSS disabled, and you could hand the JSON-LD to a search engine. That's a production-quality HTML5 document.</Callout>

@@ -1,42 +1,35 @@
 export const meta = {
   order: 99,
   num: '★',
-  title: 'Assignment: Refactor to SCSS',
-  topics: 'Beginner → advanced · ~3–4 hours · everything from this track'
+  title: 'Assignment: Architect & Apply SCSS',
+  topics: 'End of session · ~2h · lessons 05–09 (architecture, partials, @use/@forward, AEM component styling)'
 };
 
-Take the CSS from your **CSS assignment** and refactor it into a **maintainable SCSS
-architecture** — variables, nesting, partials, functions, and mixins — that compiles to the same
-(or better) CSS. Budget **~3–4 hours**. Experiment in the lesson playgrounds, then build it in your
+Pick up the SCSS you wrote in the [mid-module checkpoint](checkpoint-assignment) and turn it into a
+**maintainable architecture** — partials, `@use`/`@forward`, token maps — then apply it the way you
+would on a real AEM component. Applies lessons **05–09**. Budget **~2 hours**. Build it in your
 project's `ui.frontend` SCSS.
 
-<Callout type="note">The goal isn't "more Sass" — it's **less repetition and one source of truth**. The compiled CSS should stay lean; SCSS is how you author it comfortably.</Callout>
+<Callout type="note">Extend the same SCSS — don't restart. If you skipped the checkpoint, do [Part 1](checkpoint-assignment) first (variables, nesting, functions, mixins); everything here organizes and applies those.</Callout>
 
-## Part 1 — Variables & nesting (Beginner, ~1h)
-
-- [ ] Convert hard-coded colors/spacing to **`$` variables**
-- [ ] Use **nesting + `&`** to express your BEM blocks (`&__element`, `&--modifier`, `&:hover`)
-- [ ] Keep nesting shallow (≤ ~2 levels) so output selectors stay flat
-
-**Acceptance:** no magic numbers/hex repeated; the compiled selectors are still single-class BEM.
-
-## Part 2 — Architecture (Intermediate, ~1–1.5h)
+## Part 1 — Architecture (Intermediate, ~1h)
 
 - [ ] Split into **partials**: `_variables.scss`, `_mixins.scss`, component partials
 - [ ] Wire them with **`@use` / `@forward`** (no `@import`) — namespaced where it helps
 - [ ] Put your tokens in a **map** (e.g. `$spacing: (sm: .5rem, md: 1rem, lg: 2rem)`) and read with `map.get`
 - [ ] Generate a spacing/utility set with **`@each`**
+- [ ] A **`@mixin`** breakpoint helper driven by your breakpoints map
 
-**Acceptance:** one entry point forwards the shared layer; components `@use` tokens instead of redefining them; no `@import`.
+**Acceptance:** one entry point forwards the shared layer; components `@use` tokens instead of redefining them; no `@import`; changing a token ripples everywhere.
 
-## Part 3 — Functions & mixins (Advanced, ~1–1.5h)
+## Part 2 — Apply it to an AEM component (Advanced, ~1h)
 
-- [ ] A **`@mixin button($bg, $fg)`** with default args, used for ≥ 2 button variants
-- [ ] A **`@function rem($px)`** (or similar) used for sizing
-- [ ] A **`@mixin`** for a media-query/breakpoint helper driven by your breakpoints map
-- [ ] Use **`@if`/`@else`** for a small theming or variant decision
+- [ ] Author **one component's styles as its own partial** (`hello.clientlibs.scss`-style), `@use`-ing the shared tokens/mixins — never redefining them
+- [ ] Use **BEM-in-AEM** naming so the compiled selectors are flat, single-class, and namespaced to the component
+- [ ] Add an **author-mode guard** for any edit-only styling (e.g. styles applied only under `.cq-Editable-dom` / behind a `wcmmode` wrapper)
+- [ ] Sanity-check the **compiled output** is lean — no deep selector chains, no duplicated declarations
 
-**Acceptance:** changing a token or a mixin updates every consumer; functions return values, mixins emit CSS; no copy-pasted blocks remain.
+**Acceptance:** the component partial reuses the shared layer (no copy-pasted tokens); selectors stay flat BEM; author-only styling doesn't leak to publish.
 
 ## Stretch goals
 
@@ -44,28 +37,4 @@ project's `ui.frontend` SCSS.
 - Organise files ITCSS-style (settings → tools → components).
 - Add a `map`-driven theme and switch it with `@each`.
 
-<Reveal title="Starter snippets">
-
-```scss
-// _variables.scss
-$brand: #6b2fb3;
-$spacing: (sm: .5rem, md: 1rem, lg: 2rem);
-
-// _mixins.scss
-@use "sass:map";
-@mixin button($bg, $fg: #fff) {
-  padding: map.get($spacing, sm) map.get($spacing, md);
-  border: 0; border-radius: 6px;
-  background: $bg; color: $fg; cursor: pointer;
-}
-
-// component
-@use "variables" as *;
-@use "mixins" as *;
-.btn { @include button($brand); }
-.btn--ghost { @include button(transparent, $brand); border: 1px solid $brand; }
-```
-
-</Reveal>
-
-<Callout type="do">Done when: a single change (a token, a mixin) ripples through the whole stylesheet, the file structure reads clearly, and the compiled CSS is no bigger than your hand-written version.</Callout>
+<Callout type="do">Done when: a single change (a token, a mixin) ripples through the whole stylesheet, the file structure reads clearly, the component partial reuses the shared layer, and the compiled CSS is no bigger than your hand-written version.</Callout>

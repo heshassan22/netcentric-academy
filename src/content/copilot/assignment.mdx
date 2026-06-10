@@ -1,0 +1,52 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Lab: Build a Component with Copilot',
+  topics: 'Hands-on · ~1.5–2h · prompt, context, verify — end to end'
+};
+
+Build a small AEM component **with Copilot as your pair**, practising every habit from this module:
+clear prompts, the right context, AEM-aware verification, and reviewing before you accept. The point
+isn't the component — it's *how you drive the tool*. Budget **~1.5–2 hours**.
+
+<Callout type="note">Keep a scratch note of your prompts and what you had to correct. The reflection at the end is the real deliverable — it's how you turn "I used Copilot" into "I use Copilot well".</Callout>
+
+## Setup (~10min)
+
+- [ ] Add a **`.github/copilot-instructions.md`** to your project (or a scratch repo) with your AEM conventions — use the template from [lesson 04](04-context-instructions)
+- [ ] Open a known-good existing component (HTL + Sling Model + dialog) in nearby tabs for context
+
+## Part 1 — Front-end with Copilot (~40min)
+
+Build a **"Promo card"** component's front end:
+
+- [ ] Prompt Copilot for the **HTL** (title, teaser, an optional CTA link via `data-sly-test`) — then **verify every HTL block option** against the spec
+- [ ] Prompt for a **BEM SCSS partial** using your tokens (`@use`, ≤2 nesting levels) — check the compiled selectors stay flat
+- [ ] Prompt for a **component-loader JS** class (scoped to `this.element`, idempotent `init`) following your pattern — confirm `register()` matches your real convention
+
+**Acceptance:** you can point to at least one suggestion you **corrected** (a wrong API, a non-existent option, a convention mismatch) and explain why.
+
+## Part 2 — Full-stack with Copilot (~40min)
+
+- [ ] Prompt for a **Sling Model** (`@ValueMapValue` + `@Default`, correct `adaptables`) — verify the adaptable matches what the HTL needs
+- [ ] Generate the **dialog `.content.xml`** with Copilot, then **paste known-good `sling:resourceType` strings** over any it guessed
+- [ ] Use **`/tests`** to generate an **AemContext** test for the model — steer it to cover the default/null branch, then tighten it
+
+**Acceptance:** the model adapts and renders; the dialog fields actually appear; the test passes and asserts real behaviour (not a vanity test).
+
+## Part 3 — Debug & refactor with Chat (~20min)
+
+- [ ] Introduce a deliberate bug (wrong resourceType, or model not adapting). Ask `@workspace` to **list likely causes** — see if its checklist finds it
+- [ ] Select a method and ask for a **behaviour-preserving refactor**; run the test to confirm nothing changed
+
+**Acceptance:** you used Chat to diagnose and to refactor, and **the tests gated both**.
+
+## Reflection (the real deliverable, ~10min)
+
+Write a short note answering:
+
+- [ ] Which tasks did Copilot accelerate most? Which did you trust least, and why?
+- [ ] List 2–3 suggestions you **rejected or corrected** — what was wrong (hallucinated API, AEM-specific miss, convention)?
+- [ ] One prompt you'd phrase better next time, and how.
+
+<Callout type="do">Done when: the component works end to end, every accepted suggestion was reviewed, the AEM-specific parts were verified (not trusted blindly), and your reflection shows you driving the tool — not the other way round.</Callout>

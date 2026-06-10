@@ -1,0 +1,73 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'Everyday Chat Workflows',
+  topics: 'Explain · fix · refactor · debug · generate tests · reviewing diffs'
+};
+
+Beyond completions, most daily value comes from a handful of **Chat workflows**. Here are the ones
+worth making automatic, each shown the way you'd actually use it on an AEM codebase.
+
+## Understand unfamiliar code — `/explain`
+
+Inherited a gnarly Sling Model or a dense HTL block? Select it and ask:
+
+```text
+/explain  — and call out any AEM-specific behaviour (injection, adaptation,
+HTL block options) a newcomer would miss.
+```
+
+Great for onboarding into a client project and for reviewing a teammate's PR before you comment.
+
+## Fix an error — `/fix`
+
+Paste the stack trace or compiler error (or just select the broken code):
+
+```text
+/fix  — NullPointerException in getCtaTarget when `newTab` is unset. Keep it
+null-safe with @Default rather than an if-ladder.
+```
+
+Read *why* it proposes the fix, not just the patch — that's where you catch a fix that hides the
+symptom instead of solving it.
+
+## Refactor safely
+
+Inline chat on a selection, with the constraint stated:
+
+```text
+Refactor this to extract the URL-building into a private method. Behaviour must
+stay identical. Don't change the public getters.
+```
+
+<Callout type="do">After any refactor, run the tests (or ask <code>/tests</code> first, refactor second). "Looks equivalent" is not "is equivalent" — especially with null handling and AEM injection.</Callout>
+
+## Debug a behaviour
+
+Describe the symptom and attach context (`#file`, `#selection`, `@workspace`):
+
+```text
+@workspace this component renders nothing on the page even though the node
+exists in CRX/DE. Here's the HTL (#file) and the Sling Model (#file). What are
+the likely causes?
+```
+
+Copilot is good at generating a **checklist of hypotheses** (wrong resourceType, model not adapting,
+placed under `root` not `root/responsivegrid`, missing clientlib) — you then confirm against the
+running instance.
+
+## Generate tests — `/tests`
+
+Covered in lesson 06 for Java; the same flow works for front-end JS with Jest. Select the unit, run
+`/tests`, and steer it toward edge cases and behaviour (not implementation).
+
+## Always: review the diff
+
+Edits/Agent mode shows a **multi-file diff** before applying. This is the moment that matters.
+
+<Callout type="warn">Never bulk-accept a multi-file change without reading each hunk. Copilot can "helpfully" reformat unrelated code, drop a guard, or touch a file you didn't mean to change. Accept hunk by hunk.</Callout>
+
+## What's next
+
+Last lesson: the **best-practices and guardrails** — when to reach for Copilot, when not to, and the
+security/licensing rules that keep you and the client safe.

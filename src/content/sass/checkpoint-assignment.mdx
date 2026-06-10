@@ -1,0 +1,53 @@
+export const meta = {
+  order: 4.5,
+  num: '✦',
+  title: 'Checkpoint: SCSS Language Basics',
+  topics: 'Mid-module · ~1.5h · lessons 01–04 (variables, nesting & ampersand, functions, mixins)'
+};
+
+This is the **mid-module checkpoint** — apply lessons **01–04** by refactoring a chunk of plain CSS
+into SCSS using the language features. **Keep your files**: the [final assignment](assignment) turns
+this into a real architecture and applies it to an AEM component. Experiment in the lesson
+playgrounds, then build it in your editor.
+
+<Callout type="note">The goal isn't "more Sass" — it's **less repetition and one source of truth**. The compiled CSS should stay lean; SCSS is how you author it comfortably.</Callout>
+
+## Part A — Variables & nesting (Beginner, ~45min)
+
+- [ ] Convert hard-coded colors/spacing to **`$` variables**
+- [ ] Use **nesting + `&`** to express your BEM blocks (`&__element`, `&--modifier`, `&:hover`)
+- [ ] Keep nesting shallow (≤ ~2 levels) so output selectors stay flat
+
+**Acceptance:** no magic numbers/hex repeated; the compiled selectors are still single-class BEM.
+
+## Part B — Functions & mixins (Intermediate, ~45min)
+
+- [ ] A **`@mixin button($bg, $fg)`** with default args, used for ≥ 2 button variants
+- [ ] A **`@function rem($px)`** (or similar) used for sizing
+- [ ] Use **`@if`/`@else`** for a small theming or variant decision
+
+**Acceptance:** functions return values, mixins emit CSS; changing a mixin updates every consumer; no copy-pasted blocks remain.
+
+<Reveal title="Starter snippets">
+
+```scss
+// variables
+$brand: #6b2fb3;
+$spacing: (sm: .5rem, md: 1rem, lg: 2rem);
+
+// a mixin
+@use "sass:map";
+@mixin button($bg, $fg: #fff) {
+  padding: map.get($spacing, sm) map.get($spacing, md);
+  border: 0; border-radius: 6px;
+  background: $bg; color: $fg; cursor: pointer;
+}
+
+// usage
+.btn { @include button($brand); }
+.btn--ghost { @include button(transparent, $brand); border: 1px solid $brand; }
+```
+
+</Reveal>
+
+<Callout type="do">Done with the checkpoint when colors, spacing, and repeated blocks all live in **variables, functions, and mixins** — and the compiled CSS is no bigger than the hand-written version. Save your files; the end-of-session assignment splits them into a maintainable architecture.</Callout>

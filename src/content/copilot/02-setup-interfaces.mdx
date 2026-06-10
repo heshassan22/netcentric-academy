@@ -1,0 +1,60 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Setup & the Interfaces',
+  topics: 'Install · sign in · completions · Chat panel · inline chat · slash commands'
+};
+
+A five-minute setup, then a tour of the surfaces you'll live in. Copilot works in **VS Code**,
+**JetBrains (IntelliJ / WebStorm)**, and others — the concepts are identical; the keybindings differ.
+
+## Install & sign in
+
+- [ ] Install the **GitHub Copilot** extension (and **GitHub Copilot Chat**) from your IDE's marketplace
+- [ ] Sign in with the GitHub account that has a Copilot license (your Netcentric org seat)
+- [ ] Confirm the status-bar Copilot icon shows **active** (not a slash through it)
+
+<Callout type="note">JetBrains users: install the *GitHub Copilot* plugin from Settings → Plugins. Same features, IntelliJ-style keybindings.</Callout>
+
+## Completions — the ghost text
+
+As you type, Copilot shows a grey suggestion. The defaults in VS Code:
+
+| Action | Shortcut |
+|---|---|
+| Accept suggestion | `Tab` |
+| Accept one word | `Cmd/Ctrl + →` |
+| Next / previous suggestion | `Alt/Option + ]` / `[` |
+| Dismiss | `Esc` |
+| Trigger manually | `Alt/Option + \` |
+
+The strongest trigger is a **clear lead-in**: a function signature, a descriptive variable name, or a
+comment describing intent. Write the *what*, let it draft the *how*.
+
+## Chat — the conversation
+
+Open the **Chat panel** (sidebar) for back-and-forth: explanations, "how do I…", generating a block,
+debugging. It can see your open editor and selection, and you steer it with context references
+(lesson 04).
+
+**Inline chat** (`Cmd/Ctrl + I` in VS Code) opens a prompt *right in the file* — ideal for "refactor
+this selection" or "add a null guard here" without leaving your code.
+
+## Slash commands
+
+In Chat (panel or inline), `/` invokes a focused action. The ones you'll use most:
+
+| Command | Does |
+|---|---|
+| `/explain` | Explain the selected code |
+| `/fix` | Propose a fix for an error or smell |
+| `/tests` | Generate unit tests for the selection |
+| `/doc` | Add doc comments |
+| `/new` | Scaffold a new file/project from a description |
+
+<Callout type="do">Spend ten minutes pressing every shortcut on real code before reading on. Muscle memory for *accept word*, *next suggestion*, and *inline chat* is where the daily speed-up actually comes from.</Callout>
+
+## What's next
+
+You now have the surfaces. The skill that separates fast users from frustrated ones is **prompting** —
+that's the next lesson.

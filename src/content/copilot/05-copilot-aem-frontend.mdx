@@ -1,0 +1,64 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Copilot for AEM Front-End',
+  topics: 'HTL · clientlibs SCSS/BEM · component-loader JS · AEM blind spots'
+};
+
+This is where it gets practical for FE devs. Copilot is excellent at the **standard web** parts of an
+AEM front end (SCSS, vanilla JS, BEM) and **weakest** at the AEM-specific glue (HTL syntax, Granite,
+clientlib categories) — because there's far less of it in its training data. Lean on it for the
+former; verify hard on the latter.
+
+## HTL — useful, but check the syntax
+
+Copilot knows HTML well, so HTL markup comes out mostly right — but it sometimes invents block
+options or mixes in JSP/Thymeleaf habits. Prompt with the model in mind:
+
+```text
+Write an HTL snippet that uses a Sling Model `hero` (data-sly-use) to render
+an <h2> title and an optional <p> teaser. Use data-sly-test to skip the teaser
+when empty. No inline business logic.
+```
+
+<Callout type="warn">Verify HTL block expressions (<code>data-sly-test</code>, <code>data-sly-list</code>, <code>data-sly-resource</code>) and the display-context/escaping options against the official HTL spec. A plausible-looking <code>@ context=</code> value or list option may not exist.</Callout>
+
+## SCSS & BEM — Copilot's home turf
+
+Styling is where you'll get the biggest, safest speed-up. Give it your conventions and it produces
+clean BEM partials:
+
+```text
+Write a BEM SCSS partial for a `.card` component (block, __media, __title,
+__body, --featured modifier). Use @use to read $spacing and $brand from our
+tokens, keep nesting ≤2 levels, animate only transform/opacity on hover.
+```
+
+It's also great at the boring-but-error-prone bits: converting a hex palette to custom properties,
+generating a spacing scale with `@each`, or writing a responsive `clamp()` type ramp.
+
+## Component-loader JS — give it the pattern
+
+Copilot won't know the `@netcentric/component-loader` conventions unless you show it (or it's in your
+`copilot-instructions.md`). Once it has the pattern, it scaffolds reliably:
+
+```text
+Following our component-loader pattern (a class taking (element, options),
+register({ Name }), DOM queries scoped to this.element, idempotent init),
+write a `Tabs` component that uses event delegation and reads an initial
+open index from this.options.
+```
+
+<Callout type="do">Keep an existing component open in another tab when you ask. Copilot mirrors the open file's structure — your real <code>register()</code> + class shape — far more accurately than a from-scratch guess.</Callout>
+
+## Where it stumbles (so you don't trust it blindly)
+
+- **Clientlib categories & `cq:ClientLibraryFolder`** — it may guess category names or `allowProxy` wrong; check against your actual generated categories.
+- **Granite UI dialogs** — resource types like `granite/ui/components/coral/foundation/form/textfield` are often *almost* right; one wrong segment and the field won't render. Copy known-good resource types.
+- **HTL global objects** — it can confuse `properties`, `pageProperties`, `currentPage`, and `wcmmode` usage.
+
+<Callout type="note">Rule of thumb: the closer a task is to "normal web dev", the more you can trust the draft. The closer it is to "AEM plumbing", the more you verify against docs or a known-good example in the repo.</Callout>
+
+## What's next
+
+Front-end covered — next, the full-stack side: Sling Models, servlets, dialogs, and tests.

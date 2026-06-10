@@ -1,81 +1,44 @@
 export const meta = {
   order: 99,
   num: '★',
-  title: 'Assignment: Build Components',
-  topics: 'Beginner → advanced · ~3–4 hours · everything from this track'
+  title: 'Assignment: Ship & Harden Components',
+  topics: 'End of session · ~2h · lessons 07–11 (shipping, modules, author-mode, performance, best practices)'
 };
 
-Build a small set of **interactive components** the Netcentric way — classes wired up by the
-component loader, configured via `data-nc-params`, talking through events. Budget **~3–4 hours**.
-Prototype behaviour in the lesson playgrounds, then build it in `ui.frontend`.
+Pick up the components you built in the [mid-module checkpoint](checkpoint-assignment) and take them
+to production quality — applying lessons **07–11**: shipping the JS, extracting modules, surviving
+author re-render, and deferring heavy work. Budget **~2 hours**. Build it in `ui.frontend`.
 
-<Callout type="note">Every component is a class taking `(element, options)`. Scope all queries to `this.element`, keep `init()` idempotent, and enhance markup that already works without JS.</Callout>
+<Callout type="note">Extend the same components — don't restart. If you skipped the checkpoint, do [Part 1](checkpoint-assignment) first (the Counter/Toggle/Tabs); everything here hardens those.</Callout>
 
-## Part 1 — Your first components (Beginner, ~1h)
+## Part 1 — Modules & shipping (Intermediate, ~45min)
 
-- [ ] A **Counter** component: a button + a count display; clicking increments. DOM refs scoped to `this.element`
-- [ ] A **Toggle** component: a button that toggles an `aria-expanded` state and shows/hides a panel
-- [ ] Register both with `register({ … })`; constructor stores `element`/`options` and calls `init()`
+- [ ] Extract a piece of **pure logic** (a debounce, a formatter, the IntersectionObserver setup) into a reusable **module** under `modules/`
+- [ ] Wire your components into the publish entry so the build bundles them (`export … from './components/…'`)
+- [ ] Confirm the loader picks them up via `data-nc` — no manual instantiation
 
-**Acceptance:** two instances of the same component on one page work independently; no `document.querySelector` for inner elements.
+**Acceptance:** shared logic lives in a `modules/` file imported by more than one component; nothing is hand-wired outside the loader.
 
-## Part 2 — Config & communication (Intermediate, ~1–1.5h)
+## Part 2 — Author mode & robustness (Advanced, ~45min)
 
-- [ ] A **Tabs** (or Accordion) component using **event delegation** (one listener on the root)
-- [ ] Pass configuration via **`data-nc-params-…`** (valid JSON) — e.g. an initial open index — read from `this.options`
-- [ ] A **"theme switch"** that dispatches a **custom event** on `window`; one or more components listen and react
-
-**Acceptance:** config comes from the dialog/markup via params (not hard-coded); components coordinate via a custom event, not direct references.
-
-## Part 3 — Performance & robustness (Advanced, ~1–1.5h)
-
-- [ ] A **lazy-loading image/section** component using **IntersectionObserver**, with the observer extracted into a reusable **module** under `modules/`
-- [ ] **Debounce** a `resize` (or `input`) handler; add `{ passive: true }` to a scroll listener
 - [ ] Make `init()` **idempotent** (guard against double-init) so it survives author re-rendering
 - [ ] **Progressive enhancement**: the content works without JS; add a `<noscript>` fallback where needed
+- [ ] A `destroy()` that removes listeners (clean teardown on re-render)
 
-**Acceptance:** heavy work is deferred until visible; no duplicate listeners after a re-init; the page is usable with JS disabled.
+**Acceptance:** no duplicate listeners after a re-init; the page is usable with JS disabled; re-rendering a component in author mode doesn't leak handlers.
+
+## Part 3 — Performance patterns (Advanced, ~30min)
+
+- [ ] A **lazy-loading image/section** component using **IntersectionObserver** (reuse the module from Part 1)
+- [ ] **Debounce** a `resize` (or `input`) handler; add `{ passive: true }` to a scroll listener
+- [ ] `dynamic import()` a heavy dependency only when a component actually needs it
+
+**Acceptance:** heavy work is deferred until visible; scroll/resize handlers don't jank; the heavy dependency isn't in the initial bundle.
 
 ## Stretch goals
 
-- `dynamic import()` a heavy dependency only when a component needs it.
 - Extract pure logic into a tiny module and **unit-test** it (see the Unit Testing track).
-- A `destroy()` that removes listeners.
-
-<Reveal title="Starter component">
-
-```js
-import { register } from '@netcentric/component-loader';
-
-class Counter {
-  constructor(element, options) {
-    this.element = element;
-    this.options = options;       // e.g. { step: 1 }
-    this.init();
-  }
-  init() {
-    if (this.element.dataset.ncInit) return;   // idempotent
-    this.element.dataset.ncInit = 'true';
-    this.out = this.element.querySelector('.counter__value');
-    this.n = 0;
-    this.element.querySelector('.counter__btn')
-      .addEventListener('click', () => this.bump());
-  }
-  bump() {
-    this.n += this.options.step || 1;
-    this.out.textContent = this.n;
-  }
-}
-register({ Counter });
-```
-
-```html
-<div class="counter" data-nc="Counter" data-nc-params-Counter='{"step":2}'>
-  <button class="counter__btn">+</button>
-  <span class="counter__value">0</span>
-</div>
-```
-
-</Reveal>
+- Add a custom-event "bus" so components coordinate without knowing about each other.
+- Measure the bundle before/after `dynamic import()` and note the saving.
 
 <Callout type="do">Done when: components are scoped, params-driven, coordinate via events, defer heavy work, survive re-init, and degrade gracefully without JS.</Callout>

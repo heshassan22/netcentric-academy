@@ -34,15 +34,16 @@ When you need real logic, put it in a **Sling Model** — a plain Java class ann
 `@Model`. It can read context without any authored field.
 
 ```java
-package biz.netcentric.academy.core.models;
+// core/src/main/java/biz/netcentric/academy/core/models/hello/PageMetaModel.java
+package biz.netcentric.academy.core.models.hello;
 
-import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
 import com.day.cq.wcm.api.Page;
 
-@Model(adaptables = Resource.class,
+@Model(adaptables = SlingHttpServletRequest.class,
        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class PageMetaModel {
 
@@ -57,22 +58,27 @@ public class PageMetaModel {
 ```
 
 ```html
-<sly data-sly-use.meta="biz.netcentric.academy.core.models.PageMetaModel"/>
+<sly data-sly-use.meta="biz.netcentric.academy.core.models.hello.PageMetaModel"/>
 <span class="crumb">${meta.breadcrumbLabel}</span>
 ```
 
-- `@Model(adaptables = Resource.class)` — adapt the current resource into this class.
-- `@ScriptVariable` — inject a global object (here `currentPage`).
+- `@Model(adaptables = SlingHttpServletRequest.class)` — adapt the current **request** (required for `@ScriptVariable` to see the script bindings).
+- `@ScriptVariable` — inject a global object (here `currentPage`). It comes from the request's script context, so the model must adapt from the request, not the resource.
 - `data-sly-use` instantiates the model; `${meta.breadcrumbLabel}` calls `getBreadcrumbLabel()`.
 
 <Callout type="do">Even with no author input, keep branching/formatting in the model. HTL stays a thin view.</Callout>
 
-## The gotcha: no dialog → not in the Insert dialog
+## The gotcha: showing up in the Insert dialog
 
-AEM's **Insert New Component** dialog only lists components it considers *editable*. A component
-with **no `_cq_dialog`** typically won't appear there.
+What a container offers in **Insert New Component** is decided by its **template policy** — your
+component's `componentGroup` must be in the allowed list (covered in *Policies*). That's the
+documented gate.
 
-<Callout type="warn">If your component is missing from the Insert list, the usual cause is a missing dialog (or a `componentGroup` not allowed by the policy). Add a minimal `_cq_dialog` — even an empty one — to make it selectable.</Callout>
+Beyond that, a component an author can't configure is of limited use — and **in this project, a
+component with no `_cq_dialog` doesn't appear in the Insert dialog at all**. So if authors need to
+insert it by hand, give it a dialog (even a minimal/empty one).
+
+<Callout type="warn">Missing from the Insert list? Check **both**: (1) its `componentGroup` is **allowed by the template policy**, and (2) it has a **`_cq_dialog`**. In this project, both gate whether it shows. A purely structural component placed by the template doesn't need either.</Callout>
 
 ## When "no dialog" is the right choice
 

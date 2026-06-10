@@ -21,6 +21,8 @@ ui.frontend/src/main/frontend/academy/publish/components/hello/
 The build (`nc-fe-build`) compiles it into a generated clientlib whose **category** follows the
 folder path: `academy.publish.components.hello`.
 
+<Callout type="note">A clientlib is generated **only for components that have a source file here**. A markup-only component (like the `hello` from earlier lessons, with no `.clientlibs.scss`/`.js`) produces **no clientlib** — that's expected, not an error. Add a source file only when the component actually needs styling or behaviour.</Callout>
+
 ## Loading the clientlib from HTL
 
 Pull the category in with the Granite `clientlib` template:
@@ -37,6 +39,91 @@ Pull the category in with the Granite `clientlib` template:
 - The `categories` string must match the generated category exactly.
 
 <Callout type="note">Author-only styling? Guard it with `<sly data-sly-test="${wcmmode.edit}">` around an author clientlib call, like the project's `title` component does.</Callout>
+
+## Adding JavaScript — the component loader
+
+CSS is declarative; for **behaviour** you add a JS file beside the component and wire it up with the
+[Netcentric component loader](https://github.com/Netcentric/component-loader). You never call your
+code directly — you **register** a class, and the loader creates an instance for every matching
+element on the page (including ones authors add live).
+
+### 1 · Write the component's JS
+
+The source sits next to the SCSS:
+
+```text
+ui.frontend/src/main/frontend/academy/publish/components/hello/
+├── hello.clientlibs.scss
+└── hello.clientlibs.js
+```
+
+```js
+import { register } from '@netcentric/component-loader';
+
+class Hello {
+  constructor(element, options) {
+    this.element = element;   // the DOM node carrying data-nc="Hello"
+    this.options = options;   // parsed from data-nc-params-Hello (JSON)
+    this.init();
+  }
+
+  init() {
+    // Scope queries to this.element — never document.querySelector.
+    this.element.addEventListener('click', () => {
+      this.element.classList.toggle('hello--active');
+    });
+  }
+}
+
+register({ Hello });   // the key "Hello" is the name you use in data-nc
+export default Hello;
+```
+
+### 2 · Make the build aware of it
+
+Export it from the publish entry so the bundler includes it — if it's never imported, it's never
+registered and nothing runs:
+
+```js
+// publish/components/index.js
+export * from 'academy-base-project/publish/components/hello/hello';
+```
+
+### 3 · The loader runtime (set up once per page)
+
+One entry boots the loader: `run()` initialises components already in the DOM, and `observe()`
+initialises any added afterwards (essential for author mode):
+
+```js
+// publish.clientlibs.js
+import { observe, run } from '@netcentric/component-loader';
+run();        // defaults to scanning document for the data-nc attribute
+observe();
+```
+
+### 4 · Wire it from HTL
+
+Mark the element with `data-nc` (the **registered name** — case-sensitive). Optionally pass config
+as **valid JSON** in `data-nc-params-<Name>`; it arrives as the constructor's `options`:
+
+```html
+<sly data-sly-use.clientlib="${'/libs/granite/sightly/templates/clientlib.html'}"
+     data-sly-call="${clientlib.all @ categories='academy.publish.components.hello'}"/>
+
+<div class="hello" data-nc="Hello" data-nc-params-Hello='{"speed":300}'>
+  <h2 class="hello__title">${hello.greeting}</h2>
+</div>
+```
+
+### Loader features worth knowing
+
+- **Multiple components on one element:** `data-nc="Hello,Tracker"` (+ a `data-nc-params-…` per name).
+- **Lazy init:** `data-nc-loading="lazy"` defers instantiation until the element scrolls into view — ideal for heavy or below-the-fold components.
+- **Introspection:** the loader exports `components` (registered classes) and `instances` (live instances by name).
+
+<Callout type="warn">The loader ships **untranspiled**, so the front-end build must run Babel over it — include `@netcentric` in `babel-loader` rather than blanket-excluding `node_modules`. `nc-fe-build` already handles this; it only bites in a hand-rolled webpack config.</Callout>
+
+<Callout type="note">This is the component-author's view. For the behaviour itself — events, delegation, custom events, params/DOM references, and performance patterns — see the **JavaScript track**.</Callout>
 
 ## The manual alternative — `cq:ClientLibraryFolder`
 

@@ -1,0 +1,49 @@
+export const meta = {
+  order: 4.5,
+  num: '✦',
+  title: 'Checkpoint: Foundations & Tokens',
+  topics: 'Mid-module · ~1h · lessons 01–04 (reset, selectors, box model, custom properties, BEM)'
+};
+
+This is the **mid-module checkpoint** — apply lessons **01–04** by laying the styling foundation for a
+small UI. Start a stylesheet for the starter markup below and **keep it**: the
+[final assignment](assignment) picks it up and adds layout, responsiveness, and theming.
+
+<Callout type="note">Style by **meaning**: namespace everything under component classes (BEM), keep specificity flat, and use custom properties for anything you'd want to theme. Prototype in the lesson playgrounds, then build it for real in your editor.</Callout>
+
+## Part A — Reset & tokens (Beginner, ~30min)
+
+- [ ] A small reset: `*, *::before, *::after { box-sizing: border-box; }` + sensible `body` defaults
+- [ ] Define design tokens as **custom properties** on `:root` (`--brand`, `--fg`, `--bg`, `--space`)
+- [ ] Type & color: a readable font stack, line-height, and colors pulled from your tokens
+
+**Acceptance:** values come from tokens, not hard-coded hex/px; no styling depends on element order or deep nesting.
+
+## Part B — Component classes & the cascade (Intermediate, ~30min)
+
+- [ ] **BEM** class names for each component (e.g. `.card`, `.card__title`, `.card--featured`)
+- [ ] Style the starter markup's header, cards, and sidebar by class — **no bare element selectors leaking globally**
+- [ ] Keep specificity flat: single-class selectors, no `id` selectors, no `!important`
+
+**Acceptance:** no bare element selectors leaking globally; passes a quick mental "specificity stays flat" check; everything themeable already reads from a custom property.
+
+<Reveal title="Starter HTML to style">
+
+```html
+<header class="site">
+  <a class="site__logo" href="/">Acme</a>
+  <nav class="site__nav"><a href="#">Guides</a> <a href="#">Shop</a></nav>
+</header>
+<main class="layout">
+  <section class="gallery">
+    <article class="card"><div class="card__media"></div><h3 class="card__title">Card</h3></article>
+    <article class="card"><div class="card__media"></div><h3 class="card__title">Card</h3></article>
+    <article class="card"><div class="card__media"></div><h3 class="card__title">Card</h3></article>
+  </section>
+  <aside class="layout__aside">Sidebar</aside>
+</main>
+```
+
+</Reveal>
+
+<Callout type="do">Done with the checkpoint when the page is **readable and on-brand** — typography, color, and spacing all driven by tokens — even though nothing is laid out yet. Save the stylesheet; the end-of-session assignment adds layout and theming on top.</Callout>

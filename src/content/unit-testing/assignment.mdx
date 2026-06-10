@@ -1,93 +1,39 @@
 export const meta = {
   order: 99,
   num: '★',
-  title: 'Assignment: Test a Codebase',
-  topics: 'Beginner → advanced · ~3–4 hours · everything from this track'
+  title: 'Assignment: DOM Tests & Coverage',
+  topics: 'End of session · ~1.5h · lessons 06–08 (DOM testing, organization, coverage & quality)'
 };
 
-Write a meaningful **Jest test suite** for a small front-end codebase. Budget **~3–4 hours**. Use
-the components/utilities from your **JavaScript assignment** (or the starter functions below).
+Pick up the Jest project from the [mid-module checkpoint](checkpoint-assignment) and round it out —
+test a component in the DOM, organize the suite, and make coverage **meaningful**. Applies lessons
+**06–08**. Budget **~1.5 hours**.
 
-<Callout type="note">Test **behaviour**, not implementation. A good suite goes red when you introduce a real bug and survives a refactor that keeps behaviour the same.</Callout>
+<Callout type="note">Extend the same project — don't restart. If you skipped the checkpoint, do [Part 1](checkpoint-assignment) first (setup, matchers, mocking, async); everything here builds on it.</Callout>
 
-## Setup
-
-- [ ] Install and configure Jest (`jest`, `@testing-library/jest-dom`, `jest-environment-jsdom`)
-- [ ] Add `"test": "jest"` and a `"test:watch"` script
-- [ ] Confirm `npx jest` runs and finds `*.test.js` files
-
-## Part 1 — Pure logic & matchers (Beginner, ~1h)
-
-Given `formatPrice(cents)`, `slugify(text)`, and `clamp(n, min, max)`:
-
-- [ ] Test happy paths with the **right matchers** (`toBe`, `toEqual`, `toThrow`)
-- [ ] Cover **edge cases**: `0`, empty string, negative, boundary values
-- [ ] Name tests as behaviour sentences; group with `describe`
-
-**Acceptance:** each function has happy-path + edge-case tests; matchers are specific (e.g. `toHaveLength`, `toThrow('…')`).
-
-## Part 2 — Mocking & async (Intermediate, ~1–1.5h)
-
-Given `loadUser(id)` that calls `fetch`, and a `debounce(fn, ms)` helper:
-
-- [ ] **Mock `fetch`** (`jest.fn().mockResolvedValue(...)`) and assert the URL + parsed result
-- [ ] Test the **rejection** path with `await expect(...).rejects.toThrow(...)`
-- [ ] Use **fake timers** to prove `debounce` fires **once** after the delay
-- [ ] Reset mocks between tests (`afterEach(() => jest.resetAllMocks())`)
-
-**Acceptance:** no real network; async assertions are awaited; the debounce test is deterministic (no real waiting).
-
-## Part 3 — DOM testing & coverage (Advanced, ~1–1.5h)
+## Part 1 — DOM testing (Advanced, ~45min)
 
 Given a `Counter` component class (takes `element`, increments on click):
 
 - [ ] In **jsdom**, render markup, instantiate the component, **dispatch a click**, and assert the DOM updated (`toHaveTextContent`)
 - [ ] Test a **custom-event** interaction (dispatch on `window`, assert a class/text changed)
+- [ ] Use `@testing-library/jest-dom` matchers (`toHaveTextContent`, `toHaveAttribute`, `toBeVisible`)
+
+**Acceptance:** the component test exercises real user behaviour (click → DOM change); it asserts on what the user sees, not internal fields.
+
+## Part 2 — Organization & coverage (Advanced, ~45min)
+
+- [ ] Organize tests: co-locate `*.test.js`, group with nested `describe`, share setup with `beforeEach`/`afterEach`
 - [ ] Run `--coverage`; reach a sensible **threshold** (e.g. 80% branches) on the logic
 - [ ] Find one **"vanity" test** (runs code, asserts nothing meaningful) and make it real
+- [ ] Add a `coverageThreshold` to `jest.config.js` so CI fails on regressions
 
-**Acceptance:** the component test exercises real user behaviour (click → DOM change); branch coverage is meaningful, not padded.
+**Acceptance:** branch coverage is meaningful, not padded; the suite is grouped and readable; the threshold is enforced.
 
 ## Stretch goals
 
 - Parametrise edge cases with `test.each`.
-- Add a `coverageThreshold` to `jest.config.js` so CI fails on regressions.
 - Break a line of production code on purpose — confirm a test goes red.
-
-<Reveal title="Starter code under test">
-
-```js
-// money.js
-export const formatPrice = (cents) => {
-  if (cents == null || cents < 0) throw new Error('invalid amount');
-  return (cents / 100).toFixed(2);
-};
-
-// users.js
-export async function loadUser(id) {
-  const res = await fetch(`/api/users/${id}`);
-  if (!res.ok) throw new Error('not found');
-  return res.json();
-}
-```
-
-```js
-// money.test.js
-import { formatPrice } from './money.js';
-
-describe('formatPrice()', () => {
-  it('formats cents as two decimals', () => {
-    expect(formatPrice(4250)).toBe('42.50');
-  });
-  it('treats 0 as a valid amount', () => {
-    expect(formatPrice(0)).toBe('0.00');
-  });
-  it('throws on a negative amount', () => {
-    expect(() => formatPrice(-1)).toThrow('invalid amount');
-  });
-});
-```
-
-</Reveal>
+- Add a custom matcher for a domain assertion you repeat.
 
 <Callout type="do">Done when: tests read as a spec, mocks isolate the unit, async is awaited, the component test mirrors real interaction, and coverage reflects **meaningful** assertions.</Callout>

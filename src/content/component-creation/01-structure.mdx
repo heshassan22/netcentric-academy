@@ -42,7 +42,8 @@ ui.apps/src/main/content/jcr_root/apps/academy/components/hello/
 <h2 class="hello">Hello, AEM!</h2>
 ```
 
-That's a working component — drop it on a page and it renders the heading.
+That's a complete component. It renders **once it's deployed and placed on a page** — the next
+sections (and lessons) show how.
 
 ## How a page uses it
 
@@ -72,6 +73,35 @@ out-of-the-box components: place a component at the same relative path under `/a
 `sling:resourceSuperType` at a base component to inherit its scripts.
 
 <Callout type="do">One component = one responsibility. Compose pages from small components rather than building one giant one.</Callout>
+
+## Build, deploy & place it
+
+HTL is **not compiled locally** — your `.html` ships as-is and **AEM compiles it on the server**
+at render time. There's no build step for the markup itself. To get the component onto your local
+author (port 4502), run Maven from the project's **`code/`** folder:
+
+```bash
+mvn clean install -PautoInstallSinglePackage
+```
+
+It lands at `/apps/academy/components/hello` (verify in CRX/DE). It only **renders once it's placed
+on a page** — two ways:
+
+- **Via the author UI** — drop it from *Insert New Component*. For that it must be **allowed by the
+  template policy** (see *Policies*) and have a **dialog** (see *No Dialog* / *Dialog*).
+- **Directly in content** — add a node inside the page's **editable container**. On an editable
+  template that's `jcr:content/root/responsivegrid` — **not `root` itself**. `root` is locked
+  template structure (header, the responsivegrid, footer); nodes placed directly under `root`
+  are ignored by the renderer and **won't show up**.
+
+```xml
+<!-- under …/content/academy/en/<page>/jcr:content/root/responsivegrid -->
+<hello jcr:primaryType="nt:unstructured" sling:resourceType="academy/components/hello"/>
+```
+
+<Callout type="warn">Common trap: putting the node directly under `root`. It must go in the **editable** container (`root/responsivegrid`), or it renders nothing — even though the node exists in CRX/DE.</Callout>
+
+<Callout type="note">Newly created and nothing happens? It's almost always one of: not deployed (run the Maven command), placed in the wrong container (use `root/responsivegrid`), not **allowed** by the policy, or (to insert via the UI) it has **no dialog**. The next lessons cover each.</Callout>
 
 ## What's next
 

@@ -50,6 +50,14 @@ apps/academy/components/hello/
 Read it in a **Sling Model** with `@ValueMapValue` (the field name matches the property):
 
 ```java
+package biz.netcentric.academy.core.models.hello;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Default;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+
 @Model(adaptables = Resource.class,
        defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class HelloModel {
@@ -64,11 +72,23 @@ public class HelloModel {
 }
 ```
 
+This class lives in the **`core`** module. Organise models in a **per-component subpackage** —
+the project does this (`models/marquee/`, `models/hyperlink/`), so the `hello` component's model
+goes in a `hello` package. The folder path **must mirror the package / fully-qualified name** you
+pass to `data-sly-use`:
+
+```text
+core/src/main/java/biz/netcentric/academy/core/models/hello/HelloModel.java
+   └ package biz.netcentric.academy.core.models.hello;   ← must match data-sly-use
+```
+
+<Callout type="warn">The `package` line, the folder path, and the `data-sly-use` class name must all match exactly — a mismatch means `data-sly-use` can't find the model and the component errors. After adding or changing a model you must **rebuild & deploy `core`** (it's an OSGi bundle): `mvn clean install -PautoInstallSinglePackage` from `code/` (or `-PautoInstallBundle -pl core` for just the bundle).</Callout>
+
 <Tabs>
 <Tab label="Code">
 
 ```html
-<sly data-sly-use.hello="biz.netcentric.academy.core.models.HelloModel"/>
+<sly data-sly-use.hello="biz.netcentric.academy.core.models.hello.HelloModel"/>
 <h2 class="hello">${hello.greeting}</h2>
 ```
 

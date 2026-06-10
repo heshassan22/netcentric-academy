@@ -86,7 +86,9 @@ function Editor({ initial }) {
     form.appendChild(input);
     document.body.appendChild(form);
     form.submit();
-    form.remove();
+    // Detach on the next tick — removing it synchronously can cancel the
+    // target="_blank" navigation in some browsers (the intermittent "broken link").
+    setTimeout(() => form.remove(), 0);
   }
 
   const pane = (label, value, setter, wide) => (

@@ -1,0 +1,62 @@
+export const meta = {
+  order: 5.5,
+  num: '✦',
+  title: 'Checkpoint: Build the Page Skeleton',
+  topics: 'Mid-module · ~1.5h · lessons 01–05 (structure, semantics, text, links, lists, tables)'
+};
+
+This is the **mid-module checkpoint** — apply everything from lessons **01–05** by starting the
+recipe page you'll finish at the end of the session. Create `recipe.html` and **keep it**: the
+[final assignment](assignment) picks up this exact file and adds media, a form, and metadata.
+
+<Callout type="note">Aim for HTML that is correct and accessible **before** any CSS. This is an HTML exercise — don't reach for styling to fake structure. Validate as you go with the [W3C validator](https://validator.w3.org/).</Callout>
+
+## Part A — Skeleton & semantics (Beginner, ~45min)
+
+Create `recipe.html` with a valid HTML5 skeleton and a semantic layout for a recipe of your choice.
+
+- [ ] `<!DOCTYPE html>`, `<html lang>`, `<meta charset>`, `<meta name="viewport">`, a real `<title>`
+- [ ] Landmarks: `<header>` (site name + `<nav>`), `<main>`, an `<article>` for the recipe, `<footer>`
+- [ ] A correct heading outline — **one `<h1>`** (the recipe name), `<h2>`/`<h3>` for sections, no skipped levels
+
+**Acceptance:** the page validates, has exactly one `<h1>`, and its outline reads like a sensible table of contents.
+
+## Part B — Text, links, lists & tables (Intermediate, ~45min)
+
+- [ ] An intro paragraph using text-level semantics where they fit (`<strong>`, `<em>`, `<time datetime>`, `<abbr title>`)
+- [ ] **Ingredients** as a `<ul>`, **steps** as an `<ol>`
+- [ ] A **nutrition `<table>`** with `<caption>`, `<thead>`, and `<th scope="col">`/`scope="row">`
+- [ ] A "source" link (`target="_blank"` + `rel="noopener noreferrer"`) and a `mailto:` contact link, both with **descriptive text** (no "click here")
+
+**Acceptance:** the table is screen-reader-friendly (caption + scoped headers); lists use the right type for the job; every link makes sense out of context.
+
+<Reveal title="Starter skeleton (only if you're stuck)">
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Best Pancakes — Recipe</title>
+</head>
+<body>
+  <header>
+    <a href="/">My Recipes</a>
+    <nav aria-label="Primary"><a href="/recipes">All recipes</a></nav>
+  </header>
+  <main>
+    <article>
+      <h1>Best Pancakes</h1>
+      <p>Ready in <time datetime="PT20M">20 minutes</time>.</p>
+      <!-- ingredients (ul), steps (ol), nutrition (table), source link … -->
+    </article>
+  </main>
+  <footer><p>© 2026</p></footer>
+</body>
+</html>
+```
+
+</Reveal>
+
+<Callout type="do">Done with the checkpoint when `recipe.html` **validates clean** and reads as a sensible document with CSS disabled. Save it — the end-of-session assignment continues from here with media, a form, and metadata.</Callout>

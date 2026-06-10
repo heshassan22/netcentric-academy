@@ -1,0 +1,66 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Context & Custom Instructions',
+  topics: 'What Copilot sees · @workspace · #file · selection · copilot-instructions.md'
+};
+
+Copilot answers from the **context** it's given. Completions read your nearby code and open tabs;
+Chat reads your selection plus whatever you reference. Learning to *steer* that context is what makes
+answers project-aware instead of generic.
+
+## What Copilot can see
+
+- **Completions:** the current file around your cursor, and (to a degree) other **open tabs**. Keeping the relevant file open is the cheapest way to improve suggestions.
+- **Chat:** your active editor + current selection by default, plus anything you explicitly attach.
+
+<Callout type="do">Before asking Chat about a component, open its files — the HTL, the Sling Model, the dialog. Relevant tabs open = sharper, project-specific answers.</Callout>
+
+## Context references in Chat
+
+In VS Code, attach precise context with `#` and direct the request with `@`:
+
+| Reference | Pulls in |
+|---|---|
+| `#file` | A specific file you pick |
+| `#selection` | The current editor selection |
+| `#codebase` (or `@workspace`) | Lets Copilot search the whole project for relevant code |
+| `#changes` | Your current git diff |
+| `@workspace` | A participant that reasons across the repo |
+| `@terminal` | Help with the last terminal command/output |
+
+Example:
+
+```text
+@workspace where is the component-loader registered, and how do existing
+components export themselves into the publish bundle? Show the pattern.
+```
+
+That answer is grounded in *your* repo, not a generic template — exactly what you want for AEM.
+
+## Custom instructions — teach Copilot your conventions once
+
+Drop a **`.github/copilot-instructions.md`** at the repo root and Copilot Chat will read it on every
+request. This is the highest-leverage setup step for an AEM project, because it injects the
+conventions Copilot can't infer:
+
+```markdown
+<!-- .github/copilot-instructions.md -->
+# Project conventions for Copilot
+
+- This is an AEM Maven project. Front end lives in `ui.frontend` (SCSS + component-loader JS).
+- HTL files use Sightly; prefer `data-sly-use` with Sling Models over inline logic.
+- JS components are classes registered via `@netcentric/component-loader`; scope DOM queries to `this.element`.
+- Styles use BEM and `@use` (never `@import`); read tokens from the shared maps.
+- Sling Models: `@Model(adaptables = …)`, `@ValueMapValue`, package per component under `…core.models.<name>`.
+- Never invent AEM/Granite APIs — if unsure, say so.
+```
+
+<Callout type="note">You can also add task-specific files under <code>.github/instructions/</code> and per-prompt files (<code>*.prompt.md</code>) for repeatable workflows. Start with the single root file — it already changes the quality of every answer.</Callout>
+
+<Callout type="warn">Custom instructions guide, they don't guarantee. Copilot can still ignore a rule or hallucinate an API. The review habit from lesson 01 still applies to every suggestion.</Callout>
+
+## What's next
+
+With prompting and context under your belt, the next two lessons get concrete — Copilot for AEM
+**front-end**, then **full-stack**.
