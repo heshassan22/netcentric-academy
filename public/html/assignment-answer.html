@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  MODEL ANSWER — HTML track assignment (Checkpoint + Finish the Page).
+  Semantic HTML5, NO CSS at all. The hero is a <picture> with media-based
+  sources, so the image itself swaps as you resize — no stylesheet needed.
+  Images are the standard W3Schools sample images, stored locally in ./images,
+  so it opens offline (file://). Instructor reference.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Best Fluffy Pancakes — Recipe</title>
+
+  <!-- Metadata (final assignment, Part 3 — see lesson 09) -->
+  <meta name="description" content="Light, fluffy pancakes ready in 20 minutes — ingredients, step-by-step method, and nutrition.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://example.com/recipes/best-fluffy-pancakes">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+
+  <!-- Open Graph / Twitter (lesson 09) -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Best Fluffy Pancakes — Recipe">
+  <meta property="og:description" content="Light, fluffy pancakes ready in 20 minutes.">
+  <meta property="og:image" content="images/img_chania.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Structured data: schema.org Recipe as JSON-LD (lesson 09) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    "name": "Best Fluffy Pancakes",
+    "author": { "@type": "Person", "name": "Ada Cook" },
+    "description": "Light, fluffy pancakes ready in 20 minutes.",
+    "image": "images/img_chania.jpg",
+    "totalTime": "PT20M",
+    "recipeYield": "8 pancakes",
+    "recipeIngredient": [
+      "200 g plain flour",
+      "2 tbsp sugar",
+      "2 tsp baking powder",
+      "300 ml milk",
+      "1 egg",
+      "2 tbsp melted butter"
+    ],
+    "recipeInstructions": [
+      { "@type": "HowToStep", "text": "Whisk the dry ingredients together." },
+      { "@type": "HowToStep", "text": "Beat in the milk, egg and melted butter until just combined." },
+      { "@type": "HowToStep", "text": "Cook ladlefuls on a medium pan until bubbles form, then flip." }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <!-- Stretch goal: skip link as the first focusable element -->
+  <a href="#main">Skip to main content</a>
+
+  <header>
+    <a href="/">Ada&rsquo;s Kitchen</a>
+    <nav aria-label="Primary">
+      <a href="/recipes">All recipes</a>
+      <a href="/about">About</a>
+    </nav>
+    <!-- Stretch goal: breadcrumb -->
+    <nav aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href="/recipes">Recipes</a></li>
+        <li aria-current="page">Best Fluffy Pancakes</li>
+      </ol>
+    </nav>
+  </header>
+
+  <main id="main">
+    <article>
+      <h1>Best Fluffy Pancakes</h1>
+
+      <!-- Text-level semantics: strong, em, time, abbr, mark (checkpoint Part B) -->
+      <p>
+        <strong>Ready in <time datetime="PT20M">20 minutes</time></strong> &middot;
+        makes <em>8</em> pancakes &middot; uses
+        <abbr title="tablespoon">tbsp</abbr> and <abbr title="teaspoon">tsp</abbr> measures.
+        A weekend staple — <mark>fluffy every time</mark>.
+      </p>
+
+      <!-- Hero: art-direction <picture> (the W3Schools picture example pattern).
+           The browser picks a DIFFERENT image per viewport width, so the photo
+           itself changes as you resize — no CSS involved. Above the fold → eager. -->
+      <figure>
+        <picture>
+          <source media="(min-width: 650px)" srcset="images/img_chania.jpg">
+          <source media="(min-width: 465px)" srcset="images/pic_mountain.jpg">
+          <img src="images/img_girl.jpg" alt="W3Schools sample photo that changes with the viewport width." loading="eager">
+        </picture>
+        <figcaption>Resize the window — the image swaps at 465px and 650px (art direction, no CSS).</figcaption>
+      </figure>
+
+      <h2>Ingredients</h2>
+      <ul>
+        <li>200&nbsp;g plain flour</li>
+        <li>2&nbsp;<abbr title="tablespoons">tbsp</abbr> sugar</li>
+        <li>2&nbsp;<abbr title="teaspoons">tsp</abbr> baking powder</li>
+        <li>300&nbsp;ml milk</li>
+        <li>1 egg</li>
+        <li>2&nbsp;<abbr title="tablespoons">tbsp</abbr> melted butter</li>
+      </ul>
+
+      <h2>Method</h2>
+      <ol>
+        <li>Whisk the dry ingredients together in a large bowl.</li>
+        <li>Make a well, then beat in the milk, egg and melted butter until <em>just</em> combined — a few lumps are fine.</li>
+        <li>Cook ladlefuls on a medium pan until bubbles form on top, then flip and cook until golden.</li>
+        <li>Keep warm while you cook the rest; serve with your favourite topping.</li>
+      </ol>
+
+      <!-- Below-the-fold image → loading="lazy", with width/height to reserve
+           space (final assignment Part 1). -->
+      <figure>
+        <img src="images/img_5terre.jpg" alt="The Cinque Terre coastline — a W3Schools sample image." width="500" height="333" loading="lazy">
+        <figcaption>Loaded lazily as you scroll (<code>loading="lazy"</code>).</figcaption>
+      </figure>
+
+      <h2>Nutrition</h2>
+      <table>
+        <caption>Per pancake (approximate)</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nutrient</th>
+            <th scope="col">Amount</th>
+            <th scope="col">% Daily Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Energy</th><td>120 kcal</td><td>6%</td></tr>
+          <tr><th scope="row">Fat</th><td>4 g</td><td>6%</td></tr>
+          <tr><th scope="row">Carbohydrate</th><td>18 g</td><td>7%</td></tr>
+          <tr><th scope="row">Protein</th><td>4 g</td><td>8%</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Notes &amp; source</h2>
+      <p>
+        Adapted from a family recipe. Read the original on
+        <a href="https://example.com/pancakes" target="_blank" rel="noopener noreferrer">the original blog post (opens in a new tab)</a>,
+        or <a href="mailto:hello@example.com?subject=Pancake%20question">email Ada a question</a>.
+      </p>
+
+      <h2>Leave a review</h2>
+      <!-- No server: native validation only (final assignment Part 2) -->
+      <form action="#" method="post">
+        <fieldset>
+          <legend>Your review</legend>
+
+          <p>
+            <label for="name">Name</label><br>
+            <input id="name" name="name" type="text" autocomplete="name" required>
+          </p>
+
+          <p>
+            <label for="email">Email</label><br>
+            <input id="email" name="email" type="email" autocomplete="email" required>
+          </p>
+
+          <p>
+            <label for="rating">Rating</label><br>
+            <select id="rating" name="rating" required>
+              <option value="">Choose…</option>
+              <option value="5">Excellent</option>
+              <option value="4">Good</option>
+              <option value="3">Okay</option>
+              <option value="2">Poor</option>
+              <option value="1">Bad</option>
+            </select>
+          </p>
+
+          <p>
+            <label for="comment">Comment</label><br>
+            <textarea id="comment" name="comment" rows="4" minlength="10" required></textarea>
+          </p>
+
+          <button type="submit">Submit review</button>
+        </fieldset>
+      </form>
+    </article>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Ada&rsquo;s Kitchen.</p>
+    <noscript><p>This page works fully without JavaScript.</p></noscript>
+  </footer>
+</body>
+</html>

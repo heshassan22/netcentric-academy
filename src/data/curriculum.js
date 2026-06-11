@@ -50,19 +50,19 @@ export const TRACKS = [
     ready: true
   },
   {
-    id: 'web-performance',
-    label: 'Web Performance',
-    badge: '🚀',
-    title: 'Web Performance',
-    blurb: 'Make pages fast: the critical rendering path, resource loading, hints, images, fonts, and lazy-loading — plus a hands-on challenge.',
-    ready: true
-  },
-  {
     id: 'unit-testing',
     label: 'Unit Testing',
     badge: 'T',
     title: 'Unit Testing',
     blurb: 'Front-end unit testing with Jest: structure, matchers, mocking, async, DOM testing, and coverage.',
+    ready: true
+  },
+  {
+    id: 'web-performance',
+    label: 'Web Performance',
+    badge: '🚀',
+    title: 'Web Performance',
+    blurb: 'Make pages fast: the critical rendering path, resource loading, hints, images, fonts, and lazy-loading — plus a hands-on challenge.',
     ready: true
   },
   {
