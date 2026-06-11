@@ -37,7 +37,7 @@ function buildDoc({ html, css, js }) {
   );
 }
 
-function Editor({ initial }) {
+function Editor({ initial, hideHtml }) {
   const [html, setHtml] = useState(initial.html || '');
   const [css, setCss] = useState(initial.css || '');
   const [scss, setScss] = useState(initial.scss || '');
@@ -101,7 +101,7 @@ function Editor({ initial }) {
   return (
     <div className="playground__inner">
       <div className="playground__editors">
-        {has.html && pane('HTML', html, setHtml)}
+        {has.html && !hideHtml && pane('HTML', html, setHtml)}
         {has.css && pane('CSS', css, setCss)}
         {has.scss && pane('SCSS', scss, setScss, true)}
         {has.js && pane('JS', js, setJs, true)}
@@ -135,12 +135,12 @@ function Editor({ initial }) {
 }
 
 // Props default to `null` so a pane only appears when the author passes that language.
-export default function Playground({ html = null, css = null, scss = null, js = null, title = 'Live playground — edit me' }) {
+export default function Playground({ html = null, css = null, scss = null, js = null, hideHtml = false, title = 'Live playground — edit me' }) {
   const [mounted, setMounted] = useState(false);
   return (
     <details className="playground" onToggle={(e) => { if (e.currentTarget.open) setMounted(true); }}>
       <summary>🎨 {title}</summary>
-      {mounted && <Editor initial={{ html, css, scss, js }} />}
+      {mounted && <Editor initial={{ html, css, scss, js }} hideHtml={hideHtml} />}
     </details>
   );
 }

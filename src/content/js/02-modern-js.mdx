@@ -1,144 +1,135 @@
 export const meta = {
   order: 2,
   num: '02',
-  title: 'Modern JS (ES2020–2024)',
-  topics: 'Optional chaining · logical assignment · dynamic import · promises · arrays/objects · modules'
+  title: 'Modern JavaScript',
+  topics: 'Optional chaining · logical assignment · dynamic import · promises · arrays · modules'
 };
 
-A tour of the most useful recent additions — shown as **before → after** so the win is obvious.
+The most useful recent additions to the language — each shown **before → after** so the win is clear.
 
-## Optional chaining `?.` (2020)
+## Optional chaining `?.`
 
-Short-circuits to `undefined` instead of throwing when something in the chain is null/undefined.
+Short-circuits to `undefined` instead of throwing when part of the chain is missing.
 
 **Before**
 
 ```js
 const city = person && person.address && person.address.city;
-onChange && onChange();
 ```
 
 **After**
 
 ```js
 const city = person?.address?.city;
-onChange?.();
+onChange?.();                 // call only if it exists
 ```
 
-<Callout type="when">**When to use it** — reading data that might be missing: API responses, optional config, `el?.dataset?.id`, or calling an optional callback. It replaces long `a && a.b && a.b.c` guards.</Callout>
+<Callout type="when">Reading data that might be missing — API responses, optional config, optional callbacks.</Callout>
 
-## Logical assignment `&&=` `||=` `??=` (2021)
+## Logical assignment `||=` `??=`
 
-Combine a logical operator with assignment — "set only if…".
+Assign only when a condition holds — great for defaults and lazy init.
 
 **Before**
 
 ```js
 if (!opts.mode) opts.mode = 'auto';
-this._cache = this._cache || new Map();
+this.cache = this.cache || new Map();
 ```
 
 **After**
 
 ```js
-opts.mode ||= 'auto';
-this._cache ??= new Map();
+opts.mode ||= 'auto';         // set if falsy
+this.cache ??= new Map();     // set only if null/undefined
 ```
 
-<Callout type="when">**When to use it** — concise "set only if missing": lazy-init (`this._cache ??= new Map()`) or apply a default option (`opts.mode ||= 'auto'`).</Callout>
+<Callout type="when">Apply a default, or lazy-init a value the first time it's needed.</Callout>
 
-## Dynamic imports & top-level await (2020 / 2024)
+## Dynamic import & top-level await
+
+Load code only when it's actually needed, and `await` directly at module top level.
 
 **Before**
 
 ```js
-import Chart from './vendor/chart.js';   // always bundled, even if rarely used
-
-(async () => {                            // async work wrapped in an IIFE
-  const data = await fetchData();
-})();
+import Chart from './chart.js';   // always in the bundle
 ```
 
 **After**
 
 ```js
-const { default: Chart } = await import('./vendor/chart.js'); // loaded on demand
-const data = await fetchData();           // top-level await (in a module)
+const { default: Chart } = await import('./chart.js');   // loaded on demand
 ```
 
-<Callout type="when">**When to use it** — defer heavy or rarely-used code (a chart library, a modal) so it isn't in the initial bundle — a key performance lever (see the Performance Patterns lesson). Top-level `await` suits module-level setup like loading config.</Callout>
+<Callout type="when">Defer a heavy or rarely-used dependency out of the initial bundle — a key performance lever.</Callout>
 
-## Promise helpers (2020–2023)
+## Promise helpers
 
 **Before**
 
 ```js
-// Promise.all rejects as soon as ONE fails — you lose the other results
-const [a, b] = await Promise.all([p1, p2]);   // throws if p2 rejects
+const [a, b] = await Promise.all([p1, p2]);   // rejects if either one fails
 ```
 
 **After**
 
 ```js
-const results = await Promise.allSettled([p1, p2]); // every outcome, success or fail
-const first   = await Promise.any([p1, p2]);        // first success wins
-const { promise, resolve, reject } = Promise.withResolvers(); // resolve from outside
+await Promise.allSettled([p1, p2]);   // every result, success or failure
+await Promise.any([p1, p2]);          // first success wins
 ```
 
-<Callout type="when">**When to use it** — `allSettled` when you need **every** result even if some fail; `any` for **first success wins** (fallback endpoints); `withResolvers` when something **outside** the promise (an event, a callback) must resolve it.</Callout>
+<Callout type="when">`allSettled` when you need **every** result even if some fail; `any` for **first success wins** (e.g. fallback endpoints).</Callout>
 
-## Strings & arrays (2021–2023)
+## Arrays & strings
 
 **Before**
 
 ```js
-str.replace(/\+/g, ' ');          // a global regex just to replace all
-arr[arr.length - 1];              // the last item
-const sorted = [...arr].sort();   // copy first, or .sort() mutates the original
+arr[arr.length - 1];          // last item
+[...arr].sort();              // copy first — .sort() mutates the original
 ```
 
 **After**
 
 ```js
-str.replaceAll('+', ' ');
-arr.at(-1);
-const sorted = arr.toSorted();    // immutable — original untouched
-// also: toReversed(), with(index, value), Object.groupBy(list, item => item.type)
+arr.at(-1);                   // last item
+arr.toSorted();               // sorted copy, original untouched
+str.replaceAll('+', ' ');     // every occurrence, no global regex
 ```
 
-<Callout type="when">**When to use it** — `replaceAll` to swap every occurrence without a global regex; `.at(-1)` for the last item; the **immutable** `toSorted`/`toReversed`/`with` when you must not mutate a shared/state array; `Object.groupBy` to bucket records by a key.</Callout>
+<Callout type="when">`.at(-1)` for the last item; the immutable `toSorted` / `toReversed` / `with` when you must not mutate shared state.</Callout>
 
-## Module syntax
+## ES modules
 
 **Before (CommonJS)**
 
 ```js
-const add = (a, b) => a + b;
-module.exports = { add, name: 'John' };
 const { add } = require('./math.js');
+module.exports = { add };
 ```
 
 **After (ES modules)**
 
 ```js
-export const name = 'John';               // named
-export default function add(a, b) {}       // default
-export { name as myName } from './m.js';   // re-export + rename
 import add, { name } from './math.js';
+export const name = 'Ada';              // named export
+export default function add(a, b) {}     // default export
 ```
 
-<Callout type="when">**When to use it** — **named** exports for a collection of utilities (better refactoring/autocomplete); a **default** export for a module's single main thing (a component class); **re-exports** to build a barrel like the component `index.js`.</Callout>
+<Callout type="when">Named exports for a set of utilities; a default export for a module's one main thing; re-exports to build a barrel (`index.js`).</Callout>
 
-Try it — tweak the values and watch the console:
+Tweak the values and watch the console:
 
 <Playground
-  html={`<p>Results appear in the console below 👇</p>`}
-  js={`const user = { name: 'Ada' };           // note: no 'age' property
+  hideHtml
+  html={`<p>Open the console below 👇</p>`}
+  js={`const user = { name: 'Ada' };       // no 'age' property
 
-console.log('?.  →', user?.address?.city);  // undefined — no error
-console.log('??  →', user.age ?? 18);        // 18
-console.log('toSorted →', [3, 1, 2].toSorted());
-console.log('at(-1)   →', [10, 20, 30].at(-1));`}
+console.log(user?.address?.city);   // undefined — no error
+console.log(user.age ?? 18);        // 18
+console.log([3, 1, 2].toSorted());  // [1, 2, 3]
+console.log([10, 20, 30].at(-1));   // 30`}
 />
 
-<Callout type="do">`?.` eliminates most defensive `if (x && x.y)` checks. Reach for the immutable array methods (`toSorted`, `with`) when you must not mutate shared data.</Callout>
+<Callout type="do">`?.` removes most defensive `if (x && x.y)` checks. Reach for `toSorted` / `with` when you must not mutate shared data.</Callout>

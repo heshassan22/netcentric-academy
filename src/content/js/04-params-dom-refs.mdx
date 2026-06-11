@@ -8,6 +8,8 @@ export const meta = {
 A component usually needs two things from the page: **configuration** (parameters) and access to
 its **inner elements** (DOM references).
 
+<Callout type="note">**In the example** (`examples/js-component`): `accordion.clientlibs.js` `[04]` — `this.options` from `data-nc-params`, and queries scoped to `this.element`.</Callout>
+
 ## Passing parameters
 
 Pass data from HTML to JS with a `data-nc-params-<ComponentName>` attribute holding **valid

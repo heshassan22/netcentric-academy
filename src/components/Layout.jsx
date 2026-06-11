@@ -9,6 +9,13 @@ export default function Layout() {
   const { track } = useParams();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return localStorage.getItem('nc-sidebar-collapsed') === '1'; } catch (e) { return false; }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('nc-sidebar-collapsed', collapsed ? '1' : '0'); } catch (e) { /* ignore */ }
+  }, [collapsed]);
 
   const t = getTrack(track);
   const hasSidebar = !!(track && t && t.ready && getLessons(track).length);
@@ -26,8 +33,13 @@ export default function Layout() {
     <>
       <Header hasSidebar={hasSidebar} onToggleSidebar={() => setSidebarOpen((o) => !o)} />
       {hasSidebar ? (
-        <div className="layout">
-          <Sidebar track={track} onNavigate={() => setSidebarOpen(false)} />
+        <div className={'layout' + (collapsed ? ' is-collapsed' : '')}>
+          <Sidebar
+            track={track}
+            collapsed={collapsed}
+            onToggleCollapse={() => setCollapsed((c) => !c)}
+            onNavigate={() => setSidebarOpen(false)}
+          />
           <main className="content"><Outlet /></main>
         </div>
       ) : (

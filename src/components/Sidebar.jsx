@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { getLessons } from '../lib/lessons.js';
 import { getTrack } from '../data/curriculum.js';
 
-export default function Sidebar({ track, onNavigate }) {
+export default function Sidebar({ track, onNavigate, collapsed, onToggleCollapse }) {
   const lessons = getLessons(track);
   const t = getTrack(track);
   if (!lessons.length) return null;
@@ -10,6 +10,15 @@ export default function Sidebar({ track, onNavigate }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-inner">
+        <button
+          type="button"
+          className="sidebar-collapse"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? 'Expand lesson menu' : 'Collapse lesson menu'}
+          title={collapsed ? 'Expand' : 'Collapse'}
+        >
+          {collapsed ? '»' : '«'}
+        </button>
         <h4>{t ? t.title : track}</h4>
         <ol>
           <li>

@@ -9,6 +9,8 @@ AEM is a **WYSIWYG** CMS: authors add, edit, move, and delete components live. T
 `observe()`s the DOM and **initialises new components as they appear** — which means your JS can run
 in situations a plain website never sees.
 
+<Callout type="note">**In the example** (`examples/js-component`): `accordion.clientlibs.js` `[09]` — the idempotent `init()` guard (`dataset.ncReady`) that survives author re-render.</Callout>
+
 ## What changes in author mode
 
 - A component can be **(re)initialised at any time**, not just on page load.

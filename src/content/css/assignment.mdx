@@ -2,7 +2,7 @@ export const meta = {
   order: 99,
   num: '★',
   title: 'Assignment: Finish the UI',
-  topics: 'End of session · ~2h · lessons 05–09 (flexbox/grid, responsive, container queries, theming, modern CSS)'
+  topics: 'End of session · ~2h · lessons 05–09 (flexbox/grid, responsive media queries, theming, modern CSS)'
 };
 
 Pick up the stylesheet you started in the [mid-module checkpoint](checkpoint-assignment) and turn
@@ -23,7 +23,7 @@ Budget **~2 hours**. Try pieces in the lesson playgrounds first, then build it f
 ## Part 2 — Responsive, theming & modern CSS (Advanced, ~1h)
 
 - [ ] **Mobile-first** media queries that enhance upward, using a small set of breakpoints
-- [ ] A **container query** on a reusable card so it adapts to its container, not just the viewport
+- [ ] A **`prefers-reduced-motion`** query that disables non-essential animation, and (bonus) a `prefers-color-scheme` tweak
 - [ ] A **light/dark theme** toggled by a class (`[data-theme="dark"]`) that only overrides custom properties
 - [ ] **Transitions** on interactive elements (buttons/links) — animate `transform`/`opacity`, not layout
 - [ ] One **modern-CSS** touch: `clamp()` fluid type, and `:has()` for a stateful style (e.g. a card with an image)
@@ -37,3 +37,5 @@ Budget **~2 hours**. Try pieces in the lesson playgrounds first, then build it f
 - Replace a "JS would do this" interaction with pure `:has()`.
 
 <Callout type="do">Done when: the same markup looks polished and responsive from mobile to desktop, themes with a single class, and you didn't reach for `!important` once.</Callout>
+
+<Callout type="note">Want to apply this on a real AEM component instead of a standalone page? See the next lesson, [AEM: Style the Card Component](aem-assignment).</Callout>

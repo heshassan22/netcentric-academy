@@ -51,8 +51,8 @@ dependencies = [academy.publish.atomic.colors]
 
 - Mobile-first: base styles for small screens, layer up with `min-width` media queries using the
   **shared breakpoints** (`common/styles`).
-- For components that must adapt to *where they're placed* (sidebar vs main), reach for
-  **container queries** (CSS track) rather than viewport media queries.
+- Lean on intrinsic sizing (Flexbox/Grid wrapping, `min()`/`max()`/`clamp()`) so a component adapts
+  to the space it's given with as few media queries as possible.
 
 ## Quick checklist
 

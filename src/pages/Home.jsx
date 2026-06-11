@@ -11,7 +11,7 @@ export default function Home() {
         <p>Hands-on lessons and exercises for the Academy tech curriculum. Pick a track to get started.</p>
       </section>
       <main className="track-grid">
-        {TRACKS.map((t) => (
+        {TRACKS.filter((t) => !t.hidden).map((t) => (
           <TrackCard key={t.id} track={t} lessonsCount={getLessons(t.id).length} />
         ))}
       </main>

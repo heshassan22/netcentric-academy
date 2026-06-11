@@ -26,7 +26,19 @@ A flex container distributes space among its items along a **main axis**, with a
 
 **Terminology:** flex container · flex items · flex-direction · main axis · cross axis.
 
-Try it — change `justify-content`, `gap`, or `flex-direction` and watch the layout react:
+### Play with every flex property
+
+Toggle each property below and watch the boxes rearrange. The generated CSS updates live, so you
+can connect each value to its effect — try `flex-direction: column` with different `align-items`, or
+add `items` until `flex-wrap: wrap` kicks in.
+
+<LayoutLab mode="flex" />
+
+<Callout type="note">`align-items` aligns on the **cross axis** — so with `flex-direction: row` it moves items up/down, but with `column` it moves them left/right. Watch the boxes flip behaviour when you change direction. (`baseline` lines up the items' text baselines — that's why the boxes have different text sizes.)</Callout>
+
+### A real-world example
+
+Now the same properties on something concrete — change `justify-content`, `gap`, or `flex-direction`:
 
 <Playground
   html={`<div class="toolbar">
@@ -66,6 +78,17 @@ Grid lays out items into a 2-D grid of **tracks** (rows/columns) and **areas**.
 ```
 
 **Terminology:** grid container · grid items · grid line · grid cell · grid track · grid area.
+
+### Play with grid layout
+
+Pick a preset for `grid-template-columns` / `grid-template-rows` — or **type your own** value in the
+field — and watch the boxes flow into the tracks. `justify-items`/`align-items` position each item
+*inside* its cell; `justify-content`/`align-content` position the whole grid *within* the container;
+`grid-auto-flow` controls the direction items are placed.
+
+<LayoutLab mode="grid" />
+
+<Callout type="note">Two things worth noticing as you experiment: `repeat(auto-fit, minmax(60px, 1fr))` reflows the column count on its own (no media query — the pattern behind the card grid below). And `justify-content`/`align-content` only have a visible effect when the tracks **don't fill** the container — try fixed columns like `repeat(3, 80px)` to see them move the whole grid.</Callout>
 
 ## New units, functions & keywords
 

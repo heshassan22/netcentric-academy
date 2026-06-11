@@ -1,0 +1,141 @@
+export const meta = {
+  order: 5,
+  num: '05',
+  title: 'Responsive Design & Media Queries',
+  topics: 'Media queries · mobile-first · breakpoints · ranges · user preferences'
+};
+
+Responsive design delivers a layout that adapts to screen size, platform, and orientation. The core
+tool is the **media query** — a block of CSS that only applies when the viewport (or device) matches
+a condition.
+
+## Anatomy of a media query
+
+```css
+.grid { display: block; }
+
+@media (min-width: 768px) {
+  .grid { display: grid; grid-template-columns: 1fr 1fr; }
+}
+```
+
+A media query is a **media type** (`screen`, `print`, `all` — `screen` is implied) plus one or more
+**feature conditions** in parentheses (`min-width`, `orientation`, …). When it matches, the rules
+inside apply; otherwise they're ignored.
+
+## Mobile-first (`min-width`)
+
+Style the mobile layout first, then *add* changes upward with `min-width`:
+
+```css
+.nav { flex-direction: column; }          /* mobile default */
+
+@media (min-width: 900px) {
+  .nav { flex-direction: row; }            /* enhancement for wider screens */
+}
+```
+
+- Mobile is the most-used platform.
+- Mobile styles tend to be simpler, so they make a cleaner base.
+- You only layer on complexity where there's room for it.
+
+## `min-width` vs `max-width`
+
+- **`min-width`** → mobile-first; you *enhance upward*. This is the recommended default.
+- **`max-width`** → desktop-first; you *override downward*.
+
+```css
+/* desktop-first: base is the wide layout, then walk it back */
+.sidebar { width: 320px; }
+@media (max-width: 700px) {
+  .sidebar { width: 100%; }
+}
+```
+
+<Callout type="warn">Don't freely mix `min-` and `max-width` for the same component — overlapping ranges make it hard to reason about which rule wins. Pick one direction (usually mobile-first) and stay consistent.</Callout>
+
+## Choosing breakpoints
+
+Common starting points — but pick breakpoints where **your content** breaks, not for specific devices:
+
+| Breakpoint | Typical target |
+|---|---|
+| `≥ 480px` | large phones |
+| `≥ 768px` | tablets |
+| `≥ 1024px` | small laptops |
+| `≥ 1280px` | desktops |
+
+<Callout type="do">Before reaching for a media query, see how far the layout gets with intrinsic sizing (Flexbox/Grid, `min()`/`max()`/`clamp()`, `flex-wrap`). The best breakpoint is often *no* breakpoint.</Callout>
+
+## Combining conditions
+
+```css
+@media (min-width: 600px) and (max-width: 900px) { … }   /* both must match  */
+@media (min-width: 600px), print { … }                   /* either (OR)      */
+@media not all and (min-width: 600px) { … }              /* negate           */
+```
+
+## Modern range syntax
+
+Newer, more readable comparison syntax (widely supported):
+
+```css
+@media (width >= 768px) { … }
+@media (400px <= width <= 900px) { … }   /* an explicit range */
+```
+
+## Beyond width: other useful features
+
+```css
+@media (orientation: landscape) { … }
+@media print { nav, .ads { display: none; } }   /* print stylesheet */
+@media (min-resolution: 2dppx) { … }            /* retina / hi-dpi */
+```
+
+## Responding to user preferences
+
+These accessibility-focused media features react to OS settings — use them, they're easy wins:
+
+```css
+/* respect users who asked for less motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* honour the OS light/dark choice */
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #14141c; --fg: #e8e8f2; }
+}
+```
+
+<Callout type="note">`prefers-reduced-motion` and `prefers-color-scheme` cost almost nothing to add and make a real difference — reduced-motion prevents nausea/vestibular issues, and respecting dark mode is increasingly expected.</Callout>
+
+## Try it — cross a breakpoint live
+
+**Drag the preview's right edge** to resize the viewport and watch the grid switch from one column
+to two as it crosses `min-width: 420px` — a real media query, no JavaScript:
+
+<Playground
+  html={`<div class="grid">
+  <div class="box">1</div>
+  <div class="box">2</div>
+  <div class="box">3</div>
+  <div class="box">4</div>
+</div>`}
+  css={`.grid {
+  display: grid;
+  grid-template-columns: 1fr;     /* mobile default: one column */
+  gap: 1rem;
+}
+.box {
+  padding: 1.5rem;
+  background: #6b2fb3;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  text-align: center;
+}
+@media (min-width: 420px) {
+  .grid { grid-template-columns: 1fr 1fr; }   /* two columns when wide enough */
+}`}
+/>

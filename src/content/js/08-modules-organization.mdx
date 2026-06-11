@@ -8,6 +8,8 @@ export const meta = {
 When the same logic shows up in several components, extract it into a **module** and import it.
 Shared, tested utilities beat copy-pasted snippets.
 
+<Callout type="note">**In the example** (`examples/js-component`): `accordion.clientlibs.js` `[08]` imports `common/scripts/dom.js` (`qsa`, `emit`) instead of re-writing them.</Callout>
+
 ## A shared module
 
 Put cross-component helpers in a common folder — e.g. an IntersectionObserver wrapper used by any

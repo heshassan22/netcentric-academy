@@ -56,6 +56,12 @@ img { max-width: 100%; }
 .sidebar a:hover { background: var(--bg-soft); color: var(--text); text-decoration: none; }
 .sidebar a.is-active { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
 .sidebar a .num { flex: 0 0 auto; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent); font-size: .8rem; }
+/* collapsible sidebar */
+.sidebar-collapse { display: inline-grid; place-items: center; width: 28px; height: 28px; margin: 0 0 .75rem auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); color: var(--text-soft); cursor: pointer; font-size: .95rem; line-height: 1; }
+.sidebar-collapse:hover { color: var(--accent); border-color: var(--accent-2); }
+.layout.is-collapsed { grid-template-columns: 40px minmax(0, 1fr); gap: 1.25rem; }
+.layout.is-collapsed .sidebar h4, .layout.is-collapsed .sidebar ol { display: none; }
+.layout.is-collapsed .sidebar-collapse { margin: 0 auto; }
 
 /* Landing hero */
 .hero { text-align: center; padding: 4rem 1.25rem 2rem; background: radial-gradient(1200px 400px at 50% -10%, var(--accent-soft), transparent); }
@@ -190,6 +196,48 @@ details.playground[open] > summary { border-bottom: 1px solid var(--border); }
 .inline-demo__toggle { flex: 0 0 auto; font-size: .68rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: .08rem .45rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-soft); color: var(--text-soft); cursor: pointer; }
 .inline-demo__toggle:hover { color: var(--accent); border-color: var(--accent-2); }
 
+/* interactive page-load journey */
+.journey { margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-soft); overflow: hidden; }
+.journey__steps { display: flex; gap: .35rem; margin: 0; padding: .6rem; list-style: none; overflow-x: auto; border-bottom: 1px solid var(--border); }
+.journey__step { display: flex; align-items: center; flex: 0 0 auto; }
+.journey__step:not(:last-child)::after { content: "→"; color: var(--text-soft); margin: 0 .15rem; opacity: .6; }
+.journey__chip { display: flex; align-items: center; gap: .5rem; padding: .4rem .6rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-elev); color: var(--text); cursor: pointer; white-space: nowrap; transition: border-color .15s, background .15s; }
+.journey__chip:hover { border-color: var(--accent-2); }
+.journey__chip.is-active { border-color: var(--accent); background: var(--accent-soft); }
+.journey__num { display: grid; place-items: center; width: 1.4rem; height: 1.4rem; flex: 0 0 auto; border-radius: 999px; background: var(--border); color: var(--text); font-size: .78rem; font-weight: 800; }
+.journey__chip.is-active .journey__num { background: var(--accent); color: #fff; }
+.journey__chiptext { display: flex; flex-direction: column; line-height: 1.1; text-align: left; }
+.journey__chiplabel { font-weight: 700; font-size: .85rem; }
+.journey__chipsub { font-size: .68rem; color: var(--text-soft); }
+.journey__detail { padding: 1rem 1.1rem 1.2rem; }
+.journey__title { margin: 0 0 .5rem; display: flex; align-items: center; gap: .55rem; font-size: 1.02rem; }
+.journey__titlenum { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 999px; background: var(--accent); color: #fff; font-size: .82rem; font-weight: 800; }
+.journey__what { margin: 0 0 .8rem; color: var(--text); }
+.journey__what code, .journey__tip code { font-family: var(--mono); font-size: .85em; background: var(--bg-elev); border: 1px solid var(--border); padding: .03em .35em; border-radius: 5px; }
+.journey__tip { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: .7rem .9rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: .92rem; }
+.journey__tiplabel { font-weight: 800; color: var(--accent); margin-right: .25rem; }
+
+/* interactive task-list checkboxes (assignment steps) */
+.contains-task-list { list-style: none; padding-left: .2rem; }
+.task-list-item { padding-left: 0; }
+.task-checkbox { cursor: pointer; accent-color: var(--accent); width: 1rem; height: 1rem; margin-right: .5rem; vertical-align: -1px; }
+
+/* interactive flexbox / grid lab */
+.lab { margin: 1.5rem 0; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-soft); overflow: hidden; }
+.lab__controls { padding: .75rem .85rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: .55rem; }
+.lab__row { display: grid; grid-template-columns: 9.5rem 1fr; gap: .6rem; align-items: start; }
+.lab__prop { font-family: var(--mono); font-size: .82rem; color: var(--text-soft); padding-top: .25rem; }
+.lab__chips { display: flex; flex-wrap: wrap; gap: .3rem; }
+.lab__chip { font-family: var(--mono); font-size: .76rem; padding: .2rem .5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-elev); color: var(--text); cursor: pointer; transition: border-color .12s, background .12s; }
+.lab__chip:hover { border-color: var(--accent-2); }
+.lab__chip.is-active { border-color: var(--accent); background: var(--accent); color: #fff; }
+.lab__input { font-family: var(--mono); font-size: .76rem; padding: .2rem .5rem; border: 1px dashed var(--accent-2); border-radius: 6px; background: var(--bg); color: var(--text); min-width: 13rem; flex: 1 1 13rem; }
+.lab__input:focus { outline: none; border-style: solid; border-color: var(--accent); }
+.lab__stage { padding: 1rem; background: repeating-linear-gradient(45deg, var(--bg) 0 10px, var(--bg-soft) 10px 20px); }
+.lab__box { display: grid; place-items: center; min-width: 56px; min-height: 40px; padding: .4rem .7rem; border-radius: 8px; color: #fff; font-weight: 800; box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+.lab__code { margin: 0; padding: .8rem 1rem; background: var(--code-bg); color: var(--code-fg); font-family: var(--mono); font-size: .82rem; line-height: 1.5; overflow-x: auto; }
+@media (max-width: 560px) { .lab__row { grid-template-columns: 1fr; gap: .25rem; } }
+
 /* mermaid diagrams */
 .mermaid-diagram { margin: 1.5rem 0; padding: 1rem; text-align: center; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-soft); }
 .mermaid-diagram svg { max-width: 100%; height: auto; }
@@ -208,7 +256,12 @@ details.playground[open] > summary { border-bottom: 1px solid var(--border); }
 
 /* responsive */
 @media (max-width: 880px) {
-  .layout { grid-template-columns: 1fr; gap: 1rem; }
+  /* the top track-nav doesn't fit beside the brand + toggles on small screens;
+     it wraps and overlaps the page. Hide it — the brand logo goes to the Home
+     grid (the track switcher) and the ☰ opens the lesson menu. */
+  .nav { display: none; }
+  .layout, .layout.is-collapsed { grid-template-columns: 1fr; gap: 1rem; }
+  .sidebar-collapse { display: none; }
   .sidebar-toggle { display: grid; }
   .sidebar { position: fixed; inset: var(--header-h) 0 0 auto; width: min(80vw, 300px); background: var(--bg); border-left: 1px solid var(--border); transform: translateX(100%); transition: transform .2s ease; z-index: 40; padding: 1.25rem; overflow-y: auto; }
   body.sidebar-open .sidebar { transform: translateX(0); }

@@ -7,8 +7,10 @@ export const meta = {
 
 This is the **mid-module checkpoint** — apply lessons **01–06** by building your first loader-driven
 components and making them talk to each other. **Keep your files**: the
-[final assignment](assignment) hardens these same components for production. Prototype behaviour in
-the lesson playgrounds, then build it in `ui.frontend`.
+[final assignment](assignment) hardens these same components for production. Prototype in the lesson
+playgrounds, then build it for real.
+
+<Callout type="note">**Shortcut:** to skip project setup, check out the `assignment/starter-card` branch (the one from *AEM: Script the Card*) — it already has the component loader, a clientlib, and a page wired up. Write your component(s) under `ui.frontend/.../publish/components/` and deploy, instead of scaffolding from scratch.</Callout>
 
 <Callout type="note">Every component is a class taking `(element, options)`. Scope all queries to `this.element`, keep `init()` idempotent, and enhance markup that already works without JS.</Callout>
 

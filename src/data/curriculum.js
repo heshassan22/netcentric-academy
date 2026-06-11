@@ -30,7 +30,7 @@ export const TRACKS = [
     label: 'CSS',
     badge: 'C',
     title: 'CSS',
-    blurb: 'From the cascade and selectors to Flexbox, Grid, container queries, layers, and modern CSS.',
+    blurb: 'From the cascade and selectors to Flexbox, Grid, responsive media queries, layers, and modern CSS.',
     ready: true
   },
   {
@@ -71,7 +71,8 @@ export const TRACKS = [
     badge: '🤖',
     title: 'GitHub Copilot for AEM',
     blurb: 'Use Copilot efficiently as an AEM front-end / full-stack dev: completions, Chat, context, custom instructions, and AEM-specific workflows — with the review habits that keep it safe.',
-    ready: true
+    ready: true,
+    hidden: true // temporarily hidden from nav + home grid; route still works
   }
 ];
 

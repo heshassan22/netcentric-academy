@@ -1,0 +1,26 @@
+export const meta = {
+  order: 100,
+  num: '⬢',
+  title: 'AEM: Script the Card Component',
+  topics: 'Hands-on in AEM · card starter branch · one JS file'
+};
+
+Apply the JS module on the **same `card` component**. Deploy it and fill **one JS file** — the loader
+already instantiates your class (the markup carries `data-nc="Card"`).
+
+```bash
+# in the `code` AEM project
+git fetch && git checkout assignment/starter-card
+mvn clean install -PautoInstallSinglePackage   # deploy to author :4502
+```
+
+Open `http://localhost:4502/content/academy/en/card-assignment.html`, then write this file:
+
+```text
+ui.frontend/src/main/frontend/academy/publish/components/card/card.clientlibs.js
+```
+
+In `init()`: toggle `.card__body` (its `hidden` attribute) from the `.card__toggle` button, and keep
+`aria-expanded` in sync. Scope every query to `this.element`; keep `init()` idempotent.
+
+<Callout type="do">Did the CSS track's *AEM: Style the Card* too? Your styles are already there — now it comes alive.</Callout>

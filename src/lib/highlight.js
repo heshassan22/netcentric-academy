@@ -9,12 +9,20 @@ export function highlight(raw, lang) {
   if (lang && /^(java|xml|json|bash|sh|js|javascript|css|scss|sass)$/i.test(lang)) {
     return highlightGeneric(raw);
   }
-  // HTL / HTML
-  var re = /(<!--[\s\S]*?-->)|(\$\{[^}]*\})|(\bdata-sly-[\w.]+)|('[^']*')/g;
+  // HTL / HTML. Order matters (leftmost match wins, then alternative order):
+  //  1 comment  2 ${expr}  3 <tag/</tag  4 data-sly-*  5 attr-name=  6 "str"/'str'
+  // The double-quoted rule stops at ${ so HTL expressions inside attributes
+  // still get the expression colour rather than being swallowed as a string.
+  var re = /(<!--[\s\S]*?-->)|(\$\{[^}]*\})|(<\/?[a-zA-Z][\w-]*)|(\bdata-sly-[\w.]+)|([a-zA-Z_:][\w:.-]*(?==))|((?<!\})"(?:[^"$]|\$(?!\{))*"|'[^']*')/g;
   var out = '', last = 0, m;
   while ((m = re.exec(raw))) {
     out += escapeHtml(raw.slice(last, m.index));
-    var cls = m[1] ? 'tok-cmt' : m[2] ? 'tok-expr' : m[3] ? 'tok-attr' : 'tok-str';
+    var cls = m[1] ? 'tok-cmt'
+      : m[2] ? 'tok-expr'
+      : m[3] ? 'tok-tag'
+      : m[4] ? 'tok-attr'
+      : m[5] ? 'tok-attr'
+      : 'tok-str';
     out += '<span class="' + cls + '">' + escapeHtml(m[0]) + '</span>';
     last = re.lastIndex;
   }

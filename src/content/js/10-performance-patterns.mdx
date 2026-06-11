@@ -8,6 +8,8 @@ export const meta = {
 Component JS runs on every page that uses the component, so small inefficiencies multiply. These
 patterns keep the front end fast (and tie directly into the Web Performance track).
 
+<Callout type="note">**In the example** (`examples/js-component`): `accordion.clientlibs.js` `[10]` + `accordion.html` show `data-nc-loading="lazy"` and the `import()` pattern. Debounce/throttle and IntersectionObserver are shown as snippets below — the Accordion itself doesn't need them.</Callout>
+
 ## Lazy-initialise with IntersectionObserver
 
 Don't do expensive work for components far below the fold. Defer until they're near the viewport:

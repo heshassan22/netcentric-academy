@@ -62,7 +62,6 @@ Reserve space and keep proportions — great for images/embeds and avoiding layo
 |---|---|
 | `dvh` / `svh` / `lvh` | dynamic / small / large viewport height (mobile-toolbar safe) |
 | `vi` / `vb` | viewport inline / block size (writing-mode aware) |
-| `cqw` / `cqi` | container query width / inline size |
 | `rem` / `ch` | root font size / "0" character width |
 
 <Callout type="do">Reach for these before JavaScript: `:has()` replaces many "add a class with JS" patterns, `clamp()` replaces breakpoint-heavy type scales, and `aspect-ratio` replaces the old padding-hack.</Callout>
@@ -80,4 +79,4 @@ Tick the checkbox — the panel restyles itself with **`:has()`**, no JavaScript
 body:has(input:checked) .panel { background: #6b2fb3; color: #fff; }`}
 />
 
-<Callout type="note">Pair with the previous lessons: logical properties + container queries + `clamp()` give you components that adapt to size *and* writing direction with almost no media queries.</Callout>
+<Callout type="note">Pair with the previous lessons: logical properties + intrinsic sizing (`min()`/`max()`/`clamp()`) give you components that adapt to size *and* writing direction with very few media queries.</Callout>

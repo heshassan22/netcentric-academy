@@ -11,7 +11,7 @@ export default function Header({ hasSidebar, onToggleSidebar }) {
         <span>Netcentric Academy</span>
       </Link>
       <nav className="nav">
-        {TRACKS.map((t) => (
+        {TRACKS.filter((t) => !t.hidden).map((t) => (
           <Link
             key={t.id}
             to={'/' + t.id}

@@ -1,0 +1,25 @@
+export const meta = {
+  order: 100,
+  num: '⬢',
+  title: 'AEM: Style the Card Component',
+  topics: 'Hands-on in AEM · card starter branch · one SCSS file'
+};
+
+Apply the CSS module on a **real AEM component**. A `card` is ready on a branch — deploy it and style
+**one SCSS file**. HTL, dialog, and a page with the card placed are done for you.
+
+```bash
+# in the `code` AEM project
+git fetch && git checkout assignment/starter-card
+mvn clean install -PautoInstallSinglePackage   # deploy to author :4502
+```
+
+Open `http://localhost:4502/content/academy/en/card-assignment.html`, then style this file:
+
+```text
+ui.frontend/src/main/frontend/academy/publish/components/card/card.clientlibs.scss
+```
+
+BEM hooks (from `card.html`): `.card` · `.card__title` · `.card__body` · `.card__text` · `.card__toggle` · `.card__cta`.
+
+<Callout type="do">Reuse your [Finish the UI](assignment) work — tokens, BEM, spacing, hover/focus, one media query. Rebuild the front end to see changes. The same card is scripted in the JS track.</Callout>
