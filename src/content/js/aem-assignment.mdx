@@ -1,26 +1,31 @@
 export const meta = {
   order: 100,
   num: '⬢',
-  title: 'AEM: Script the Card Component',
-  topics: 'Hands-on in AEM · card starter branch · one JS file'
+  title: 'AEM: Extend the Accordion',
+  topics: 'Hands-on in AEM · accordion starter branch · custom events'
 };
 
-Apply the JS module on the **same `card` component**. Deploy it and fill **one JS file** — the loader
-already instantiates your class (the markup carries `data-nc="Card"`).
+Apply the JS module on a **real AEM component**. The annotated `Accordion` from lessons 03–11 is on a
+branch — deploy it, read how it works, then **extend it**.
 
 ```bash
 # in the `code` AEM project
-git fetch && git checkout assignment/starter-card
+git fetch && git checkout assignment/js-starter-accordion
 mvn clean install -PautoInstallSinglePackage   # deploy to author :4502
 ```
 
-Open `http://localhost:4502/content/academy/en/card-assignment.html`, then write this file:
+Open `http://localhost:4502/content/academy/en/accordion-example.html` and read the annotated file:
 
 ```text
-ui.frontend/src/main/frontend/academy/publish/components/card/card.clientlibs.js
+ui.frontend/src/main/frontend/academy/publish/components/accordion/accordion.clientlibs.js
 ```
 
-In `init()`: toggle `.card__body` (its `hidden` attribute) from the `.card__toggle` button, and keep
-`aria-expanded` in sync. Scope every query to `this.element`; keep `init()` idempotent.
+**Your task:** it already *dispatches* an `accordion:toggle` custom event (`[06]`) that nothing listens
+to yet. Make accordions **coordinate** — when a panel opens in one accordion, close any open panels in
+the *other* accordions on the page, by listening to that event (not by reaching across components).
 
-<Callout type="do">Did the CSS track's *AEM: Style the Card* too? Your styles are already there — now it comes alive.</Callout>
+- [ ] Put a second Accordion on the page (author it, or add a node under `…/root/responsivegrid`)
+- [ ] Listen for `accordion:toggle`; when it opens and didn't come from `this.element`, close your own panels
+- [ ] Scope all DOM work to `this.element`; keep `init()` idempotent
+
+<Callout type="do">Stretch: add keyboard support (Up/Down moves focus between headers), or make `allowMultiple` authorable via the dialog. The class is exported, so you can unit-test your logic (`[11]`).</Callout>
