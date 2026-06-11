@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { getLesson } from '../lib/lessons.js';
 import Pager from '../components/Pager.jsx';
+import SlideDeck from '../components/SlideDeck.jsx';
 
 export default function LessonPage() {
   const { track, slug } = useParams();
@@ -18,12 +19,14 @@ export default function LessonPage() {
   const Body = lesson.Component;
   return (
     <>
-      <div className="lesson-head">
-        <span className="kicker">{lesson.num ? 'Lesson ' + lesson.num : 'Hands-on'}</span>
-        <h1>{lesson.title}</h1>
-        {lesson.topics && <p className="topics-line" dangerouslySetInnerHTML={{ __html: lesson.topics }} />}
-      </div>
-      <Body />
+      <SlideDeck key={track + '/' + slug}>
+        <div className="lesson-head">
+          <span className="kicker">{lesson.num ? 'Lesson ' + lesson.num : 'Hands-on'}</span>
+          <h1>{lesson.title}</h1>
+          {lesson.topics && <p className="topics-line" dangerouslySetInnerHTML={{ __html: lesson.topics }} />}
+        </div>
+        <Body />
+      </SlideDeck>
       <Pager track={track} slug={slug} />
     </>
   );
