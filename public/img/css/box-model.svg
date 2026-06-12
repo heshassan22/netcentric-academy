@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 430" font-family="system-ui, -apple-system, sans-serif" role="img" aria-label="The CSS box model: content wrapped by padding, then border, then margin">
+  <rect x="10" y="10" width="500" height="410" fill="#f7d9b8" stroke="#d98a3a" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="24" y="36" font-size="18" font-weight="700" fill="#7a4a12">margin</text>
+  <rect x="80" y="74" width="360" height="282" fill="#f3edb0" stroke="#9a8a2a" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="94" y="100" font-size="18" font-weight="700" fill="#6f6111">border</text>
+  <rect x="140" y="134" width="240" height="162" fill="#cfe3b0" stroke="#5f8a2a" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="154" y="160" font-size="18" font-weight="700" fill="#3f5e15">padding</text>
+  <rect x="195" y="188" width="130" height="54" fill="#b9d4ef" stroke="#2f6f9a" stroke-width="2"/>
+  <text x="260" y="220" font-size="18" font-weight="700" fill="#1c3f5e" text-anchor="middle">content</text>
+</svg>

@@ -5,8 +5,9 @@
   "type": "module",
   "description": "Netcentric Academy — interactive learning site (HTL, AEM components, and more).",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "index": "node scripts/gen-search-index.mjs",
+    "dev": "npm run index && vite",
+    "build": "npm run index && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

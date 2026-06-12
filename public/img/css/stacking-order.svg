@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 630" font-family="system-ui, -apple-system, sans-serif" role="img" aria-label="CSS painting order from back to front: root, negative z-index, block-level, floats, inline, z-index 0 or auto, then positive z-index">
+  <g>
+    <g transform="translate(20,20)">
+      <rect width="320" height="150" rx="4" fill="#e3197f"/>
+      <circle cx="26" cy="28" r="13" fill="#ffffff" opacity=".85"/><text x="26" y="33" font-size="15" font-weight="700" fill="#e3197f" text-anchor="middle">1</text>
+      <text x="50" y="33" font-size="17" font-weight="700" fill="#fff">Root element</text>
+      <text x="50" y="55" font-size="14" fill="#fff" opacity=".9">(the viewport)</text>
+    </g>
+    <g transform="translate(92,92)">
+      <rect width="320" height="150" rx="4" fill="#3a3a3a"/>
+      <circle cx="26" cy="28" r="13" fill="#ffffff" opacity=".85"/><text x="26" y="33" font-size="15" font-weight="700" fill="#3a3a3a" text-anchor="middle">2</text>
+      <text x="50" y="33" font-size="17" font-weight="700" fill="#fff">Negative z-index</text>
+      <text x="50" y="55" font-size="14" fill="#fff" opacity=".9">(positioned)</text>
+    </g>
+    <g transform="translate(164,164)">
+      <rect width="320" height="150" rx="4" fill="#1aa179"/>
+      <circle cx="26" cy="28" r="13" fill="#ffffff" opacity=".85"/><text x="26" y="33" font-size="15" font-weight="700" fill="#1aa179" text-anchor="middle">3</text>
+      <text x="50" y="33" font-size="17" font-weight="700" fill="#fff">Block-level boxes</text>
+      <text x="50" y="55" font-size="14" fill="#fff" opacity=".9">(non-positioned)</text>
+    </g>
+    <g transform="translate(236,236)">
+      <rect width="320" height="150" rx="4" fill="#5b1fb0"/>
+      <circle cx="26" cy="28" r="13" fill="#ffffff" opacity=".85"/><text x="26" y="33" font-size="15" font-weight="700" fill="#5b1fb0" text-anchor="middle">4</text>
+      <text x="50" y="33" font-size="17" font-weight="700" fill="#fff">Floated boxes</text>
+      <text x="50" y="55" font-size="14" fill="#fff" opacity=".9">(non-positioned)</text>
+    </g>
+    <g transform="translate(308,308)">
+      <rect width="320" height="150" rx="4" fill="#149ccf"/>
+      <circle cx="26" cy="28" r="13" fill="#ffffff" opacity=".85"/><text x="26" y="33" font-size="15" font-weight="700" fill="#149ccf" text-anchor="middle">5</text>
+      <text x="50" y="33" font-size="17" font-weight="700" fill="#fff">Inline boxes</text>
+      <text x="50" y="55" font-size="14" fill="#fff" opacity=".9">(in-flow, non-positioned)</text>
+    </g>
+    <g transform="translate(380,380)">
+      <rect width="320" height="150" rx="4" fill="#8a1414"/>
+      <circle cx="26" cy="28" r="13" fill="#ffffff" opacity=".85"/><text x="26" y="33" font-size="15" font-weight="700" fill="#8a1414" text-anchor="middle">6</text>
+      <text x="50" y="33" font-size="17" font-weight="700" fill="#fff">z-index: 0 / auto</text>
+      <text x="50" y="55" font-size="14" fill="#fff" opacity=".9">(positioned)</text>
+    </g>
+    <g transform="translate(452,452)">
+      <rect width="320" height="150" rx="4" fill="#2e2e2e"/>
+      <circle cx="26" cy="28" r="13" fill="#ffffff" opacity=".85"/><text x="26" y="33" font-size="15" font-weight="700" fill="#2e2e2e" text-anchor="middle">7</text>
+      <text x="50" y="33" font-size="17" font-weight="700" fill="#fff">Positive z-index</text>
+      <text x="50" y="55" font-size="14" fill="#fff" opacity=".9">(positioned)</text>
+    </g>
+  </g>
+</svg>

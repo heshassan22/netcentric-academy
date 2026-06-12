@@ -16,6 +16,8 @@ From the inside out:
 - **Border** — around the padding
 - **Margin** — space *outside* the border (transparent)
 
+![The CSS box model: a content box wrapped by padding, then border, then margin](img/css/box-model.svg)
+
 ```css
 .box {
   width: 200px;     /* by default applies to the CONTENT box only */
@@ -64,12 +66,33 @@ Try it — flip `box-sizing` between `content-box` and `border-box`, or change t
 
 ## z-index & stacking contexts
 
-`z-index` controls vertical stacking of overlapping elements — but only **within the same
-stacking context**. A new stacking context is created by, e.g., a positioned element with a
-`z-index`, `opacity < 1`, `transform`, `filter`, etc.
+The whole idea in one line: **`z-index` is local.** It only ranks elements **inside the same
+stacking context** — never across different ones.
+
+A **stacking context** is a self-contained layer. A few things create one — most commonly a
+**positioned** element with a `z-index`, but also `opacity < 1`, a `transform`, a `filter`, or
+`will-change`.
+
+The catch: once an element makes a context, its children are **sealed inside it**. Their `z-index`
+only competes with each other — a child can't climb out, however big the number:
+
+![Main (z-index 2) is painted over the whole Header (z-index 1) — including its Menu (z-index 9999) — because the Menu is trapped inside Header's stacking context](img/css/stacking-context.svg)
 
 ```css
-.modal { position: fixed; z-index: 1000; }
+.header       { position: relative; z-index: 1; }   /* a stacking context  */
+.header .menu { position: absolute; z-index: 9999; } /* trapped inside it   */
+.main         { position: relative; z-index: 2; }    /* a separate context  */
 ```
 
-<Callout type="warn">"My `z-index: 9999` doesn't work!" almost always means the element is trapped in a parent stacking context. Learn stacking contexts — it saves real headaches.</Callout>
+`.main` (2) beats `.header` (1), so it paints over the whole header — and the menu's `9999` never
+gets compared against `.main` at all.
+
+<Callout type="warn">"My `z-index: 9999` doesn't work!" almost always means it's trapped in a parent stacking context. Fix the **parent's** stacking, not the child's number.</Callout>
+
+<Reveal title="For the curious: the exact paint order inside one context">
+
+Within a single stacking context, the browser paints **back → front** in a fixed order:
+
+![Painting order back to front: root, negative z-index, block-level boxes, floats, inline boxes, z-index 0 or auto, then positive z-index](img/css/stacking-order.svg)
+
+</Reveal>

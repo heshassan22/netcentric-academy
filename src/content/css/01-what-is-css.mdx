@@ -21,13 +21,31 @@ A **rule** is a *selector* plus a block of *declarations*. Each declaration is a
 
 ## Why "cascading"?
 
-When more than one rule targets the same element, the **cascade** decides which value wins —
-and it's predictable. Four things determine the outcome, in order:
+When more than one rule sets the **same property** on the **same element**, the **cascade** picks
+the winner — predictably. It checks four things, in order:
 
-1. **Source & importance** — where the rule comes from
+1. **Source & importance** — where the rule comes from (origin, and `!important`)
 2. **Specificity** — how targeted the selector is (next lesson)
-3. **Order** — later rules beat earlier ones of equal specificity
-4. **Inheritance** — some properties pass down to children when nothing else applies
+3. **Order** — among rules of equal specificity, the **later** one wins
+4. **Inheritance** — if nothing targets the element, some properties fall back to the parent's value
+
+```css
+/* Three rules set `color` on the same <p>. The cascade resolves the conflict: */
+p     { color: gray; }          /* type selector — weakest        */
+.note { color: teal; }          /* class beats a type selector    */
+#x    { color: rebeccapurple; } /* id beats a class  →  this wins  */
+```
+
+The browser walks the checks top to bottom and stops at the first one that separates the rules:
+
+```mermaid
+flowchart TD
+  S["Two rules set the same property<br/>on the same element"] --> I{"Different origin<br/>or !important?"}
+  I -->|yes| W1["Higher-priority origin wins"]
+  I -->|no| SP{"Different specificity?"}
+  SP -->|yes| W2["Higher specificity wins"]
+  SP -->|no| W3["Last rule in source order wins"]
+```
 
 <Callout type="note">"Cascading" is the priority scheme for resolving conflicts. Knowing it is the difference between fixing CSS and *cursing at* CSS.</Callout>
 
@@ -41,15 +59,6 @@ and it's predictable. Four things determine the outcome, in order:
 
 Author styles normally win over user-agent defaults — which is why a `<h1>` you style looks the
 way you wrote it, not the browser's default.
-
-```mermaid
-flowchart TD
-  S["Two rules target the same element"] --> I{"Different source / importance?"}
-  I -->|yes| W1["Higher-priority source wins"]
-  I -->|no| SP{"Different specificity?"}
-  SP -->|yes| W2["Higher specificity wins"]
-  SP -->|no| W3["Last one in source order wins"]
-```
 
 ## Inheritable properties
 

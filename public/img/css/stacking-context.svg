@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="system-ui, -apple-system, sans-serif" role="img" aria-label="Main with z-index 2 is painted over Header with z-index 1 and its Menu with z-index 9999, because Menu is trapped inside Header's stacking context">
+  <!-- Header: a stacking context (drawn first = behind) -->
+  <rect x="40" y="60" width="360" height="280" rx="6" fill="#eef0fb" stroke="#9b6dd6" stroke-width="2"/>
+  <text x="58" y="90" font-size="17" font-weight="700" fill="#3a2a5e">Header — z-index: 1</text>
+  <text x="58" y="112" font-size="13" fill="#6a5a8e">creates a stacking context</text>
+  <!-- Menu inside Header -->
+  <rect x="80" y="200" width="300" height="110" rx="6" fill="#6b2fb3"/>
+  <text x="230" y="248" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">Menu</text>
+  <text x="230" y="272" font-size="14" fill="#fff" text-anchor="middle" opacity=".9">z-index: 9999</text>
+  <!-- Main: a separate context, drawn last = on top -->
+  <rect x="300" y="40" width="380" height="320" rx="6" fill="#20202b" stroke="#3a3a48" stroke-width="2"/>
+  <text x="322" y="70" font-size="17" font-weight="700" fill="#fff">Main — z-index: 2</text>
+  <text x="322" y="92" font-size="13" fill="#fff" opacity=".8">a separate stacking context</text>
+</svg>

@@ -41,6 +41,28 @@ export default function SlideDeck({ children }) {
     return () => document.body.classList.remove('slides-active');
   }, [on]);
 
+  // full-screen the whole page (great paired with slides mode)
+  const [fs, setFs] = useState(false);
+  useEffect(() => {
+    const sync = () => setFs(!!(document.fullscreenElement || document.webkitFullscreenElement));
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
+    return () => {
+      document.removeEventListener('fullscreenchange', sync);
+      document.removeEventListener('webkitfullscreenchange', sync);
+    };
+  }, []);
+  function toggleFullscreen() {
+    const active = document.fullscreenElement || document.webkitFullscreenElement;
+    if (active) {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    } else {
+      const el = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (req) Promise.resolve(req.call(el)).catch(() => {});
+    }
+  }
+
   const next = useCallback(() => setI((n) => Math.min(n + 1, slides.length - 1)), [slides.length]);
   const prev = useCallback(() => setI((n) => Math.max(n - 1, 0)), []);
 
@@ -57,15 +79,26 @@ export default function SlideDeck({ children }) {
 
   return (
     <div className={'deck' + (on ? ' is-slides' : '')}>
-      <button
-        className="deck__toggle"
-        type="button"
-        onClick={() => setOn((v) => !v)}
-        aria-pressed={on}
-        title={on ? 'Exit slides (Esc)' : 'View as slides'}
-      >
-        {on ? '✕ Exit' : '▦ Slides'}
-      </button>
+      <div className="deck__bar">
+        <button
+          className="deck__btn"
+          type="button"
+          onClick={toggleFullscreen}
+          aria-pressed={fs}
+          title={fs ? 'Exit full screen' : 'Full screen'}
+        >
+          {fs ? '🡼 Exit full screen' : '⛶ Full screen'}
+        </button>
+        <button
+          className={'deck__btn' + (on ? ' is-active' : '')}
+          type="button"
+          onClick={() => setOn((v) => !v)}
+          aria-pressed={on}
+          title={on ? 'Exit slides (Esc)' : 'View as slides'}
+        >
+          {on ? '✕ Exit' : '▦ Slides'}
+        </button>
+      </div>
 
       <div className="deck__content" ref={ref}>{children}</div>
 

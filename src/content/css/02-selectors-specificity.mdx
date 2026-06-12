@@ -54,6 +54,8 @@ ul#nav li.active a   /* 0,1,2,2 */
 li                   /* 0,0,0,1 */
 ```
 
+<Callout type="note">Drop a selector into a [specificity calculator](https://cssbootcamp.com/css/specificity-calculator) to see its score. Aim for the **lowest** score that still targets the right element — low, flat specificity is easy to override on purpose and hard to break by accident.</Callout>
+
 <Callout type="warn">An inline `style=""` beats almost everything, and `!important` overrides the lot. Reaching for `!important` is usually a sign the specificity is wrong — fix the selector instead.</Callout>
 
 ## BEM — keeping specificity flat
@@ -68,19 +70,17 @@ classes, so specificity stays low and predictable.
 .alert__button--disabled { }  /* Modifier */
 ```
 
-Try different selectors — `:hover` an item, or change the combinator and class targets:
+Tweak the block, element, and modifier — every rule is a single, flat class:
 
 <Playground
-  html={`<ul>
-  <li>One</li>
-  <li class="lead">Two (lead)</li>
-  <li>Three</li>
-</ul>`}
-  css={`li { padding: .3rem; list-style: none; }
-li:first-child { font-weight: 700; }
-li:hover { background: #f0ebf6; }
-.lead { color: rebeccapurple; }
-li + li { border-top: 1px solid #ddd; }`}
+  html={`<div class="alert">
+  <p class="alert__title">Heads up</p>
+  <button class="alert__button alert__button--disabled">Dismiss</button>
+</div>`}
+  css={`.alert { padding: 1rem; border-radius: 8px; background: #f0ebf6; }
+.alert__title { margin: 0 0 .5rem; font-weight: 700; }
+.alert__button { padding: .4rem .9rem; border: 0; border-radius: 6px; background: rebeccapurple; color: #fff; }
+.alert__button--disabled { opacity: .5; }`}
 />
 
 <Callout type="do">Prefer one class per selector (BEM). Flat specificity means styles are easy to override intentionally and hard to break by accident — and it's enforced by this project's stylelint config.</Callout>
