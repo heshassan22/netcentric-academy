@@ -36,16 +36,6 @@ expect(user).toHaveProperty('address.city', 'Berlin');
 expect(user).toMatchObject({ name: 'Ada' });     // subset match
 ```
 
-## Truthiness & nullish
-
-```js
-expect(value).toBeTruthy();
-expect(value).toBeFalsy();
-expect(value).toBeNull();
-expect(value).toBeUndefined();
-expect(value).toBeDefined();
-```
-
 ## Exceptions
 
 ```js
@@ -55,15 +45,6 @@ expect(() => parse('')).toThrow(ValidationError);  // error type
 ```
 
 <Callout type="note">Pass a **function** to `expect` when testing throws — <code>expect(parse('')).toThrow()</code> would run `parse` *before* expect sees it, so the error escapes the test.</Callout>
-
-## Negation
-
-Any matcher can be inverted with `.not`:
-
-```js
-expect(value).not.toBe(0);
-expect(list).not.toContain('x');
-```
 
 ## DOM matchers (jest-dom)
 

@@ -32,17 +32,6 @@ const failing = jest.fn()
   .mockRejectedValue(new Error('boom'));     // rejects
 ```
 
-## Spying — `jest.spyOn`
-
-Wrap a **real** method so you can assert on it (and optionally replace it):
-
-```js
-const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-doThing();
-expect(spy).toHaveBeenCalledWith('deprecated');
-spy.mockRestore();   // put the real one back
-```
-
 ## Mocking modules — `jest.mock`
 
 Replace an entire imported module:

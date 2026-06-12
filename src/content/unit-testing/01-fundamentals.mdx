@@ -26,12 +26,6 @@ flowchart TB
   E --> I --> U
 ```
 
-| Level | Scope | Speed | How many |
-|---|---|---|---|
-| **Unit** | one function/module, isolated | very fast | many |
-| **Integration** | several units together | medium | some |
-| **End-to-end (E2E)** | the whole app in a browser | slow | few |
-
 This track is about the **base of the pyramid**: fast, focused unit tests (with a little DOM
 testing) using **Jest**.
 
@@ -54,7 +48,4 @@ test('adds two numbers', () => {
 
 ## What makes a good unit test
 
-<Callout type="do">A good test is **fast**, **isolated** (no real network/disk/other tests), **deterministic** (same result every run), and tests **behaviour/output** — not private implementation details.</Callout>
-<Callout type="dont">Don't test the framework, don't assert on internal variables that aren't part of the contract, and avoid tests that only pass "by accident" of the current implementation — they break on every refactor.</Callout>
-
-<Callout type="note">Rule of thumb: test the **inputs and outputs** (and side effects) a caller actually relies on. If a refactor that keeps behaviour identical breaks your test, the test was too tightly coupled.</Callout>
+<Callout type="do">A good test is **fast**, **isolated**, **deterministic**, and tests **behaviour/output** — not private implementation details. If a behaviour-preserving refactor breaks it, the test was too tightly coupled.</Callout>

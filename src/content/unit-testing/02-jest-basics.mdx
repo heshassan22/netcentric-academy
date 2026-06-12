@@ -58,13 +58,3 @@ afterAll(() => { /* once, after all tests */ });
 ```
 
 <Callout type="do">Put shared setup in `beforeEach` so every test is **independent** — tests must pass in any order and never rely on state left by another test.</Callout>
-
-## Skipping & focusing (temporary)
-
-```js
-test.only('just this one', () => { /* … */ });   // run only this
-test.skip('not yet', () => { /* … */ });          // skip this
-test.todo('write the empty-input case');          // a reminder
-```
-
-<Callout type="warn">Never commit `test.only` / `test.skip` — they silently hide the rest of the suite or a missing test. Many teams lint against them in CI.</Callout>

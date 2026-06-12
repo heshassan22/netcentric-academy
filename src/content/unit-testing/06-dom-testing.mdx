@@ -72,17 +72,6 @@ test('writes the param text into the element', () => {
 });
 ```
 
-## A note on Testing Library
-
-Most teams pair Jest with **[Testing Library](https://testing-library.com/)** (`@testing-library/dom`
-and its framework flavours). It encourages querying the way a user would — by **role, label, and
-text** — instead of by CSS class:
-
-```js
-import { screen } from '@testing-library/dom';
-screen.getByRole('button', { name: 'Subscribe' });
-```
-
-<Callout type="do">Test what the **user experiences** — visible text, roles, attributes, and behaviour after an interaction — not internal structure. That keeps tests stable when you refactor the markup.</Callout>
+<Callout type="do">Test what the **user experiences** — visible text, attributes, and behaviour after an interaction — not internal structure. That keeps tests stable when you refactor the markup.</Callout>
 
 <Callout type="warn">jsdom is **not a real browser**: no real layout, no painting, limited support for some APIs (e.g. `getBoundingClientRect` returns zeros). For true rendering/visual behaviour, use an E2E tool (Playwright/Cypress) — that's the top of the pyramid, not unit testing.</Callout>

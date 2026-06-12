@@ -1,0 +1,25 @@
+export const meta = {
+  order: 100,
+  num: '⬢',
+  title: 'AEM: Test the Accordion',
+  topics: 'Hands-on · Jest + jsdom pre-wired · one real component'
+};
+
+Test a real component — no project setup. Jest + jsdom are already wired up on a branch.
+
+```bash
+# in the `code` AEM project
+git fetch && git checkout assignment/unit-testing-accordion
+cd ui.frontend/src/main/frontend && npm install && npm test
+```
+
+Write your tests in this file:
+
+```text
+ui.frontend/src/main/frontend/academy/publish/components/accordion/accordion.test.js
+```
+
+Two tests already pass. Finish the three `test.todo`s: `allowMultiple` keeps others open, the
+`accordion:toggle` event fires with `{ title, open }`, and `init()` is idempotent.
+
+<Callout type="do">Test behaviour, not internals — a test that goes red on a real bug and survives a behaviour-preserving refactor.</Callout>

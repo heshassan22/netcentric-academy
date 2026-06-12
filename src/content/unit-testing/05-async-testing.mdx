@@ -17,19 +17,7 @@ test('loads the user', async () => {
 });
 ```
 
-## Returning a promise
-
-If you don't `await`, **return** the promise so Jest waits:
-
-```js
-test('resolves', () => {
-  return loadUser(1).then((user) => {
-    expect(user.name).toBe('Ada');
-  });
-});
-```
-
-<Callout type="warn">Forgetting to `await`/`return` is the #1 async-test bug: the test finishes and **passes before** the assertion runs. If a test "can't fail", check that you awaited the async call.</Callout>
+<Callout type="warn">Forgetting to `await` is the #1 async-test bug: the test finishes and **passes before** the assertion runs. If a test "can't fail", check that you awaited the async call.</Callout>
 
 ## `.resolves` / `.rejects`
 
@@ -38,14 +26,6 @@ Assert on a promise's outcome directly:
 ```js
 await expect(loadUser(1)).resolves.toMatchObject({ name: 'Ada' });
 await expect(loadUser(0)).rejects.toThrow('not found');
-```
-
-## Testing rejections
-
-```js
-test('throws on bad id', async () => {
-  await expect(loadUser(-1)).rejects.toThrow(ValidationError);
-});
 ```
 
 ## Fake timers

@@ -64,10 +64,3 @@ test('inactive users are hidden', () => {
 ```
 
 <Callout type="warn">Don't over-abstract. A test with so much shared setup that you can't tell what it does is worse than a little duplication. Optimise for **readability over DRY** in tests.</Callout>
-
-## One reason to fail
-
-Prefer a focused assertion (or a few closely-related ones) per test. If a test checks five
-unrelated things, a failure doesn't tell you which behaviour broke.
-
-<Callout type="do">A clean test reads top-to-bottom as **Arrange → Act → Assert** (lesson 01), with a name that states the expected behaviour.</Callout>

@@ -53,14 +53,7 @@ test('renders', () => { render(); });
 <Callout type="do">Prioritise: <strong>business logic</strong> (calculations, formatting, validation), <strong>edge cases</strong> (empty, null, zero, boundary, error paths), and <strong>component behaviour</strong> (what happens on a click/input). These are where bugs live and where tests pay off.</Callout>
 <Callout type="dont">Don't chase coverage on trivial code (plain getters, config objects), don't test the framework or the language, and don't assert on implementation details that change on every refactor.</Callout>
 
-## Signs of meaningful tests
-
-- They **fail** when you introduce a real bug (try it — break the code and watch a test go red).
-- Each test name states a behaviour a user or caller relies on.
-- They survive a refactor that preserves behaviour.
-- A failure points you straight at **what** broke.
-
-<Callout type="note">A quick gut-check: temporarily break a line of production code. If no test fails, that line isn't *meaningfully* covered — regardless of what the coverage report says.</Callout>
+<Callout type="note">Gut-check: temporarily break a line of production code. If no test fails, that line isn't *meaningfully* covered — regardless of what the coverage report says.</Callout>
 
 ## You've completed the track
 
