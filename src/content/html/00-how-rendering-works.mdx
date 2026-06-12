@@ -1,0 +1,54 @@
+export const meta = {
+  order: 0.5,
+  num: '00',
+  title: 'How a Web Page Renders',
+  topics: 'Request → response → HTML → DOM → CSS → CSSOM → render tree'
+};
+
+Before writing HTML, it helps to picture what the browser actually does with it — from your request
+to pixels on screen.
+
+## 1 · The request
+
+![A browser window sending a GET request to a server](img/html-render/1-request.png)
+
+Your browser sends a **GET** request to the server, asking for the page.
+
+## 2 · The response
+
+![The server returning an HTML document back to the browser](img/html-render/2-response.png)
+
+The server responds with the **HTML document** — just text.
+
+## 3 · The HTML
+
+![An HTML document with head, title, a linked stylesheet, and a body with a heading and list](img/html-render/3-html.png)
+
+That HTML describes the page's **structure and content**: a heading, a list, and a link to the CSS.
+
+## 4 · The DOM
+
+![The HTML parsed into a DOM tree of html, head, body, and child nodes](img/html-render/4-dom.png)
+
+The browser parses the HTML into the **DOM** — a tree of nodes that it (and your JavaScript) work with.
+
+## 5 · The CSS
+
+![A CSS file setting background, font-size, and colors](img/html-render/5-css.png)
+
+It also fetches the **CSS** the HTML referenced.
+
+## 6 · The CSSOM
+
+![The CSS parsed into a CSSOM tree of style rules attached to elements](img/html-render/6-cssom.png)
+
+CSS is parsed into the **CSSOM** — a matching tree of style rules.
+
+## 7 · The render tree
+
+![The DOM and CSSOM combined into a render tree of visible, styled nodes](img/html-render/7-render-tree.png)
+
+The **DOM + CSSOM** combine into the **render tree** — only what's visible — which the browser then
+lays out and paints to the screen.
+
+<Callout type="note">HTML is step one of all of this. The rest of the track is about writing that HTML well — structured, semantic, and accessible.</Callout>

@@ -26,7 +26,7 @@ body { margin: 0; font-family: var(--sans); background: var(--bg); color: var(--
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 h1,h2,h3,h4 { line-height: 1.25; }
-img { max-width: 100%; }
+img { max-width: 100%; height: auto; }
 
 /* Header */
 .site-header { position: sticky; top: 0; z-index: 50; height: var(--header-h); display: flex; align-items: center; gap: 1rem; padding: 0 1.25rem; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(160%) blur(10px); border-bottom: 1px solid var(--border); }
