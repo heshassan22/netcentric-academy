@@ -38,7 +38,22 @@ Pull the category in with the Granite `clientlib` template:
   if you need only one.
 - The `categories` string must match the generated category exactly.
 
-<Callout type="note">Author-only styling? Guard it with `<sly data-sly-test="${wcmmode.edit}">` around an author clientlib call, like the project's `title` component does.</Callout>
+## Author mode & the decoration tag
+
+A component is **edited in author mode** and **viewed in publish** — the DOM and the needs differ.
+
+- **The decoration tag** — AEM usually wraps your component in a `<div>` (the *decoration tag*) carrying its CSS class and edit hooks, so your markup isn't always the outermost element. Style your **own** root class (`.hello`), not "the wrapper". Control it per component in `.content.xml` with `cq:noDecoration="{Boolean}true"` (no wrapper) or `cq:htmlTag`. The **Style System** adds the author-selected class to this tag automatically (see *Policies*).
+- **Author-only styling** — load edit affordances (outlines, "empty" hints) behind a `wcmmode` guard so they never ship to publish:
+
+```html
+<sly data-sly-test="${wcmmode.edit}"
+     data-sly-use.clientlib="${'/libs/granite/sightly/templates/clientlib.html'}"
+     data-sly-call="${clientlib.all @ categories='academy.author.components.hello'}"/>
+```
+
+The matching SCSS lives under `academy/author/…`, so the build emits an `academy.author.*` category loaded only in edit mode.
+
+<Callout type="warn">In author mode your component sits inside editor chrome (overlays, the decoration wrapper). Don't assume it's the outermost element or rely on `:first-child`/`:last-child` against the page.</Callout>
 
 ## Adding JavaScript — the component loader
 

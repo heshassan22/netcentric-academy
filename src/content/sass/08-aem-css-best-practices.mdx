@@ -1,6 +1,6 @@
 export const meta = {
-  order: 9,
-  num: '09',
+  order: 8,
+  num: '08',
   title: 'CSS Best Practices for AEM',
   topics: 'Scope to the component · low specificity · clientlib deps/embed · performance · do/don\'t'
 };
@@ -23,7 +23,6 @@ component's CSS from breaking another's — and keep pages fast.
 
 - **`dependencies`** — categories that must load **before** this one (e.g. a base/atomic lib).
 - **`embed`** — inline another category's output **into** this one (fewer requests; use deliberately).
-- **`allowProxy`** — serve under `/etc.clientlibs` so `/apps` stays private.
 
 ```text
 # a component clientlib that needs the atomic colors first

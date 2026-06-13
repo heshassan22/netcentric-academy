@@ -8,7 +8,7 @@ export const meta = {
 You've written a component class and registered it. This lesson is how that JS actually gets
 **built, bundled, and booted** on a page in this project.
 
-<Callout type="note">**In the example** (`assignment/js-starter-accordion`): `accordion.clientlibs.js` `[07]` + `accordion.html` — the clientlib category that loads the CSS/JS, booted by the global `run()`/`observe()`.</Callout>
+<Callout type="note">**In the example** (`assignment/js-starter-accordion`): `accordion.clientlibs.js` `[07]` + `accordion.html` — the clientlib category that loads the component's CSS/JS.</Callout>
 
 ## The end-to-end flow
 
@@ -17,8 +17,7 @@ flowchart LR
   J["my-component.clientlibs.js<br/>register MyComponent"] --> I["components/index.js<br/>exports it"]
   I --> B["nc-fe-build / webpack<br/>bundle + minify"]
   B --> C["clientlib<br/>academy.publish"]
-  C --> L["component-loader<br/>run() + observe()"]
-  L --> N["new MyComponent(element, options)"]
+  C --> H["loaded from HTL on the page"]
 ```
 
 ## Where component JS lives
@@ -56,19 +55,6 @@ export default MyComponent;
 ```js
 // publish/components/index.js — make the build aware of it
 export * from 'academy-base-project/publish/components/my-component/my-component';
-```
-
-## The loader runtime
-
-A single entry boots the loader once per page — it runs on existing DOM and **observes** for nodes
-added later (essential for author mode):
-
-```js
-// publish.clientlibs.js
-import { observe as loaderObserve, run as loaderRun } from '@netcentric/component-loader';
-
-loaderRun();      // initialise components already in the DOM
-loaderObserve();  // initialise any added afterwards
 ```
 
 ## The build

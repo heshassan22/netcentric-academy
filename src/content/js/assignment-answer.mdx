@@ -1,0 +1,53 @@
+export const meta = {
+  order: 101,
+  num: '✓',
+  title: 'Assignment — Answer',
+  topics: 'Model solution for the Dropdown · compare with your own'
+};
+
+<Callout type="note">One correct solution — attempt the [assignment](assignment) first. The habits that matter: scope to `this.element`, idempotent `init()`, and communicate via a custom event.</Callout>
+
+```js
+// publish/components/dropdown/dropdown.clientlibs.js
+import { register } from '@netcentric/component-loader';
+
+class Dropdown {
+  constructor(element, options) {                 // [03] the loader calls this
+    this.element = element;
+    this.open = Boolean(options && options.open);  // [04] read a param
+    this.init();
+  }
+
+  init() {
+    if (this.element.dataset.ncReady) return;       // [08] idempotent — safe to run twice
+    this.element.dataset.ncReady = 'true';
+
+    // [04] DOM refs scoped to this.element
+    this.toggle = this.element.querySelector('.dropdown__toggle');
+    this.menu = this.element.querySelector('.dropdown__menu');
+    this.setOpen(this.open);
+
+    // [05] events
+    this.toggle.addEventListener('click', () => this.setOpen(!this.open));
+    document.addEventListener('click', (event) => {
+      if (!this.element.contains(event.target)) this.setOpen(false);  // close on outside click
+    });
+  }
+
+  setOpen(open) {
+    this.open = open;
+    this.menu.hidden = !open;
+    this.toggle.setAttribute('aria-expanded', String(open));
+    // [06] announce the change — anyone can listen, no direct references
+    this.element.dispatchEvent(new CustomEvent('dropdown:toggle', {
+      bubbles: true,
+      detail: { open }
+    }));
+  }
+}
+
+register({ Dropdown });   // [07] shipped via the publish bundle
+export default Dropdown;  // exported so it can be unit-tested
+```
+
+<Callout type="do">Two Dropdowns coexist (scoped refs), it survives a double `init()`, and it announces every change via `dropdown:toggle` — without knowing who's listening.</Callout>

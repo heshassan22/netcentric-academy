@@ -1,6 +1,6 @@
 export const meta = {
-  order: 10,
-  num: '10',
+  order: 9,
+  num: '09',
   title: 'Performance Patterns',
   topics: 'Lazy init with IntersectionObserver · debounce/throttle · dynamic import · efficient DOM'
 };
@@ -15,10 +15,13 @@ patterns keep the front end fast (and tie directly into the Web Performance trac
 Don't do expensive work for components far below the fold. Defer until they're near the viewport:
 
 ```js
-import observe from '../../modules/intersection-observer.js';
-
 init() {
-  observe(this.element, () => this.start(), true);  // run once when visible
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) { this.start(); io.disconnect(); }  // run once when visible
+    });
+  });
+  io.observe(this.element);
 }
 start() {
   // heavy work: build a carousel, fetch data, init a map…

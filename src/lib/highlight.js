@@ -6,7 +6,10 @@ function escapeHtml(s) {
 }
 
 export function highlight(raw, lang) {
-  if (lang && /^(java|xml|json|bash|sh|js|javascript|css|scss|sass)$/i.test(lang)) {
+  if (lang && /^(css|scss|sass|less)$/i.test(lang)) {
+    return highlightCss(raw);
+  }
+  if (lang && /^(java|xml|json|bash|sh|js|javascript)$/i.test(lang)) {
     return highlightGeneric(raw);
   }
   // HTL / HTML. Order matters (leftmost match wins, then alternative order):
@@ -22,6 +25,26 @@ export function highlight(raw, lang) {
       : m[3] ? 'tok-tag'
       : m[4] ? 'tok-attr'
       : m[5] ? 'tok-attr'
+      : 'tok-str';
+    out += '<span class="' + cls + '">' + escapeHtml(m[0]) + '</span>';
+    last = re.lastIndex;
+  }
+  out += escapeHtml(raw.slice(last));
+  return out;
+}
+
+function highlightCss(raw) {
+  // 1 comment  2 #{interpolation}  3 string  4 $var  5 @rule  6 hex colour
+  // (#{…} and #hex must be matched BEFORE any "#" could read as a comment)
+  var re = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|(#\{[^}]*\})|("[^"]*"|'[^']*')|(\$[\w-]+)|(@[\w-]+)|(#[0-9a-fA-F]{3,8}\b)/g;
+  var out = '', last = 0, m;
+  while ((m = re.exec(raw))) {
+    out += escapeHtml(raw.slice(last, m.index));
+    var cls = m[1] ? 'tok-cmt'
+      : m[2] ? 'tok-expr'
+      : m[3] ? 'tok-str'
+      : m[4] ? 'tok-attr'
+      : m[5] ? 'tok-kw'
       : 'tok-str';
     out += '<span class="' + cls + '">' + escapeHtml(m[0]) + '</span>';
     last = re.lastIndex;

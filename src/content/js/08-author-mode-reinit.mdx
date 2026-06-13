@@ -1,0 +1,56 @@
+export const meta = {
+  order: 8,
+  num: '08',
+  title: 'Author Mode & Re-initialization',
+  topics: 'WYSIWYG author mode · run() vs observe() · idempotent init · re-render gotchas'
+};
+
+AEM is a **WYSIWYG** CMS: authors add, edit, move, and delete components **live** on the page — so
+your component's JS runs in situations a plain website never sees. The component loader is built for
+exactly this, through two calls.
+
+## `run()` vs `observe()`
+
+The loader boots **once per page** from the publish entry:
+
+```js
+// publish.clientlibs.js
+import { run, observe } from '@netcentric/component-loader';
+
+run();      // initialise every component already in the DOM (on page load)
+observe();  // keep watching the DOM and initialise components added/re-rendered later
+```
+
+- **`run()`** scans the current DOM **once** and instantiates each `data-nc` component it finds.
+- **`observe()`** keeps watching (via a `MutationObserver`). When AEM **re-renders** a component
+  after an author edits its dialog — or an author **drops a new one** — `observe()` instantiates it
+  with no page reload.
+
+<Callout type="note">On a published page `run()` alone would do. **`observe()` is what makes author mode work**, because the DOM keeps changing as the author edits.</Callout>
+
+## Make `init()` idempotent
+
+Because a component can be initialised **more than once** (a re-render, a re-insert), binding a
+listener in `init()` without a guard **stacks duplicates** — one click then fires twice, three
+times… Guard it so the second init bails out:
+
+```js
+init() {
+  if (this.element.dataset.ncReady) return;   // already initialised — stop
+  this.element.dataset.ncReady = 'true';
+
+  // safe to query and bind listeners now
+}
+```
+
+<Callout type="warn">No guard = the classic author-mode bug: every re-init adds another listener, so the handler runs multiple times per click. Idempotent `init()` is the fix.</Callout>
+
+## Run only on the published page
+
+Some behaviour shouldn't run in the editor (autoplay, tracking, animations). Skip it in author mode:
+
+```js
+if (wcmmode === 'edit') return;
+```
+
+<Callout type="note">**In the example** (`assignment/js-starter-accordion`): `accordion.clientlibs.js` `[09]` — the idempotent `init()` guard that survives author re-render.</Callout>

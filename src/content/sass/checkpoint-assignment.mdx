@@ -31,21 +31,18 @@ playgrounds, then build it in your editor.
 <Reveal title="Starter snippets">
 
 ```scss
-// variables
+// 1. define a couple of tokens
 $brand: #6b2fb3;
-$spacing: (sm: .5rem, md: 1rem, lg: 2rem);
+// $spacing: ( … );          // a map of sizes
 
-// a mixin
-@use "sass:map";
+// 2. write the mixin (fill in the body from the args)
 @mixin button($bg, $fg: #fff) {
-  padding: map.get($spacing, sm) map.get($spacing, md);
-  border: 0; border-radius: 6px;
-  background: $bg; color: $fg; cursor: pointer;
+  // TODO: padding, border, radius, background/colour from $bg/$fg
 }
 
-// usage
-.btn { @include button($brand); }
-.btn--ghost { @include button(transparent, $brand); border: 1px solid $brand; }
+// 3. use it for two variants
+.btn        { @include button($brand); }
+.btn--ghost { @include button(transparent, $brand); }
 ```
 
 </Reveal>

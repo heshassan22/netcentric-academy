@@ -1,0 +1,77 @@
+export const meta = {
+  order: 101,
+  num: '✓',
+  title: 'Assignment — Answer',
+  topics: 'Model solution for “Architect & Apply SCSS” · compare with your own'
+};
+
+<Callout type="note">One correct solution — attempt the [assignment](assignment) first. The goal is one source of truth: tokens in a map, an `_index.scss` that `@forward`s the shared layer, and components that `@use` it rather than redefine it.</Callout>
+
+## File structure
+
+```text
+common/styles/
+├── _tokens.scss     ← variables + maps
+├── _mixins.scss     ← button(), bp() …
+└── index.scss       ← @forward barrel (the entry point)
+publish/components/card/
+└── card.clientlibs.scss
+```
+
+## The shared layer
+
+```scss
+// _tokens.scss
+$brand: #6b2fb3;
+$spacing: (sm: .5rem, md: 1rem, lg: 2rem);
+$breakpoints: (md: 48rem, lg: 64rem);
+```
+
+```scss
+// _mixins.scss
+@use "sass:map";
+@use "tokens" as *;
+
+@mixin bp($name) {
+  @media (min-width: map.get($breakpoints, $name)) { @content; }
+}
+
+@mixin button($bg, $fg: #fff) {
+  padding: map.get($spacing, sm) map.get($spacing, md);
+  border: 0; border-radius: 6px;
+  background: $bg; color: $fg; cursor: pointer;
+}
+```
+
+```scss
+// index.scss — the entry point: @forward passes the partials along
+@forward "tokens";
+@forward "mixins";
+```
+
+## Generate utilities with `@each`
+
+```scss
+@use "tokens" as *;
+@each $name, $val in $spacing {
+  .p-#{$name} { padding: $val; }     // .p-sm / .p-md / .p-lg
+}
+```
+
+## Apply it on a component (flat BEM, author-guarded)
+
+```scss
+// card.clientlibs.scss
+@use "../../../common/styles" as *;   // the _index entry point — tokens + mixins in one
+
+.card {
+  padding: 1rem;
+  @include bp(md) { display: grid; grid-template-columns: 120px 1fr; }
+}
+.card__cta { @include button($brand); }
+
+// edit-only styling, behind author mode
+.cq-Editable-dom .card { outline: 1px dashed $brand; }
+```
+
+<Callout type="do">Change a token or a mixin once and every consumer updates; the compiled CSS stays flat single-class BEM, and author-only rules never reach publish.</Callout>

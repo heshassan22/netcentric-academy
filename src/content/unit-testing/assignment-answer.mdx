@@ -1,0 +1,62 @@
+export const meta = {
+  order: 101,
+  num: '✓',
+  title: 'Assignment — Answer',
+  topics: 'Model solution for “DOM Tests & Coverage” · compare with your own'
+};
+
+<Callout type="note">One correct solution — attempt the [assignment](assignment) first. Good tests assert on what the user sees, run in jsdom, and stay meaningful (red on a real bug, green after a behaviour-preserving refactor).</Callout>
+
+## Part 1 — A DOM + custom-event test
+
+```js
+import '@testing-library/jest-dom';
+// mock the loader so importing the component is side-effect free
+jest.mock('@netcentric/component-loader', () => ({ register: jest.fn() }));
+import Counter from './counter.js';
+
+function mount() {
+  document.body.innerHTML = `
+    <div class="counter">
+      <button class="counter__btn">+</button>
+      <span class="counter__value">0</span>
+    </div>`;
+  const el = document.querySelector('.counter');
+  new Counter(el, { step: 1 });
+  return el;
+}
+
+describe('Counter', () => {
+  it('increments the display on click', () => {
+    const el = mount();
+    el.querySelector('.counter__btn').click();
+    expect(el.querySelector('.counter__value')).toHaveTextContent('1');
+  });
+
+  it('reacts to a "counter:reset" custom event', () => {
+    const el = mount();
+    el.querySelector('.counter__btn').click();
+    window.dispatchEvent(new CustomEvent('counter:reset'));
+    expect(el.querySelector('.counter__value')).toHaveTextContent('0');
+  });
+});
+```
+
+## Part 2 — Organization & coverage
+
+```js
+// jest.config.js
+module.exports = {
+  testEnvironment: 'jsdom',
+  collectCoverage: true,
+  coverageThreshold: {
+    global: { branches: 80, functions: 80, lines: 80, statements: 80 }
+  }
+};
+```
+
+```bash
+npx jest --coverage      # fails the run if branches/lines drop below 80%
+```
+
+<Callout type="do">Co-locate `*.test.js` next to the source, name tests as behaviour sentences, and gut-check coverage by breaking a line of production code — if no test goes red, that line isn't *meaningfully* covered.</Callout>

@@ -2,7 +2,7 @@ export const meta = {
   order: 4,
   num: '04',
   title: 'Functions & Mixins',
-  topics: '<code>@mixin</code>/<code>@include</code> · <code>@function</code> · <code>@extend</code> · control flow · mixins vs functions'
+  topics: '<code>@mixin</code>/<code>@include</code> · <code>@function</code> · control flow · mixins vs functions'
 };
 
 The `@`-rules are where Sass gets its reuse and logic powers.
@@ -36,17 +36,6 @@ defaults.
 ```
 
 A function returns a **value**; it never emits CSS itself.
-
-## `@extend` — share a selector's declarations
-
-```scss
-%card-base { border: 1px solid #ddd; border-radius: 8px; }
-
-.card  { @extend %card-base; }
-.panel { @extend %card-base; }
-```
-
-<Callout type="warn">`@extend` groups selectors in the output, which can produce surprising, far-reaching selector lists. When in doubt, prefer a `@mixin` — it's more predictable.</Callout>
 
 ## Control flow
 

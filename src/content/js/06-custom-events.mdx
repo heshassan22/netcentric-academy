@@ -98,29 +98,4 @@ document.querySelectorAll('.bulb').forEach((bulb) => {
 });`}
 />
 
-## Reusing logic — modules
-
-When a piece of code is useful in several components, extract it into a **module** and import it.
-
-```js
-// modules/intersection-observer.js
-export default function observe(target, callback, once = false) {
-  const io = new IntersectionObserver((entries, obs) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        callback(entry);
-        if (once) obs.unobserve(target);
-      }
-    });
-  });
-  io.observe(target);
-}
-```
-
-```js
-// in a component
-import observe from '../modules/intersection-observer.js';
-observe(this.element, () => this.displayImg(), true);
-```
-
-<Callout type="note">Custom events (loose coupling between components) plus shared modules (reused logic) are the two patterns that keep a component-based front end maintainable as it grows.</Callout>
+<Callout type="note">Custom events keep components **loosely coupled** — a component announces *what happened* and never needs to know who's listening.</Callout>

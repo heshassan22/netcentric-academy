@@ -1,0 +1,50 @@
+export const meta = {
+  order: 101,
+  num: '✓',
+  title: 'Assignment — Answer',
+  topics: 'Model solution for “Finish the UI” · compare with your own'
+};
+
+<Callout type="note">One correct solution — attempt the [assignment](assignment) first. Yours may differ and still be right; what matters is flat specificity, tokens, and no media query where intrinsic sizing does the job.</Callout>
+
+## Tokens & reset (from the checkpoint)
+
+```css
+:root { --brand: #6b2fb3; --fg: #1c1c28; --bg: #fff; --space: 1rem; }
+[data-theme="dark"] { --fg: #e8e8f2; --bg: #14141c; }   /* theme = override tokens only */
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; color: var(--fg); background: var(--bg); font: 16px/1.6 system-ui, sans-serif; }
+```
+
+## Part 1 — Layout
+
+```css
+/* Flexbox header: logo left, nav right via an auto margin (no spacer element needed) */
+.site { display: flex; align-items: center; gap: 1rem; padding: var(--space); }
+.site__nav { margin-left: auto; display: flex; gap: 1rem; }
+
+/* Grid main + sidebar; gallery reflows with no media query */
+.layout { display: grid; grid-template-columns: 1fr 16rem; gap: 1.5rem; padding: var(--space); }
+.gallery { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.card { border: 1px solid #e3e3ec; border-radius: 10px; padding: 1rem; }
+.card__media { aspect-ratio: 16 / 9; background: var(--brand); border-radius: 8px; }  /* no CLS */
+```
+
+## Part 2 — Responsive, theming & modern CSS
+
+```css
+@media (max-width: 700px) { .layout { grid-template-columns: 1fr; } }   /* mobile-first-ish */
+
+h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); }            /* fluid type, no breakpoints */
+
+.card { transition: transform .15s ease; }               /* animate transform, not layout */
+.card:hover { transform: translateY(-2px); }
+.card:has(.card__media) { box-shadow: 0 2px 10px rgba(0,0,0,.08); }   /* :has() stateful style */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+```
+
+<Callout type="do">Dark mode is a single class flip (`[data-theme="dark"]`) that only re-points custom properties; the gallery never needs a media query because `auto-fit` + `minmax()` already reflow it.</Callout>

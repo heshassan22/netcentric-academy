@@ -67,4 +67,14 @@ build:
 
 <Callout type="warn">A class that doesn't match the BEM pattern fails lint. Stick to `block__element--modifier`, all lowercase, kebab-case — no camelCase, no IDs for styling.</Callout>
 
-<Callout type="note">BEM pairs with the **Style System** (Components track): a `cq:styleGroups` entry simply toggles a BEM **modifier** class (e.g. `teaser--featured`) that your SCSS already defines — author-driven variants, no new code.</Callout>
+## It powers the Style System
+
+AEM's **Style System** lets authors pick visual variants from the component toolbar — and under the
+hood, those variants are just **BEM modifier classes**. The flow:
+
+1. You define the modifier in SCSS **once** — `.teaser--featured { … }`.
+2. The template policy gets a `cq:styleGroups` entry for that variant: a label (*"Featured"*) mapped to the class `teaser--featured`.
+3. In the page, the author picks **Featured** from the component's toolbar.
+4. AEM adds `teaser--featured` to the component's element — and the SCSS you already wrote styles it.
+
+<Callout type="do">A new author-selectable variant is usually **no new code**: one more BEM modifier in your SCSS, plus one entry in the policy. (Policies & the Style System are covered in the Components track.)</Callout>

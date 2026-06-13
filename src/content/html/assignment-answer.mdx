@@ -1,0 +1,60 @@
+export const meta = {
+  order: 101,
+  num: '✓',
+  title: 'Assignment — Answer',
+  topics: 'Model solution for “Finish the Page” · compare with your own'
+};
+
+<Callout type="note">One correct solution — attempt the [assignment](assignment) first. A full, self-contained recipe page is available too: <a href="html/assignment-answer.html" target="_blank" rel="noopener">open the complete page ↗</a> (opens standalone, works offline).</Callout>
+
+## Part 1 — Responsive media
+
+```html
+<figure>
+  <picture>
+    <source type="image/avif" srcset="pancakes-800.avif 800w, pancakes-1600.avif 1600w" sizes="(max-width: 800px) 100vw, 800px">
+    <source type="image/webp" srcset="pancakes-800.webp 800w, pancakes-1600.webp 1600w" sizes="(max-width: 800px) 100vw, 800px">
+    <img src="pancakes-800.jpg" srcset="pancakes-800.jpg 800w, pancakes-1600.jpg 1600w"
+         sizes="(max-width: 800px) 100vw, 800px"
+         alt="A short stack of golden pancakes." width="800" height="450" loading="eager">
+  </picture>
+  <figcaption>Best straight off the pan.</figcaption>
+</figure>
+```
+
+## Part 2 — The review form (native validation)
+
+```html
+<form action="#" method="post">
+  <fieldset>
+    <legend>Your review</legend>
+    <p><label for="name">Name</label><br><input id="name" name="name" required></p>
+    <p><label for="email">Email</label><br><input id="email" name="email" type="email" required></p>
+    <p><label for="rating">Rating</label><br>
+      <select id="rating" name="rating" required>
+        <option value="">Choose…</option><option>Excellent</option><option>Good</option>
+      </select>
+    </p>
+    <p><label for="comment">Comment</label><br><textarea id="comment" name="comment" minlength="10" required></textarea></p>
+    <button type="submit">Submit</button>
+  </fieldset>
+</form>
+```
+
+## Part 3 — Metadata & structured data
+
+```html
+<meta name="description" content="Fluffy pancakes in 20 minutes.">
+<link rel="canonical" href="https://example.com/recipes/pancakes">
+<meta property="og:title" content="Best Fluffy Pancakes">
+<meta property="og:image" content="https://example.com/pancakes.jpg">
+
+<script type="application/ld+json">
+{ "@context": "https://schema.org", "@type": "Recipe",
+  "name": "Best Fluffy Pancakes", "author": { "@type": "Person", "name": "Ada" },
+  "recipeIngredient": ["200 g flour", "300 ml milk", "1 egg"],
+  "recipeInstructions": [{ "@type": "HowToStep", "text": "Whisk, combine, cook." }] }
+</script>
+```
+
+<Callout type="do">Done when it validates clean (W3C), every control has a label and validates natively, and the page reads correctly with CSS disabled.</Callout>

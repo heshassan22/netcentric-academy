@@ -19,7 +19,7 @@ ui.frontend/src/main/frontend/academy/common/styles/
 │   ├── fonts.scss
 │   ├── grid.scss
 │   └── z_index.scss
-└── variables.scss        ← aggregates them with @use/@forward
+└── variables.scss        ← an entry point that @forwards the partials
 ```
 
 The build's SASS `includePaths` point at `common/styles`, so any component can `@use` these without
@@ -39,8 +39,10 @@ long relative paths:
 
 - **`@use "file"`** imports a module **once**, namespaced (`bp.$tablet`) — no global leakage, no
   duplicate output. `@use "file" as *` drops the namespace.
-- **`@forward "file"`** re-exports a module so an aggregator (`variables.scss`) can expose everything
-  through one entry point.
+- **`@forward "file"`** re-exports a module so an **entry point** (like `_index.scss`) can pass it
+  along to whatever imports that entry point.
+
+<Callout type="note">Rule of thumb: **`@use`** a file when you need its variables/mixins **in the current file**. **`@forward`** a file only when you're building an entry point (like `_index.scss`) and want to **pass it along** to other files — without using it there yourself.</Callout>
 
 <Callout type="warn">`@import` is **deprecated** in Sass — it re-includes files (duplication) and dumps everything into the global scope. Use `@use`/`@forward` in new code.</Callout>
 
@@ -73,5 +75,21 @@ theme set by a class the author picks (think AEM **Style System**, see the Compo
 ```scss
 .theme--dark { --brand: #b794ec; --bg: #14141c; }
 ```
+
+Toggle the theme and watch every value follow — **Open in CodePen** gives you a runnable copy:
+
+<Playground
+  html={`<label class="switch"><input type="checkbox"> Dark theme</label>
+<div class="card">
+  <h3 class="card__title">Themed card</h3>
+  <p>Colours come from custom properties — flip them in one place.</p>
+</div>`}
+  css={`:root { --bg: #fff; --fg: #1c1c28; --brand: #6b2fb3; }
+body:has(.switch input:checked) { --bg: #14141c; --fg: #e8e8f2; --brand: #b794ec; }
+
+body { background: var(--bg); color: var(--fg); transition: background .2s, color .2s; padding: 1rem; }
+.card { margin-top: 1rem; padding: 1rem; border: 1px solid var(--brand); border-radius: 8px; }
+.card__title { color: var(--brand); margin: 0 0 .5rem; }`}
+/>
 
 <Callout type="do">Components should consume **shared tokens**, never hard-coded hex/px. Change a value once in `common/styles` (or a custom property) and the whole site follows.</Callout>

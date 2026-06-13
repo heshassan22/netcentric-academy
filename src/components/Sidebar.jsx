@@ -26,7 +26,7 @@ export default function Sidebar({ track, onNavigate, collapsed, onToggleCollapse
               <span className="num">·</span><span>Overview</span>
             </NavLink>
           </li>
-          {lessons.map((l) => (
+          {lessons.filter((l) => !l.slug.endsWith('assignment-answer')).map((l) => (
             <li key={l.slug}>
               <NavLink to={'/' + track + '/' + l.slug} className={cls} onClick={onNavigate}>
                 <span className="num">{l.num || '·'}</span><span>{l.title}</span>

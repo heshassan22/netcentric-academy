@@ -20,7 +20,7 @@ project's `ui.frontend` SCSS.
 - [ ] Generate a spacing/utility set with **`@each`**
 - [ ] A **`@mixin`** breakpoint helper driven by your breakpoints map
 
-**Acceptance:** one entry point forwards the shared layer; components `@use` tokens instead of redefining them; no `@import`; changing a token ripples everywhere.
+**Acceptance:** one entry point (`_index.scss`) `@forward`s the shared layer; components `@use` tokens instead of redefining them; no `@import`; changing a token ripples everywhere.
 
 ## Part 2 — Apply it to an AEM component (Advanced, ~1h)
 

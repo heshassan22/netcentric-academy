@@ -12,7 +12,7 @@ the component loads that category from its HTL.
 ## The end-to-end flow
 
 ```mermaid
-flowchart LR
+flowchart TD
   S["SCSS<br/>ui.frontend/.../teaser.clientlibs.scss"] --> B["nc-fe-build<br/>compile + minify"]
   B --> C["clientlib<br/>category: academy.publish.components.teaser"]
   C --> H["teaser.html<br/>data-sly-call clientlib.all"]
@@ -60,17 +60,6 @@ Pull the category in with the Granite `clientlib` template:
 
 - `clientlib.all` injects CSS **and** JS; `clientlib.css` / `clientlib.js` load just one.
 - The `categories` string must match the generated category **exactly**.
-
-## Atomic / shared categories
-
-Beyond per-component styles, the project ships **atomic** clientlibs (e.g.
-`academy.publish.atomic.colors`, `…atomic.alignment`) that components can pull in alongside their
-own — handy for shared utility classes:
-
-```html
-<sly data-sly-use.clientlib="${'/libs/granite/sightly/templates/clientlib.html'}"
-     data-sly-call="${clientlib.all @ categories='academy.publish.atomic.colors'}"/>
-```
 
 <Callout type="do">One SCSS folder per component, named to match the component, producing one predictable category. That keeps the clientlib graph obvious as the project grows.</Callout>
 
