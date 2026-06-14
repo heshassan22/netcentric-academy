@@ -26,10 +26,9 @@ project's `ui.frontend` SCSS.
 
 - [ ] Author **one component's styles as its own partial** (`hello.clientlibs.scss`-style), `@use`-ing the shared tokens/mixins — never redefining them
 - [ ] Use **BEM-in-AEM** naming so the compiled selectors are flat, single-class, and namespaced to the component
-- [ ] Add an **author-mode guard** for any edit-only styling (e.g. styles applied only under `.cq-Editable-dom` / behind a `wcmmode` wrapper)
 - [ ] Sanity-check the **compiled output** is lean — no deep selector chains, no duplicated declarations
 
-**Acceptance:** the component partial reuses the shared layer (no copy-pasted tokens); selectors stay flat BEM; author-only styling doesn't leak to publish.
+**Acceptance:** the component partial reuses the shared layer (no copy-pasted tokens); selectors stay flat BEM.
 
 ## Stretch goals
 
