@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { TRACKS } from '../data/curriculum.js';
 import ThemeToggle from './ThemeToggle.jsx';
 import Search from './Search.jsx';
+import OfflineButton from './OfflineButton.jsx';
 
 export default function Header({ hasSidebar, onToggleSidebar }) {
   const { track } = useParams();
@@ -24,6 +25,7 @@ export default function Header({ hasSidebar, onToggleSidebar }) {
         ))}
       </nav>
       <Search />
+      <OfflineButton />
       <ThemeToggle />
       {hasSidebar && (
         <button className="icon-btn sidebar-toggle" type="button" aria-label="Lessons" onClick={onToggleSidebar}>
