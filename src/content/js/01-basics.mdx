@@ -178,18 +178,17 @@ const button = document.querySelector('.button');
 button.addEventListener('click', () => console.log('clicked'));
 ```
 
-Run it yourself — edit the JS and watch the console pane update:
+Run it yourself — **click the button** and watch the console:
 
 <Playground
-  html={`<p>Output appears in the console below 👇</p>`}
-  js={`function sum(a, b) { return a + b; }
-console.log('sum(3, 5) =', sum(3, 5));
+  html={`<button class="btn">Click me</button>`}
+  js={`const button = document.querySelector('.btn');
+let count = 0;
 
-class Greeter {
-  constructor(name) { this.name = name; }
-  greet() { return 'Hello ' + this.name; }
-}
-console.log(new Greeter('World').greet());`}
+button.addEventListener('click', () => {
+  count += 1;
+  console.log('clicked ' + count + ' time(s)');
+});`}
 />
 
 <Callout type="note">These fundamentals power everything in the next lessons — especially classes + events, which the Netcentric component pattern is built on.</Callout>
