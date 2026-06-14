@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 470" font-family="system-ui, -apple-system, sans-serif" role="img" aria-label="How default, async and defer scripts affect HTML parsing: default blocks parsing while the script downloads and executes; async pauses parsing to execute as soon as the download finishes; defer downloads in parallel and executes only after parsing completes.">
+  <!-- legend -->
+  <g font-size="14" fill="#222">
+    <rect x="20" y="12" width="16" height="16" fill="#a8e6a1" stroke="#333"/><text x="44" y="25">HTML parsing</text>
+    <rect x="20" y="36" width="16" height="16" fill="#d0d0d0" stroke="#333"/><text x="44" y="49">HTML parsing paused</text>
+    <rect x="20" y="60" width="16" height="16" fill="#a9b0f2" stroke="#333"/><text x="44" y="73">Script download</text>
+    <rect x="20" y="84" width="16" height="16" fill="#f4a6a6" stroke="#333"/><text x="44" y="97">Script execution</text>
+  </g>
+
+  <!-- default -->
+  <text x="20" y="142" font-size="16" font-weight="700" font-family="ui-monospace, Menlo, monospace" fill="#1c1c28">&lt;script&gt;</text>
+  <g stroke="#333">
+    <rect x="20"  y="152" width="280" height="26" fill="#a8e6a1"/>
+    <rect x="300" y="152" width="220" height="26" fill="#d0d0d0"/>
+    <rect x="520" y="152" width="220" height="26" fill="#a8e6a1"/>
+    <rect x="300" y="180" width="150" height="22" fill="#a9b0f2"/>
+    <rect x="450" y="180" width="70"  height="22" fill="#f4a6a6"/>
+  </g>
+
+  <!-- async -->
+  <text x="20" y="252" font-size="16" font-weight="700" font-family="ui-monospace, Menlo, monospace" fill="#1c1c28">&lt;script async&gt;</text>
+  <g stroke="#333">
+    <rect x="20"  y="262" width="410" height="26" fill="#a8e6a1"/>
+    <rect x="430" y="262" width="80"  height="26" fill="#d0d0d0"/>
+    <rect x="510" y="262" width="230" height="26" fill="#a8e6a1"/>
+    <rect x="250" y="290" width="180" height="22" fill="#a9b0f2"/>
+    <rect x="430" y="290" width="80"  height="22" fill="#f4a6a6"/>
+  </g>
+
+  <!-- defer -->
+  <text x="20" y="362" font-size="16" font-weight="700" font-family="ui-monospace, Menlo, monospace" fill="#1c1c28">&lt;script defer&gt;</text>
+  <g stroke="#333">
+    <rect x="20"  y="372" width="630" height="26" fill="#a8e6a1"/>
+    <rect x="250" y="400" width="180" height="22" fill="#a9b0f2"/>
+    <rect x="660" y="372" width="80"  height="26" fill="#f4a6a6"/>
+  </g>
+</svg>

@@ -20,11 +20,14 @@ The `<head>` is invisible but decides how your page is **indexed, shared, and lo
 </head>
 ```
 
-- **`<title>`** and **`<meta name="description">`** are your search-result snippet — write them for
-  humans.
-- **`robots`** controls indexing (`noindex`, `nofollow`).
-- **`canonical`** points search engines to the "real" URL when the same content is reachable
-  via several URLs (avoids duplicate-content penalties).
+What each one does:
+
+- **`<meta charset="utf-8">`** — the page's character encoding. Put it **first** in the `<head>` so the browser decodes accents, symbols, and emoji correctly.
+- **`<meta name="viewport">`** — makes the layout responsive; without it, phones render the page at a zoomed-out desktop width.
+- **`<title>`** — the browser-tab/bookmark label **and** the bold clickable line in a search result. Make it unique per page (~50–60 chars).
+- **`<meta name="description">`** — the grey snippet under the title in search results. Not a ranking signal, but it drives click-through, so write it for humans (~150 chars).
+- **`<meta name="robots">`** — instructs crawlers: `index, follow` (the default), `noindex` (keep this page out of results), `nofollow` (don't pass link credit from it).
+- **`<link rel="canonical">`** — names the *real* URL when the same content is reachable via several (tracking params, http/https, trailing slash), so search engines consolidate them instead of treating them as duplicates.
 
 ## Social sharing — Open Graph & Twitter
 
@@ -54,6 +57,45 @@ Machine-readable facts that power rich results (ratings, breadcrumbs, FAQs):
 </script>
 ```
 
+Real cases you'll actually ship:
+
+**Product** — price + rating earn a star rich result:
+
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Acme Espresso Machine",
+  "image": "https://acme.example/img/machine.jpg",
+  "offers": {
+    "@type": "Offer",
+    "price": "499.00",
+    "priceCurrency": "EUR",
+    "availability": "https://schema.org/InStock"
+  },
+  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.6", "reviewCount": "128" }
+}
+</script>
+```
+
+**Breadcrumbs** — the path shown under the title in results:
+
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Guides", "item": "https://acme.example/guides" },
+    { "@type": "ListItem", "position": 2, "name": "Espresso", "item": "https://acme.example/guides/espresso" }
+  ]
+}
+</script>
+```
+
+<Callout type="note">Validate with Google's [Rich Results Test](https://search.google.com/test/rich-results) — it shows which rich result a page qualifies for and flags missing required fields. Keep the JSON-LD facts **in sync with the visible page**, or search engines ignore (or penalise) it.</Callout>
+
 ## Resource hints & script loading
 
 ```html
@@ -67,5 +109,13 @@ Machine-readable facts that power rich results (ratings, breadcrumbs, FAQs):
 - **`preload`** fetches a critical asset early.
 - **`defer`** (run after HTML parses, in order) and **`async`** (run as soon as ready) keep scripts
   from blocking rendering. Prefer `defer` for app scripts.
+
+How each one affects HTML parsing:
+
+![A plain script blocks parsing while it downloads and executes; async pauses parsing to execute as soon as it has downloaded; defer downloads in parallel and executes only after parsing completes](img/html/script-loading.svg)
+
+- **`<script>`** (no attribute) — parsing **stops**, the script downloads, runs, *then* parsing resumes. Render-blocking.
+- **`<script async>`** — downloads alongside parsing, but **pauses** the parser to run the moment it arrives (order not guaranteed). Good for independent third-party scripts (analytics).
+- **`<script defer>`** — downloads alongside parsing and runs **after** the HTML is fully parsed, **in document order**. The safe default for your app scripts.
 
 <Callout type="do">Minimum viable `<head>`: charset, viewport, title, description. Add canonical + Open Graph for anything public-facing, and JSON-LD where rich results matter.</Callout>
