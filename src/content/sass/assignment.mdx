@@ -12,7 +12,7 @@ project's `ui.frontend` SCSS.
 
 <Callout type="note">Extend the same SCSS — don't restart. If you skipped the checkpoint, do [Part 1](checkpoint-assignment) first (variables, nesting, functions, mixins); everything here organizes and applies those.</Callout>
 
-## Part 1 — Architecture (Intermediate, ~1h)
+## Part 1 — Architecture (Intermediate)
 
 - [ ] Split into **partials**: `_variables.scss`, `_mixins.scss`, component partials
 - [ ] Wire them with **`@use` / `@forward`** (no `@import`) — namespaced where it helps
@@ -22,7 +22,7 @@ project's `ui.frontend` SCSS.
 
 **Acceptance:** one entry point (`_index.scss`) `@forward`s the shared layer; components `@use` tokens instead of redefining them; no `@import`; changing a token ripples everywhere.
 
-## Part 2 — Apply it to an AEM component (Advanced, ~1h)
+## Part 2 — Apply it to an AEM component (Advanced)
 
 - [ ] Author **one component's styles as its own partial** (`hello.clientlibs.scss`-style), `@use`-ing the shared tokens/mixins — never redefining them
 - [ ] Use **BEM-in-AEM** naming so the compiled selectors are flat, single-class, and namespaced to the component
