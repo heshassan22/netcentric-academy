@@ -58,7 +58,31 @@ function outer() {
 
 ## Data types
 
-`String`, `Number`, `Boolean`, `Array`, and `Object` (functions, DOM nodes — everything else — are objects).
+A few **primitives**, plus **objects** for everything structured:
+
+```js
+const title   = 'Hello';                 // String   — text
+const price    = 42;                      // Number   — ints & floats (one number type)
+const inStock  = true;                    // Boolean  — true / false
+const nothing  = null;                    // null     — an intentional "no value"
+let   notSet;                             // undefined — declared but not assigned
+
+const tags     = ['new', 'sale'];         // Array    — an ordered list
+const user     = { name: 'Ada', age: 36 }; // Object   — key/value pairs
+```
+
+Everything that isn't a primitive is an **object** — arrays, functions, and DOM nodes included.
+Check a value's type with `typeof`:
+
+```js
+typeof title;    // 'string'
+typeof price;    // 'number'
+typeof inStock;  // 'boolean'
+typeof notSet;   // 'undefined'
+typeof tags;     // 'object'   (arrays are objects)
+typeof user;     // 'object'
+typeof null;     // 'object'   (a long-standing quirk)
+```
 
 ## Operators
 
