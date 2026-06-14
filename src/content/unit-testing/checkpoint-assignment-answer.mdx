@@ -1,0 +1,68 @@
+export const meta = {
+  order: 5.6,
+  num: '✓',
+  title: 'Checkpoint — Answer',
+  topics: 'Jest: matchers, mocking, async & timers · compare with your own'
+};
+
+<Callout type="note">Attempt the [checkpoint](checkpoint-assignment) first. The [final assignment](assignment) adds DOM testing and coverage on top of these.</Callout>
+
+## Pure logic & matchers
+
+```js
+import { formatPrice } from './money.js';
+
+describe('formatPrice()', () => {
+  it('formats cents as two decimals', () => {
+    expect(formatPrice(4250)).toBe('42.50');
+  });
+  it('treats 0 as a valid amount', () => {
+    expect(formatPrice(0)).toBe('0.00');
+  });
+  it('throws on a negative amount', () => {
+    expect(() => formatPrice(-1)).toThrow('invalid amount');
+  });
+});
+```
+
+## Mocking fetch + async
+
+```js
+import { loadUser } from './users.js';
+
+afterEach(() => jest.resetAllMocks());
+
+it('loads and parses the user', async () => {
+  global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ id: 1, name: 'Ada' }) });
+  const user = await loadUser(1);
+  expect(fetch).toHaveBeenCalledWith('/api/users/1');
+  expect(user).toEqual({ id: 1, name: 'Ada' });
+});
+
+it('rejects when the response is not ok', async () => {
+  global.fetch = jest.fn().mockResolvedValue({ ok: false });
+  await expect(loadUser(99)).rejects.toThrow('not found');
+});
+```
+
+## Fake timers (debounce)
+
+```js
+import { debounce } from './debounce.js';
+
+it('fires once after the delay', () => {
+  jest.useFakeTimers();
+  const fn = jest.fn();
+  const debounced = debounce(fn, 300);
+
+  debounced(); debounced(); debounced();
+  expect(fn).not.toHaveBeenCalled();   // nothing yet
+
+  jest.advanceTimersByTime(300);
+  expect(fn).toHaveBeenCalledTimes(1); // exactly once
+
+  jest.useRealTimers();
+});
+```
+
+<Callout type="do">No real network, async is awaited, timers are faked — the suite is deterministic and tests behaviour, not implementation.</Callout>

@@ -1,0 +1,42 @@
+export const meta = {
+  order: 4.6,
+  num: '✓',
+  title: 'Checkpoint — Answer',
+  topics: 'Foundation stylesheet (reset, tokens, BEM) · compare with your own'
+};
+
+<Callout type="note">Attempt the [checkpoint](checkpoint-assignment) first. This is the **foundation** only — layout, responsiveness, and theming come in the [final assignment](assignment).</Callout>
+
+```css
+/* reset */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+
+/* design tokens — everything themeable reads from these */
+:root {
+  --brand: #6b2fb3;
+  --fg: #1c1c28;
+  --bg: #faf8fc;
+  --space: 1rem;
+}
+
+/* type & colour, pulled from tokens */
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+/* BEM components — single-class selectors, flat specificity, no !important */
+.site { padding: var(--space); }
+.site__logo { font-weight: 800; color: var(--brand); text-decoration: none; }
+
+.card { padding: var(--space); background: #fff; border-radius: 8px; }
+.card__media { aspect-ratio: 16 / 9; background: var(--brand); border-radius: 6px; }
+.card__title { margin: var(--space) 0 0; }
+
+.layout__aside { padding: var(--space); }
+```
+
+<Callout type="do">No bare element selectors leaking globally (only the reset/base), every value comes from a token, and specificity stays flat. The end-of-session assignment adds Flexbox/Grid layout, media queries, and a dark theme that just overrides these custom properties.</Callout>

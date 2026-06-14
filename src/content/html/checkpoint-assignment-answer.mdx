@@ -1,0 +1,79 @@
+export const meta = {
+  order: 5.6,
+  num: '✓',
+  title: 'Checkpoint — Answer',
+  topics: 'Model recipe.html skeleton · compare with your own'
+};
+
+<Callout type="note">Attempt the [checkpoint](checkpoint-assignment) first. This is the **skeleton stage** — semantic structure, lists, and a table, before any CSS. The [final assignment](assignment) builds media, a form, and metadata on top of it.</Callout>
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Best Fluffy Pancakes — Recipe</title>
+</head>
+<body>
+  <header>
+    <a href="/">Ada&rsquo;s Kitchen</a>
+    <nav aria-label="Primary"><a href="/recipes">All recipes</a></nav>
+  </header>
+
+  <main>
+    <article>
+      <h1>Best Fluffy Pancakes</h1>
+
+      <!-- text-level semantics: strong / em / time / abbr -->
+      <p>
+        <strong>Ready in <time datetime="PT20M">20 minutes</time></strong> — makes <em>8</em>
+        pancakes, using <abbr title="tablespoon">tbsp</abbr> and <abbr title="teaspoon">tsp</abbr> measures.
+      </p>
+
+      <h2>Ingredients</h2>
+      <ul>
+        <li>200 g plain flour</li>
+        <li>2 tbsp sugar</li>
+        <li>2 tsp baking powder</li>
+        <li>300 ml milk</li>
+        <li>1 egg</li>
+      </ul>
+
+      <h2>Method</h2>
+      <ol>
+        <li>Whisk the dry ingredients together.</li>
+        <li>Beat in the milk and egg until just combined.</li>
+        <li>Cook ladlefuls on a medium pan, flipping when bubbles form.</li>
+      </ol>
+
+      <h2>Nutrition</h2>
+      <table>
+        <caption>Per pancake (approximate)</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nutrient</th>
+            <th scope="col">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Energy</th><td>120 kcal</td></tr>
+          <tr><th scope="row">Protein</th><td>4 g</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Source</h2>
+      <p>
+        Adapted from
+        <a href="https://example.com/pancakes" target="_blank" rel="noopener noreferrer">the original recipe (opens in a new tab)</a>,
+        or <a href="mailto:hello@example.com">email a question</a>.
+      </p>
+    </article>
+  </main>
+
+  <footer><p>&copy; 2026 Ada&rsquo;s Kitchen</p></footer>
+</body>
+</html>
+```
+
+<Callout type="do">Validates clean, exactly one `<h1>` with a sensible outline, a caption + scoped table headers, and descriptive links — and it reads correctly with CSS disabled.</Callout>

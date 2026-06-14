@@ -1,0 +1,49 @@
+export const meta = {
+  order: 4.6,
+  num: '✓',
+  title: 'Checkpoint — Answer',
+  topics: 'SCSS: variables, mixin, function, nesting · compare with your own'
+};
+
+<Callout type="note">Attempt the [checkpoint](checkpoint-assignment) first. This covers the SCSS language basics; the [final assignment](assignment) splits it into a maintainable architecture.</Callout>
+
+```scss
+@use "sass:math";
+
+// variables — one source of truth
+$brand: #6b2fb3;
+$radius: 6px;
+$space: 1rem;
+
+// @function — returns a value, emits no CSS
+@function rem($px, $base: 16px) {
+  @return math.div($px, $base) * 1rem;
+}
+
+// @mixin — emits CSS, with default args and an @if decision
+@mixin button($bg, $fg: #fff) {
+  display: inline-flex;
+  padding: math.div($space, 2) $space;
+  border: 0;
+  border-radius: $radius;
+  background: $bg;
+  color: $fg;
+  cursor: pointer;
+
+  @if $bg == transparent {
+    border: 1px solid $brand;   // the ghost variant needs an outline
+  }
+
+  &:hover { filter: brightness(1.08); }
+}
+
+// nesting + & for BEM, the mixin reused for two variants
+.btn {
+  font-size: rem(16px);
+  @include button($brand);
+
+  &--ghost { @include button(transparent, $brand); }
+}
+```
+
+<Callout type="do">Change `$brand` or the `button` mixin and every consumer updates. Nesting stays ≤ 2 levels, so the compiled output is flat, single-class BEM — no copy-pasted blocks.</Callout>
