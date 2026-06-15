@@ -1,0 +1,32 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'Sling Models Best Practices',
+  topics: 'thin HTL · OPTIONAL strategy · null-safety · testability'
+};
+
+A short checklist that keeps models maintainable and your components robust.
+
+## Do
+
+- **`defaultInjectionStrategy = OPTIONAL`** — never let a missing authored property fail the whole component; handle null/`@Default`.
+- **Adapt from `Resource`** unless you truly need request data — it stays exportable and testable.
+- **One model per component**, named after it; expose plain getters that HTL reads.
+- **Compute in `@PostConstruct`**, not in getters — getters may be called many times per render.
+- **Program to interfaces** for injected services (`@OSGiService` by interface).
+- **Use specific injectors** (`@ValueMapValue`, `@ChildResource`) over the generic `@Inject`.
+- **Return safe empties** — an empty `List`, not `null`, so HTL `data-sly-list` doesn't blow up.
+
+## Avoid
+
+- Business logic or repository writes inside a model — models are for **reading/shaping** content for the view. Writes belong in services/servlets.
+- `SlingHttpServletRequest` adaptable "just in case".
+- Heavy work (HTTP calls, queries) in a model that renders on every request — cache it in a service.
+- Catching and swallowing exceptions silently — log with context.
+
+## A model you can unit-test
+
+Because a model is a plain class, a test just adapts a mock resource and asserts getters — no running
+AEM. (That's the next module, *Unit Testing*.)
+
+<Callout type="do">If a model is hard to test, it's usually doing too much. Move side effects and I/O into a service, keep the model a thin, null-safe view of the content, and your HTL stays a dumb template.</Callout>

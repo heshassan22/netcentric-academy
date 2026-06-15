@@ -1,0 +1,59 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Adaptables (Request vs Resource) & Injection Style',
+  topics: 'Resource vs SlingHttpServletRequest · field + @PostConstruct vs constructor injection'
+};
+
+Two design decisions every model faces: **what do you adapt from**, and **how is the dependency
+wired in**.
+
+## Adaptable: `Resource` vs `SlingHttpServletRequest`
+
+```java
+@Model(adaptables = { Resource.class, SlingHttpServletRequest.class })
+```
+
+- **`Resource`** — context-free. The model only knows the content node. Adaptable from JSON exporters,
+  Groovy, tests, and other models. **Default to this.**
+- **`SlingHttpServletRequest`** — request-scoped. You can inject `@RequestAttribute`, request
+  parameters, the current style/`Designer`, the resolved page via request context, and read selectors.
+  Use it **only when you genuinely need request data**.
+
+Listing both makes the model adaptable either way; request-only injections simply stay null when
+adapted from a resource.
+
+<Callout type="warn">A request-adaptable model can't be exported by the Sling Model Exporter from a plain resource, and is harder to unit-test. Don't reach for `SlingHttpServletRequest` just out of habit — most components only need the `Resource`.</Callout>
+
+## Injection style: field + `@PostConstruct` vs constructor
+
+**Field injection** (the common style) — Sling Models sets the fields, then calls `@PostConstruct`:
+
+```java
+@Model(adaptables = Resource.class)
+public class Card {
+  @ValueMapValue private String title;
+  @OSGiService  private PriceFormatter formatter;
+
+  @PostConstruct protected void init() { /* derive state */ }
+}
+```
+
+**Constructor injection** — dependencies arrive as constructor parameters, so fields can be `final`
+and the object is fully initialised on creation (great for immutability and testing):
+
+```java
+@Model(adaptables = Resource.class)
+public class Card {
+  private final String title;
+
+  @Inject
+  public Card(@ValueMapValue String title) {
+    this.title = title;
+  }
+}
+```
+
+<Callout type="do">**Constructor injection** gives you `final` fields and a valid-by-construction object — nice for testability. **Field + `@PostConstruct`** is more concise and the AEM norm. Pick one style per project and be consistent.</Callout>
+
+<Callout type="note">"Constructor vs activation": with constructor injection the object is ready the moment it's built; with field injection there's a two-phase lifecycle (inject → `@PostConstruct`). Don't read injected fields in a field-injection **constructor** — they aren't set yet; use `@PostConstruct`.</Callout>

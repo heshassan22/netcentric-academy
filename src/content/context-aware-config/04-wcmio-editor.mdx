@@ -1,0 +1,36 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'The wcm.io CAC Editor',
+  topics: 'installing the editor · editing /conf values · author-friendly config'
+};
+
+The raw `/conf` nodes aren't author-friendly. The **wcm.io Context-Aware Configuration Editor** gives
+admins a touch-UI to edit your configs without touching CRXDE.
+
+## Install it
+
+Add the wcm.io CAC editor packages (and their dependencies) to your project — embedded in the `all`
+package, or installed via Package Manager:
+
+- `io.wcm.caconfig.editor` — the touch-UI editor
+- `io.wcm.caconfig.extensions` — AEM integration (resolves `/conf`, persistence)
+
+Once installed it appears under **Tools → Configuration Browser / Context-Aware Configuration**, or per
+page via the editor URL.
+
+## Use it
+
+1. Create a **Configuration Browser** container for your context (Tools → General → Configuration Browser) and enable *Context-Aware Configuration* on it — this provisions `/conf/<name>`.
+2. Set the site root's `sling:configRef` to that `/conf/<name>`.
+3. Open the **CAC Editor**, pick the context, and you'll see *your* `@Configuration` interfaces rendered as forms — fill in `brandName`, toggle `newsletterEnabled`, add `socialLinks`.
+4. Save — values persist under `/conf/<name>/sling:configs/...` and your model reads them immediately.
+
+## Why it matters
+
+Your `@Property(label = ...)` annotations become the **field labels** in the editor — so a well-annotated
+config is self-documenting for the admins who fill it in.
+
+<Callout type="do">Label and describe every config property. The editor renders those labels, so good annotations turn your config into a clean admin form — no CRXDE, no developer round-trip to change a per-site setting.</Callout>
+
+<Callout type="note">The Configuration Browser provisions the `/conf` bucket and the `sling:configRef` wiring; the wcm.io editor edits the values inside it. You need both: the bucket (context) and the editor (values).</Callout>

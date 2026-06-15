@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
-import { getTrack } from '../data/curriculum.js';
+import { getTrack, getGroupMembers } from '../data/curriculum.js';
 import { getLessons } from '../lib/lessons.js';
+import { TrackCard } from '../components/TrackGrid.jsx';
 import ComingSoon from './ComingSoon.jsx';
 
 export default function TrackOverview() {
@@ -10,11 +11,36 @@ export default function TrackOverview() {
   if (!t) return <ComingSoon icon="❓" title="Unknown track" blurb="This track doesn't exist yet." />;
   if (!t.ready) return <ComingSoon icon={t.icon || '🚧'} title={t.title + ' Track'} blurb={t.blurb} />;
 
+  // Group landing (e.g. BE): list the member modules as cards instead of lessons.
+  if (t.isGroup) {
+    const members = getGroupMembers(t.id);
+    return (
+      <div className="container landing">
+        <div className="lesson-head">
+          <span className="kicker">{t.label}</span>
+          <h1>{t.title}</h1>
+          <p className="lead">{t.blurb}</p>
+        </div>
+        <div className="track-grid inline">
+          {members.map((m) => (
+            <TrackCard key={m.id} track={m} count={getLessons(m.id).length} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const lessons = getLessons(track);
+  const parent = t.group ? getTrack(t.group) : null;
   return (
     <>
       <div className="lesson-head">
-        <span className="kicker">{t.label} Track</span>
+        <span className="kicker">
+          {parent && (
+            <Link to={'/' + parent.id} className="kicker-link">← {parent.title}</Link>
+          )}
+          {parent ? ' · ' : ''}{t.label} Track
+        </span>
         <h1>{t.title}</h1>
         <p className="lead">{t.blurb}</p>
       </div>

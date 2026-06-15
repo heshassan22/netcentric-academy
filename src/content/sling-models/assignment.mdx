@@ -1,0 +1,36 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Build a Sling-Model Component',
+  topics: 'model · injection · OSGi service + config · HTL · JSON export'
+};
+
+Build a **"Promo Card"** component backed by a Sling Model, a service, and an OSGi config — on the
+academy `core` + `ui.apps` modules.
+
+## 1 — The model
+
+- [ ] Create `PromoCard` `@Model(adaptables = Resource.class, defaultInjectionStrategy = OPTIONAL)`
+- [ ] Inject `title`, `description` (`@ValueMapValue`), a `cta` child (`@ChildResource`), and `@Default` the title to `"Promo"`
+- [ ] Derive a `hasCta` boolean in `@PostConstruct`
+
+## 2 — A service + config
+
+- [ ] Define a `PriceFormatter` **interface** and an `@Component` impl
+- [ ] Give it an `@ObjectClassDefinition` config (currency code) bound with `@Designate`, read in `@Activate`
+- [ ] Inject it into `PromoCard` with `@OSGiService` and expose a formatted price getter
+
+## 3 — Wire it into HTL
+
+- [ ] `data-sly-use` the model in `promocard.html`; render title, description, and the CTA only when `hasCta`
+- [ ] Deploy (`mvn clean install -PautoInstallSinglePackage`) and author the component on a page
+
+## 4 — Config per run mode
+
+- [ ] Ship the service config as a `.cfg.json` under `config.publish/`; confirm it applies on publish only
+
+## 5 — Export it
+
+- [ ] Add `@Exporter(name = "jackson", extensions = "json")` and fetch `…/promocard.model.json`
+
+<Callout type="do">Done when the component renders from authored content, the formatted price comes from your configured service, the config differs by run mode, and the `.model.json` returns your fields — all with logic in Java and a thin HTL template.</Callout>

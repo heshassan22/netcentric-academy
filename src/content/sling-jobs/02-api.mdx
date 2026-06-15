@@ -1,0 +1,72 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'The Sling Job API',
+  topics: 'JobManager · JobConsumer · JobResult · scheduled vs immediate · queue config'
+};
+
+Three pieces: a **producer** adds the job, a **consumer** processes it, and optional **queue config**
+tunes how it runs.
+
+## Produce a job
+
+Inject `JobManager` and add a job to a topic with a property map:
+
+```java
+@Reference
+private JobManager jobManager;
+
+public void enqueueEmail(String to, String template) {
+  Map<String, Object> props = Map.of("to", to, "template", template);
+  jobManager.addJob("academy/job/email", props);   // returns immediately
+}
+```
+
+## Consume a job
+
+Register a `JobConsumer` for that topic; return a **`JobResult`**:
+
+```java
+@Component(service = JobConsumer.class,
+           property = JobConsumer.PROPERTY_TOPICS + "=academy/job/email")
+public class EmailJobConsumer implements JobConsumer {
+
+  @Override
+  public JobResult process(Job job) {
+    String to = job.getProperty("to", String.class);
+    try {
+      sendEmail(to, job.getProperty("template", String.class));
+      return JobResult.OK;          // done — remove from queue
+    } catch (TransientException e) {
+      return JobResult.FAILED;      // retry later (counts toward max retries)
+    } catch (Exception e) {
+      return JobResult.CANCEL;      // give up — don't retry
+    }
+  }
+}
+```
+
+- **`OK`** — success, job removed.
+- **`FAILED`** — retry (up to the queue's max retries, with delay).
+- **`CANCEL`** — permanent failure, no retry.
+
+## Immediate vs scheduled
+
+- **Immediate** — `addJob(topic, props)` runs as soon as a consumer is free.
+- **Scheduled** — use the `JobBuilder` to run later or on a cron, returning a `ScheduledJobInfo`:
+
+```java
+jobManager.createJob("academy/job/digest").properties(props)
+    .schedule().daily(2, 0).add();      // every day at 02:00
+```
+
+## Queue configuration
+
+Tune a topic's processing with an `org.apache.sling.event.jobs.QueueConfiguration` OSGi config:
+
+- **type** — `ORDERED` (one at a time, in order) vs `TOPIC_ROUND_ROBIN`/`UNORDERED` (parallel).
+- **maxParallel** — how many run concurrently.
+- **retries** & **retryDelay** — failure handling.
+- **topics** — which topic(s) this queue serves.
+
+<Callout type="do">Return `FAILED` only for **transient** errors (retry makes sense) and `CANCEL` for permanent ones — otherwise you fill the queue with doomed retries. Use an **ORDERED** queue when sequence matters, parallel when it doesn't.</Callout>

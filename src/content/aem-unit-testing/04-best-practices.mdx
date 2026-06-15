@@ -1,0 +1,29 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Testing Best Practices',
+  topics: 'test behaviour · naming · isolation · coverage that means something'
+};
+
+Good tests make change cheap. Bad tests make change painful. A few habits decide which you get.
+
+## Habits
+
+- **Test behaviour, not implementation.** Assert *what* the method returns/does, not which private calls it makes. Implementation-coupled tests break on every refactor.
+- **Name the scenario.** `uppercasesTitle()`, `returnsEmptyListWhenNoChildren()` — the name should read like a spec.
+- **Arrange · Act · Assert**, one logical assertion per test. Several tiny tests beat one mega-test.
+- **Isolated & repeatable.** No shared mutable state between tests, no order dependence, no real clock/network. `@BeforeEach` for fresh fixtures.
+- **Cover the edges.** Null, empty, missing property, the failure path — that's where bugs live, not the happy path.
+
+## Coverage is a guide, not a goal
+
+A high coverage number with no assertions proves nothing. Chase **meaningful** coverage: the branches
+that matter (null handling, error paths, config variations). 100% of getters/setters isn't the point.
+
+## What not to test
+
+- The framework (HTL rendering, JCR persistence, Mockito itself).
+- Trivial getters/setters with no logic.
+- Third-party libraries — assume they work; test *your* use of them.
+
+<Callout type="do">If a class is hard to test, that's a design smell — usually too many responsibilities or hidden dependencies. Split it, inject its collaborators, and the test gets easy. **Testability is a design feature.**</Callout>

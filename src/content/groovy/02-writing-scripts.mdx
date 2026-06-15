@@ -1,0 +1,57 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Writing Groovy Scripts',
+  topics: 'querying · iterating content · safe bulk updates · dry-run then save'
+};
+
+A few patterns cover most real Groovy Console work: find nodes, iterate, change, save — with a dry-run
+first.
+
+## Read & report (always do this first)
+
+```groovy
+def query = "SELECT * FROM [cq:Page] AS p WHERE ISDESCENDANTNODE(p, '/content/academy')"
+def result = resourceResolver.queryResources(query, "JCR-SQL2")
+
+int count = 0
+result.each { page ->
+  def content = page.getChild("jcr:content")
+  if (content) {
+    println "${page.path}  →  title='${content.valueMap['jcr:title']}'"
+    count++
+  }
+}
+println "Would touch ${count} pages"
+```
+
+Run this alone first — it changes **nothing**, just shows you the scope.
+
+## Bulk update, then save
+
+Once the report looks right, add the write and persist **once** at the end:
+
+```groovy
+int updated = 0
+result.each { page ->
+  def content = page.getChild("jcr:content")
+  def vm = content?.adaptTo(javax.jcr.Node)
+  if (vm && !vm.hasProperty("reviewed")) {
+    vm.setProperty("reviewed", true)
+    updated++
+  }
+}
+session.save()           // commit everything in one transaction
+println "Updated ${updated} pages"
+```
+
+## Useful idioms
+
+- **`getPage(path)`** → a `Page`; `page.contentResource.valueMap` for properties.
+- **Closures** — `list.findAll { ... }`, `.collect { ... }`, `.each { ... }`.
+- **`println` / `log`** — output shows in the console results pane.
+- Wrap risky writes in a check (`if (!alreadyDone)`) so a re-run is **idempotent**.
+
+<Callout type="warn">`session.save()` is all-or-nothing for what you changed — don't save inside a giant loop one node at a time (slow); batch and save once (or every N for very large sets). And keep a CRX/package **backup** before a destructive bulk run.</Callout>
+
+<Callout type="do">The golden workflow: **query → print what you'd change → review → add the write → `save()`**. Make scripts idempotent so an accidental re-run is harmless.</Callout>

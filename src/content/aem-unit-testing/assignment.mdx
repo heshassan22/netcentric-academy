@@ -1,0 +1,31 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Test a Model & a Service',
+  topics: 'JUnit · Mockito · AemContext · edge cases'
+};
+
+Add tests to the `core` module for one Sling Model and one service.
+
+## 1 — Service with Mockito
+
+- [ ] Pick (or write) a service with a dependency; test the happy path with `when(...).thenReturn(...)`
+- [ ] `verify()` the collaborator is called as expected
+- [ ] Add a failure-path test with `thenThrow(...)`
+
+## 2 — Sling Model with AemContext
+
+- [ ] Load a small JSON fixture and `addModelsForClasses(...)`
+- [ ] Adapt the resource to the model and assert the getters
+- [ ] Register a mock `@OSGiService` dependency so injection resolves
+
+## 3 — Edge cases
+
+- [ ] Test the model with a **missing** property — assert the `@Default` / null-safe behaviour
+- [ ] Test an **empty** child list returns an empty list, not null
+
+## 4 — Run it
+
+- [ ] `mvn test -pl core` is green; check the surefire report
+
+<Callout type="do">Done when each test names a behaviour, the model survives missing/empty content, the service's happy and failure paths are both pinned, and `mvn test` passes from a clean checkout.</Callout>

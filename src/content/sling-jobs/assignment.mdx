@@ -1,0 +1,27 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: A Background Job',
+  topics: 'JobManager · JobConsumer · retries · scheduled · queue config'
+};
+
+Move a slow task off the request thread with a guaranteed Sling Job.
+
+## 1 — Producer
+
+- [ ] Inject `JobManager` into a servlet or service and `addJob("academy/job/notify", props)` with a couple of properties
+
+## 2 — Consumer
+
+- [ ] Register a `JobConsumer` for `academy/job/notify`; log the properties and return `JobResult.OK`
+- [ ] Add a failure path: return `FAILED` for a simulated transient error and watch it retry; `CANCEL` for a permanent one
+
+## 3 — Scheduled
+
+- [ ] Create a scheduled job (e.g. daily) with the `JobBuilder` and confirm it fires
+
+## 4 — Queue config
+
+- [ ] Add a `QueueConfiguration` for your topic: set it **ORDERED** with `maxRetries` and a retry delay; observe the behaviour change
+
+<Callout type="do">Done when the producer returns instantly, the consumer processes the job (and retries transient failures the configured number of times), a scheduled variant fires on time, and your queue config controls ordering/retries.</Callout>

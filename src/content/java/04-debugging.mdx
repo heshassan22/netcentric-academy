@@ -1,0 +1,52 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Debugging AEM Java',
+  topics: 'remote debug · breakpoints · reading stack traces · logs'
+};
+
+When a Sling Model returns the wrong value, you don't add `System.out` lines — you attach a debugger to
+the running AEM instance and step through it.
+
+## Remote debugging an AEM instance
+
+AEM's quickstart runs a JVM with a **debug port** open (commonly `5005`, or start with the debug jvm
+flags). Point your IDE's *Remote JVM Debug* run config at `localhost:5005` and connect:
+
+```text
+-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+```
+
+Then in IntelliJ/Eclipse: **Run → Attach to / Remote JVM Debug → host localhost, port 5005**.
+
+## Breakpoints that actually help
+
+- **Line breakpoint** — pause on a line; inspect variables, the call stack, and `this`.
+- **Conditional breakpoint** — only break when e.g. `resource.getName().equals("hero")`, so you skip the other 200 calls.
+- **Evaluate expression** — run arbitrary code at the paused point to test a hypothesis without editing source.
+- **Step over / into / out** — walk the call without restarting the request.
+
+<Callout type="do">A breakpoint that's hit on every component is noise. Add a **condition** so you stop only on the resource/path you care about.</Callout>
+
+## Read the stack trace top-down
+
+The **first** line is what failed; the frames below are who called it. Find the **first frame in your
+own package** — that's almost always where to look. `Caused by:` sections point at the root exception.
+
+```text
+java.lang.NullPointerException: Cannot invoke "...getValueMap()" because "child" is null
+    at biz.netcentric.academy.core.models.Card.getTitle(Card.java:42)   ← your code
+    at jdk.internal.reflect...                                          ← framework plumbing
+```
+
+## Logs as the first net
+
+- `crx-quickstart/logs/error.log` — exceptions and your `LOGGER` output.
+- The **Sling Log Support** in `/system/console/slinglog` can route a package to its own log file at `DEBUG`.
+
+```java
+private static final Logger LOG = LoggerFactory.getLogger(Card.class);
+LOG.debug("resolved title={} for {}", title, resource.getPath());
+```
+
+<Callout type="warn">Use parameterised logging (`{}`), not string concatenation — the message is only built if that level is enabled. And never log at `INFO` inside request handling in a loop; it floods the log and slows the instance.</Callout>

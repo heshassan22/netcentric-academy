@@ -1,0 +1,26 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Extend a Core Component',
+  topics: 'sling:resourceSuperType · delegation · override · unit test'
+};
+
+Extend the Core **Title** (or Teaser) component to add one behaviour, reusing its model.
+
+## 1 — Inherit
+
+- [ ] Create `academy/components/title` with `sling:resourceSuperType` pointing at the core Title v3
+- [ ] Confirm it renders with the inherited dialog + HTL, no custom code yet
+
+## 2 — Delegate & override
+
+- [ ] Add a `TitleImpl` model implementing the core `Title` interface
+- [ ] Inject the core model with `@Self @Via(type = ResourceSuperType.class)`
+- [ ] Override **one** method (e.g. append a suffix, or transform the text); forward the rest
+
+## 3 — Test
+
+- [ ] Unit-test the override by mocking the delegate and asserting your transform
+- [ ] (Stretch) Adapt from content with `AemContext` and assert end-to-end
+
+<Callout type="do">Done when your component reuses the Core Component wholesale, changes exactly one thing through delegation, still exports the standard JSON, and a fast unit test pins the override.</Callout>

@@ -1,0 +1,70 @@
+export const meta = {
+  order: 1,
+  num: '01',
+  title: 'Collections, equals/hashCode & Comparable',
+  topics: 'List · Set · Map · the hashCode/equals contract · Comparable vs Comparator'
+};
+
+The Java Collections Framework is everyday AEM code — Sling Models return lists, services cache maps.
+Two contracts trip people up: **hashing** (for `HashSet`/`HashMap`) and **ordering** (`Comparable`).
+
+## The big three
+
+| Type | Keeps | Order | Backed by |
+|---|---|---|---|
+| `List` | duplicates, by index | insertion | `ArrayList` (random access), `LinkedList` |
+| `Set` | unique elements | none (`HashSet`) / sorted (`TreeSet`) | hash table / tree |
+| `Map` | key → value | none (`HashMap`) / sorted (`TreeMap`) | hash table / tree |
+
+## Hashing: the `equals()` + `hashCode()` contract
+
+`HashSet` and `HashMap` find elements by **`hashCode()`** (which bucket) then confirm with
+**`equals()`**. So they must be overridden **together** and stay consistent:
+
+- Equal objects (`a.equals(b)`) **must** return the same `hashCode()`.
+- Unequal objects *may* share a hashCode (a collision) — that's fine, just slower.
+
+```java
+public final class Sku {
+  private final String code;
+  public Sku(String code) { this.code = code; }
+
+  @Override public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Sku)) return false;
+    return code.equals(((Sku) o).code);
+  }
+  @Override public int hashCode() { return Objects.hash(code); }
+}
+```
+
+<Callout type="warn">Override `equals()` but **not** `hashCode()` and your objects vanish in a `HashMap` — two "equal" keys land in different buckets. Always override both, over the same fields.</Callout>
+
+## Ordering: `Comparable` vs `Comparator`
+
+For **sorted** structures (`TreeSet`, `TreeMap`, `Collections.sort`) you need ordering, not hashing:
+
+- **`Comparable`** — the type's *natural order*, one per class: `int compareTo(T other)`.
+- **`Comparator`** — an *external* order, as many as you like; ideal for multiple sort keys.
+
+```java
+// natural order on the class
+class Lesson implements Comparable<Lesson> {
+  int order;
+  public int compareTo(Lesson o) { return Integer.compare(this.order, o.order); }
+}
+
+// ad-hoc orders, composable
+list.sort(Comparator.comparing(Lesson::getTitle).thenComparingInt(l -> l.order));
+```
+
+<Callout type="do">**Hash or Comparable?** Need fast lookup with no order → `HashMap`/`HashSet` (define `equals`/`hashCode`). Need sorted iteration → `TreeMap`/`TreeSet` (define `Comparable`/`Comparator`).</Callout>
+
+<Reveal title="Gotcha: keep `compareTo` consistent with `equals`">
+
+For `TreeSet`/`TreeMap`, ordering *is* equality — two elements are "the same" when `compareTo` returns
+`0`, **regardless of `equals`**. If your `compareTo` only looks at one field, a `TreeSet` will treat
+two objects that differ elsewhere as duplicates and silently drop one. Keep `compareTo` consistent
+with `equals` unless you mean otherwise.
+
+</Reveal>

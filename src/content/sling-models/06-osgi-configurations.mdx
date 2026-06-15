@@ -1,0 +1,71 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'OSGi Configurations',
+  topics: '@ObjectClassDefinition · @Designate · @Activate · .cfg.json · run modes'
+};
+
+Services shouldn't hard-code endpoints or feature flags. **OSGi configuration** externalises those
+values — editable in the console and deployable per environment.
+
+## Define the config: `@ObjectClassDefinition` + `@Designate`
+
+```java
+@ObjectClassDefinition(name = "Academy — Report Service")
+public @interface ReportConfig {
+  @AttributeDefinition(name = "API endpoint")
+  String endpoint() default "https://api.example.com";
+
+  @AttributeDefinition(name = "Enabled")
+  boolean enabled() default true;
+
+  @AttributeDefinition(name = "Timeout (ms)")
+  int timeout() default 5000;
+}
+```
+
+Bind it to the component with **`@Designate`** and read it in **`@Activate`**:
+
+```java
+@Component(service = ReportService.class)
+@Designate(ocd = ReportConfig.class)
+public class ReportServiceImpl implements ReportService {
+  private String endpoint;
+
+  @Activate @Modified
+  protected void activate(ReportConfig config) {
+    this.endpoint = config.endpoint();
+  }
+}
+```
+
+`@Activate` runs on start (and `@Modified` on config change) — so updating the config re-applies
+without a restart.
+
+## Deploy config as `.cfg.json`
+
+A console edit isn't version-controlled. Ship the config in the repo as a **`.cfg.json`** whose
+filename is the component's PID:
+
+```text
+ui.apps/.../apps/academy/osgiconfig/config/
+    com.example.core.services.ReportServiceImpl.cfg.json
+```
+
+```json
+{ "endpoint": "https://api.example.com", "enabled": true, "timeout": 5000 }
+```
+
+## Per-environment with run modes
+
+Put the file in a **run-mode** folder and AEM applies only the matching one:
+
+```text
+config/                 ← always
+config.author/          ← author only
+config.publish.prod/    ← only when publish AND prod are active
+```
+
+<Callout type="do">Keep secrets and environment URLs in **run-mode config folders**, not code. The same artifact then carries the right values for dev / stage / prod. (This is the OSGi/run-mode topic from Advanced AEM, applied to your own service.)</Callout>
+
+<Callout type="warn">The `.cfg.json` filename **must** equal the component PID (usually the impl FQCN). A typo means the file is ignored and your defaults silently win.</Callout>

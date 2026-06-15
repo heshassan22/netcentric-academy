@@ -1,0 +1,29 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: A Safe Bulk Script',
+  topics: 'install · query · dry-run · idempotent update · save'
+};
+
+Use the Groovy Console to make a safe, repeatable bulk change on a **local** instance.
+
+## 1 — Install (local only)
+
+- [ ] Install the AEM Groovy Console on your local instance and open it
+
+## 2 — Report first
+
+- [ ] Write a JCR-SQL2 query for all `cq:Page` under `/content/academy`
+- [ ] Print each page path + title and a count — **no writes yet**
+
+## 3 — Idempotent update
+
+- [ ] Add a property (e.g. `reviewed = true`) only where it's missing
+- [ ] `session.save()` once at the end; print how many were updated
+- [ ] **Re-run** the script and confirm it updates **0** (idempotent)
+
+## 4 — Reflect
+
+- [ ] Note why you'd never run this unguarded on publish/production, and what backup you'd take first
+
+<Callout type="do">Done when your script reports before it writes, updates only what's needed, commits in one save, and a second run is a no-op. That discipline is what makes Groovy scripting safe.</Callout>

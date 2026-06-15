@@ -1,0 +1,67 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Unit-testing an Extended Model',
+  topics: 'AemContext · registering the model · mocking the delegate · asserting the override'
+};
+
+Your extended model has one job: transform the delegate's output. So the test only needs to prove
+*your override* behaves — the core model is already tested by Adobe.
+
+## Test dependencies
+
+In the `core` module's `pom.xml` you'll have JUnit 5, Mockito, and **AEM Mocks** (`io.wcm`):
+
+```xml
+<dependency>
+  <groupId>io.wcm</groupId>
+  <artifactId>io.wcm.testing.aem-mock.junit5</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
+## Approach A — mock the delegate (fast, focused)
+
+Since `getTitle()` just upper-cases `delegate.getTitle()`, mock the delegate and assert the transform:
+
+```java
+@ExtendWith(MockitoExtension.class)
+class TeaserImplTest {
+  @Test
+  void uppercasesTitle() {
+    Teaser delegate = mock(Teaser.class);
+    when(delegate.getTitle()).thenReturn("Hello");
+
+    TeaserImpl teaser = new TeaserImpl();
+    // inject the private delegate (reflection helper or a test constructor)
+    setField(teaser, "delegate", delegate);
+
+    assertEquals("HELLO", teaser.getTitle());
+  }
+}
+```
+
+## Approach B — full adaptation with AemContext
+
+For an end-to-end check, load content and adapt the request to your model:
+
+```java
+@ExtendWith(AemContextExtension.class)
+class TeaserImplIT {
+  private final AemContext ctx = new AemContext();
+
+  @Test
+  void rendersFromContent() {
+    ctx.load().json("/teaser-content.json", "/content");
+    ctx.addModelsForClasses(TeaserImpl.class);
+    ctx.currentResource("/content/teaser");
+
+    Teaser model = ctx.request().adaptTo(Teaser.class);
+    assertEquals("HELLO", model.getTitle());
+  }
+}
+```
+
+<Callout type="do">Prefer **Approach A** for your override logic — it's a true unit test (no container, milliseconds). Use **Approach B** when you need to verify the delegation wiring itself resolves.</Callout>
+
+<Callout type="note">Approach B needs the core component models on the test classpath to resolve the delegate. If that's heavy, mocking the delegate (A) keeps the test about *your* code, which is what unit tests are for. More on AEM Mocks in the **Unit Testing** module.</Callout>

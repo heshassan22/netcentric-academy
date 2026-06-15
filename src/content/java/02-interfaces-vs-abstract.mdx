@@ -1,0 +1,59 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Interfaces vs Abstract Classes',
+  topics: 'contracts vs partial implementation · default methods · when to use which'
+};
+
+Both let you program to an abstraction, but they answer different questions. Picking the right one
+keeps AEM service APIs clean.
+
+## The difference
+
+| | Interface | Abstract class |
+|---|---|---|
+| Says | *what* a type can do (a contract) | *what + some how* (shared base) |
+| State | constants only (no instance fields) | instance fields, constructors |
+| Inheritance | a class can implement **many** | a class extends **one** |
+| Methods | abstract + `default` + `static` | abstract + concrete |
+
+## Interface — a capability contract
+
+Use an interface to declare a role anything can play. In AEM, OSGi services are almost always defined
+as an interface (the contract) with a separate implementation class:
+
+```java
+public interface PriceFormatter {
+  String format(long cents, Locale locale);
+}
+```
+
+A class can implement several such roles — `implements PriceFormatter, Serializable`.
+
+## Abstract class — shared partial implementation
+
+Use an abstract class when several implementations share real code/state and you want to factor it
+out, leaving only the differences abstract:
+
+```java
+public abstract class AbstractExporter {
+  protected final Resource resource;        // shared state
+  protected AbstractExporter(Resource r) { this.resource = r; }
+
+  public final String export() {            // shared algorithm (template method)
+    return header() + body();
+  }
+  protected abstract String body();         // each subclass fills this in
+  protected String header() { return ""; }  // overridable default
+}
+```
+
+## `default` methods blur the line — but don't replace abstract classes
+
+Since Java 8 interfaces can ship `default` methods (a body), which is great for evolving an API
+without breaking implementers. But interfaces still **can't hold instance state or constructors** —
+that's the abstract class's job.
+
+<Callout type="do">Default to an **interface** for "can do X" — especially OSGi service APIs (it keeps you to single-purpose contracts and easy mocking). Reach for an **abstract class** only when implementations genuinely share **state + code**.</Callout>
+
+<Callout type="warn">"Is-a" vs "can-do": a `BlogPage` *is a* `Page` (abstract class / inheritance), but it *can be* `Exportable` (interface). Don't use inheritance just to share a couple of helper methods — prefer composition or a utility.</Callout>

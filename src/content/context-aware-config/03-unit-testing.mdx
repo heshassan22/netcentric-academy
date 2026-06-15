@@ -1,0 +1,50 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Unit-testing CAC',
+  topics: 'wcm.io CAC test support · registering config · asserting resolution'
+};
+
+CAC is testable with `AemContext` plus the **wcm.io Context-Aware Config** test support — you register
+config values for a context and assert your model reads them.
+
+## Set up
+
+Use a context built with the CAC test plugin so `ConfigurationBuilder` resolves in-memory:
+
+```java
+@ExtendWith(AemContextExtension.class)
+class FooterModelTest {
+  private final AemContext ctx =
+      new AemContextBuilder().plugin(CONTEXT_AWARE_CONFIG).build();
+}
+```
+
+## Provide config for the context
+
+Register the config class and write values for a content path, then point the current resource there:
+
+```java
+@Test
+void readsBrandFromContext() {
+  MockContextAwareConfig.registerAnnotationClasses(ctx, SiteConfig.class);
+  ctx.create().resource("/content/academy",
+      "sling:configRef", "/conf/academy");
+  MockContextAwareConfig.writeConfiguration(ctx, "/content/academy",
+      SiteConfig.class, "brandName", "Netcentric Academy");
+
+  ctx.currentResource(ctx.create().resource("/content/academy/en"));
+  ctx.addModelsForClasses(FooterModel.class);
+
+  FooterModel model = ctx.currentResource().adaptTo(FooterModel.class);
+  assertEquals("Netcentric Academy", model.getBrandName());
+}
+```
+
+## What you're really testing
+
+- The model **reads** the config (not the framework's resolution algorithm).
+- **Inheritance/override**: write a value at a parent context and a different one at a child, and assert the nearest wins.
+- **Defaults**: with no value written, your annotation `default` is returned.
+
+<Callout type="do">Test that your model surfaces the **right value for the context** and falls back to defaults — write a parent and child config and assert the override. That's the behaviour authors rely on.</Callout>

@@ -48,6 +48,7 @@ img { max-width: 100%; height: auto; }
 .layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 2.5rem; max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.25rem 4rem; }
 .content { min-width: 0; }
 .container { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem; }
+.container.landing { padding-top: 2.5rem; padding-bottom: 4rem; }
 
 /* Sidebar */
 .sidebar-inner { position: sticky; top: calc(var(--header-h) + 1.5rem); max-height: calc(100vh - var(--header-h) - 3rem); overflow-y: auto; }

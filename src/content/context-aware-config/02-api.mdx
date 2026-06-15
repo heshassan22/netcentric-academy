@@ -1,0 +1,65 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'The CAC API',
+  topics: '@Configuration annotation · ConfigurationBuilder · context-aware resources · reading in a model'
+};
+
+The Sling Context-Aware Configuration API defines configs as **annotated interfaces** — the same
+OSGi-style metatype you already know, but resolved by content context.
+
+## Define a configuration
+
+```java
+@Configuration(label = "Academy Site Config",
+               description = "Per-site settings for the Academy")
+public @interface SiteConfig {
+
+  @Property(label = "Brand name")
+  String brandName() default "Academy";
+
+  @Property(label = "Newsletter enabled")
+  boolean newsletterEnabled() default false;
+
+  @Property(label = "Social links")
+  String[] socialLinks();
+}
+```
+
+Annotate with `@Configuration` (not OSGi's `@ObjectClassDefinition`) — that's what registers it with
+CAC and surfaces it to editors.
+
+## Read it for the current context
+
+From a Sling Model, adapt the resource to a `ConfigurationBuilder` and ask for your config:
+
+```java
+@Model(adaptables = Resource.class)
+public class FooterModel {
+
+  @Self
+  private Resource resource;
+
+  private SiteConfig config;
+
+  @PostConstruct
+  void init() {
+    config = resource.adaptTo(ConfigurationBuilder.class).as(SiteConfig.class);
+  }
+
+  public String getBrandName() { return config.brandName(); }
+}
+```
+
+CAC resolves the value from the nearest `/conf` for that resource's context — no path logic in your
+code.
+
+## Singletons, lists & nested configs
+
+- **Singleton** — `.as(SiteConfig.class)` (one set of values).
+- **Collection** — `.asCollection(NavItem.class)` for a list of config items.
+- **Nested** — a config property typed as another `@Configuration` interface for structured settings.
+
+<Callout type="note">Context-aware **resources** work the same way: `adaptTo(ConfigurationResourceResolver.class)` returns the underlying `/conf` resources if you need raw nodes rather than a typed config.</Callout>
+
+<Callout type="do">Type your config as an interface and read it via `ConfigurationBuilder` in `@PostConstruct`. Your model never knows *where* the value came from — CAC handles the context resolution and inheritance.</Callout>

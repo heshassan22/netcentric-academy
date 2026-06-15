@@ -15,6 +15,13 @@ variants — without copy-pasting content.
 - **Rollout config** — the rules deciding *what* syncs from master to live copy and *when*.
 - **Rollout** — the act of pushing master changes down into the live copies.
 
+```mermaid
+flowchart TD
+  BP["Blueprint / Language Master<br/>/content/academy/language-master/en"] -->|"rollout config"| LC1["Live Copy: au"]
+  BP -->|"rollout"| LC2["Live Copy: de"]
+  LC1 -->|"break inheritance"| Local["Locally edited component<br/>(rollout skips it)"]
+```
+
 ## Create a live copy
 
 1. In **Sites**, select the source — the English **language master**.

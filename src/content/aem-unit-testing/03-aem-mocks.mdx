@@ -1,0 +1,65 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'AEM Mocks (AemContext)',
+  topics: 'AemContext · loading content · creating resources · models · mocking services'
+};
+
+For code that touches resources, `ValueMap`, or the resolver, **AEM Mocks** (`io.wcm`) gives you an
+in-memory AEM — real Sling APIs, no server.
+
+## Set up the context
+
+```java
+@ExtendWith(AemContextExtension.class)
+class CardModelTest {
+  private final AemContext ctx = new AemContext();   // in-memory resolver, bundle ctx, etc.
+}
+```
+
+## Get content in
+
+Either load a JSON snapshot of a content tree, or build resources programmatically:
+
+```java
+// from a test resource file
+ctx.load().json("/com/example/card.json", "/content/card");
+
+// or inline
+ctx.build().resource("/content/card",
+    "jcr:title", "Hello", "description", "World").commit();
+```
+
+## Adapt to your model
+
+Register the model classes, set the current resource, and adapt:
+
+```java
+ctx.addModelsForClasses(Card.class);
+ctx.currentResource("/content/card");
+
+Card card = ctx.currentResource().adaptTo(Card.class);
+assertEquals("Hello", card.getTitle());
+```
+
+## Mock the OSGi services a model needs
+
+Register a real or mock service into the context so injection resolves:
+
+```java
+ctx.registerService(PriceFormatter.class, (cents, locale) -> "19,99 €");
+// or register + activate your own component with config:
+ctx.registerInjectActivateService(new ReportServiceImpl(),
+    Map.of("endpoint", "https://test"));
+```
+
+## Requests, when the model is request-adaptable
+
+```java
+ctx.requestPathInfo().setSelectorString("teaser");
+MockSlingHttpServletRequest req = ctx.request();
+req.setResource(ctx.currentResource());
+Teaser t = req.adaptTo(Teaser.class);
+```
+
+<Callout type="do">Use `AemContext` only when you actually need Sling APIs (resources, resolver, models). For pure logic, plain JUnit + Mockito is faster. Keep JSON fixtures small and named after the test.</Callout>

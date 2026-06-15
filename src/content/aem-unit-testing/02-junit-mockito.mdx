@@ -1,0 +1,62 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'JUnit & Mockito',
+  topics: 'assertions · lifecycle · mocking collaborators · verify · argument matchers'
+};
+
+JUnit runs the test and checks results; Mockito stands in for the things your class depends on.
+
+## JUnit 5 essentials
+
+```java
+class CartTest {
+  private Cart cart;
+
+  @BeforeEach void setUp() { cart = new Cart(); }   // before every test
+
+  @Test
+  void emptyCartTotalsZero() {
+    assertEquals(0, cart.total());
+    assertTrue(cart.isEmpty());
+    assertThrows(IllegalArgumentException.class, () -> cart.add(null));
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = { 1, 5, 100 })
+  void acceptsPositiveQuantities(int qty) { cart.add(item, qty); /* ... */ }
+}
+```
+
+Common assertions: `assertEquals`, `assertTrue/False`, `assertNull/NotNull`, `assertThrows`,
+`assertAll` (group several).
+
+## Mockito — fake the collaborators
+
+When your class depends on a service, **mock** it so the test stays about *your* class:
+
+```java
+@ExtendWith(MockitoExtension.class)
+class CheckoutTest {
+  @Mock PriceFormatter formatter;
+  @Mock PaymentGateway gateway;
+  @InjectMocks Checkout checkout;     // formatter + gateway injected in
+
+  @Test
+  void chargesFormattedTotal() {
+    when(formatter.format(anyLong(), any())).thenReturn("19,99 €");  // stub
+    when(gateway.charge(1999)).thenReturn(Result.OK);
+
+    assertTrue(checkout.pay(1999, Locale.GERMANY));
+
+    verify(gateway).charge(1999);     // behaviour check
+  }
+}
+```
+
+- **`when(...).thenReturn(...)`** — stub a return value.
+- **`verify(...)`** — assert a method was (or wasn't, `never()`) called.
+- **matchers** — `any()`, `eq()`, `anyLong()`; if you use one matcher, use them for all args.
+- **`thenThrow(...)`** — simulate failure paths.
+
+<Callout type="warn">Don't over-mock. Mock the **boundaries** (services, gateways, repositories) — not value objects or the class under test. A test full of mocks asserting mock interactions tests nothing real.</Callout>

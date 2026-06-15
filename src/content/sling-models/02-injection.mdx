@@ -1,0 +1,62 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'Injecting Content into a Model',
+  topics: '@ValueMapValue · @ChildResource · @OSGiService · @Self · @Default · required vs optional'
+};
+
+A model is mostly **injection annotations** — each one pulls a different thing into a field. Prefer the
+*specific* annotation over the generic `@Inject`; it's clearer and faster.
+
+## The annotations you'll actually use
+
+| Annotation | Injects |
+|---|---|
+| `@ValueMapValue` | a property from the resource's `ValueMap` |
+| `@ChildResource` | a child resource (adapt it to another model) |
+| `@ScriptVariable` | HTL bindings — `currentPage`, `resource`, `pageManager` |
+| `@OSGiService` | an OSGi service by its interface |
+| `@Self` | the adaptable itself (the resource/request) |
+| `@SlingObject` | `ResourceResolver`, `SlingHttpServletRequest`, etc. |
+
+```java
+@Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class Teaser {
+  @ValueMapValue @Default(values = "Untitled")
+  private String title;
+
+  @ValueMapValue(name = "fileReference")
+  private String image;
+
+  @ChildResource
+  private Resource cta;            // /teaser/cta
+
+  @OSGiService
+  private PriceFormatter formatter;
+
+  @ScriptVariable
+  private Page currentPage;
+}
+```
+
+## Required vs optional, and defaults
+
+- With `OPTIONAL` default strategy, an unfilled field is just `null`.
+- Mark a field **`@Required`** when adaptation should fail without it.
+- Use **`@Default(values = ...)`** to supply a fallback instead of `null`.
+- Rename with `@ValueMapValue(name = "fileReference")` when the JCR property name differs from the field.
+
+## Initialise derived state with `@PostConstruct`
+
+Injection happens first; then a `@PostConstruct` method runs to compute derived fields:
+
+```java
+@PostConstruct
+protected void init() {
+  this.hasImage = StringUtils.isNotBlank(image);
+}
+```
+
+<Callout type="warn">Don't do heavy work in getters (they may be called repeatedly from HTL). Compute once in `@PostConstruct` and store the result.</Callout>
+
+<Callout type="do">Reach for the **specific** annotation (`@ValueMapValue`, `@ChildResource`, `@OSGiService`) rather than `@Inject`. It documents intent and avoids ambiguous resolution.</Callout>

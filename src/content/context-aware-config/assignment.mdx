@@ -1,0 +1,29 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Per-site Config with CAC',
+  topics: '@Configuration · ConfigurationBuilder · editor · override · test'
+};
+
+Give the academy site author-editable, per-context settings.
+
+## 1 — Define the config
+
+- [ ] Create a `SiteConfig` `@Configuration` interface (e.g. `brandName`, `newsletterEnabled`, `socialLinks[]`) with labels + defaults
+
+## 2 — Read it
+
+- [ ] In a `FooterModel`, resolve `SiteConfig` via `ConfigurationBuilder` for the current resource
+- [ ] Render `brandName` in the footer HTL
+
+## 3 — Edit it
+
+- [ ] Provision a `/conf/academy` context (Configuration Browser) and set `sling:configRef` on the site root
+- [ ] Install the wcm.io CAC editor and set `brandName` through the form; confirm the footer updates
+
+## 4 — Override & test
+
+- [ ] Create a sub-site context with a different `brandName`; confirm the nearest context wins
+- [ ] Unit-test the model with the CAC test support: assert the configured value and the default fallback
+
+<Callout type="do">Done when the footer's brand name comes from `/conf`, an admin can change it in the editor, a sub-site overrides it, and a unit test pins both the resolved value and the default.</Callout>

@@ -1,0 +1,29 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Design & Extend a Workflow',
+  topics: 'model · launcher · custom process · transient'
+};
+
+Build a small review workflow with a custom Java step.
+
+## 1 — Design the model
+
+- [ ] In the Workflow editor, create a model: **Participant** (review) → **OR split** (approved?) → **Process** (activate) / **Process** (notify)
+- [ ] Run it manually on a test page and action the inbox task
+
+## 2 — Custom process step
+
+- [ ] Implement a `WorkflowProcess` with a `process.label` (e.g. stamp a `reviewedAt` date on the payload)
+- [ ] Use a **service-user** resolver; read a value from **Process Arguments**
+- [ ] Add it as a Process step in your model and verify it stamps the page
+
+## 3 — Trigger automatically
+
+- [ ] Add a **launcher** that starts the model when a page under `/content/academy` is modified
+
+## 4 — Scale it
+
+- [ ] Mark the model **transient** and confirm no instance nodes are left under `/var/workflow/instances`
+
+<Callout type="do">Done when your model routes on a decision, your custom step modifies the payload as a service user, a launcher starts it automatically, and the transient model leaves no instance residue.</Callout>

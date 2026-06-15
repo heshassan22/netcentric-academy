@@ -1,0 +1,37 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Java Foundations',
+  topics: 'collections · equals/hashCode · interfaces · streams · debugging'
+};
+
+Short, focused exercises — do them in a scratch class or a JUnit test in the `core` module.
+
+## 1 — equals / hashCode
+
+- [ ] Write a `Sku` value class with `equals()` + `hashCode()` over a `code` field
+- [ ] Put two `Sku` instances with the same code into a `HashSet`; confirm the set size is **1**
+- [ ] Remove the `hashCode()` override and re-run — observe the size become **2**, and explain why
+
+## 2 — Comparable vs Comparator
+
+- [ ] Make `Lesson(order, title)` implement `Comparable` on `order`
+- [ ] Sort a list naturally, then re-sort with a `Comparator` on `title`
+- [ ] Put `Lesson`s in a `TreeSet` and explain what happens when two have the same `order`
+
+## 3 — Interfaces vs abstract classes
+
+- [ ] Define a `PriceFormatter` **interface** and two implementations (e.g. EUR, USD)
+- [ ] Refactor shared code into an **abstract** `AbstractPriceFormatter` and note what moved (state/constructor) vs what stayed on the interface (the contract)
+
+## 4 — Streams
+
+- [ ] From a `List<Lesson>`, build a `Map<String, List<Lesson>>` grouped by track with `groupingBy`
+- [ ] Get the title of the first lesson with `order > 5` as an `Optional`, defaulting to `"none"`
+
+## 5 — Debugging
+
+- [ ] Attach your IDE to a running AEM instance on port `5005`
+- [ ] Set a **conditional** breakpoint in a Sling Model that only triggers for one component path, and inspect the resolved values
+
+<Callout type="do">Done when your `HashSet`/`TreeSet` behave as the contracts predict, your formatter splits cleanly into interface + abstract base, your stream pipeline reads top-to-bottom, and you've stepped through live AEM code with a conditional breakpoint.</Callout>

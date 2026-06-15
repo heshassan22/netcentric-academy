@@ -1,0 +1,28 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Put ACS Commons to Work',
+  topics: 'deploy · a flush rule · shared props · explore MCP'
+};
+
+Install ACS Commons and use two features end to end.
+
+## 1 — Deploy
+
+- [ ] Add ACS Commons (matching your AEM version) and deploy it; confirm **Tools → ACS AEM Commons** appears
+
+## 2 — A dispatcher flush rule
+
+- [ ] Configure a **Dispatcher Flush Rule**: activating any child under `/content/academy` also flushes the homepage
+- [ ] Activate a child page and confirm the homepage is invalidated in the dispatcher cache
+
+## 3 — Shared component properties
+
+- [ ] Enable **Shared/Global Component Properties**; author a shared value (e.g. a contact phone) at page level
+- [ ] Read it from two different component instances
+
+## 4 — Explore MCP
+
+- [ ] Open **MCP** and run (or inspect) a controlled process — e.g. a bulk property update on a test folder — and read its report
+
+<Callout type="do">Done when ACS Commons is deployed through your build, a flush rule keeps the homepage fresh when children change, two components share one authored value, and you've seen MCP run a safe bulk operation with reporting.</Callout>

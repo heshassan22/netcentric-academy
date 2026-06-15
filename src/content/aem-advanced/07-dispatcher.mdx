@@ -8,6 +8,15 @@ export const meta = {
 In production, visitors don't hit publish directly — they go through the **Dispatcher**, an Apache
 HTTP Server module in front of publish that is both the **caching layer** and the **security layer**.
 
+```mermaid
+flowchart LR
+  V["Visitor"] --> D["Dispatcher<br/>(Apache module)"]
+  D -->|"cache hit"| Cache[("Cached file on disk")]
+  D -->|"miss + allowed"| P["Publish (:4503)"]
+  P --> D
+  D -.->|"blocked by /filter"| X["403 / 404"]
+```
+
 ## What it does
 
 - **Caches** rendered pages and assets to disk and serves them, so most requests never reach AEM — big for performance and resilience.

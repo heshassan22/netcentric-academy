@@ -13,8 +13,10 @@ triggers it.
 
 ## The author → publish model
 
-```text
-Author (:4502)  ──replication──▶  Publish (:4503)  ──▶  visitors
+```mermaid
+flowchart LR
+  A["Author (:4502)<br/>create + activate"] -->|"replication agent"| P["Publish (:4503)<br/>serves content"]
+  P --> V["Visitors"]
 ```
 
 - **Author** — the authoring environment; not public-facing.

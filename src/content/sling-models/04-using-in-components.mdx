@@ -1,0 +1,52 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Deploying & Using a Model in a Component',
+  topics: 'where models live · data-sly-use · the JSON exporter'
+};
+
+A model is only useful once it's deployed in a bundle and wired into a component's HTL.
+
+## Where models live & how they deploy
+
+Sling Models are part of your **`core`** OSGi bundle. The bundle declares the package as a model
+package (the `bnd`/maven-bundle config adds the `Sling-Model-Packages` header) so the Models framework
+scans and registers your `@Model` classes on activation. Deploy = build + install the bundle:
+
+```bash
+mvn clean install -PautoInstallBundle -pl core,all
+```
+
+## Using it from HTL
+
+`data-sly-use` adapts the **current resource** (or request) to the model and binds it to a name:
+
+```html
+<sly data-sly-use.card="com.example.core.models.Card"/>
+<div class="card" data-sly-test="${card.title}">
+  <h3>${card.title}</h3>
+  <p>${card.description}</p>
+</div>
+```
+
+The framework picks the right adaptable based on what the model declares — you just reference the FQCN.
+
+## Bonus: export the model as JSON
+
+Add **`@Exporter`** and the same model serves a `.model.json` for headless / SPA use:
+
+```java
+@Model(adaptables = Resource.class,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+@Exporter(name = "jackson", extensions = "json")
+public class Card {
+  @ValueMapValue private String title;
+  public String getTitle() { return title; }
+}
+```
+
+```text
+GET /content/site/page/jcr:content/card.model.json  →  { "title": "..." }
+```
+
+<Callout type="do">Verify a model in **`/system/console/status-adapters`** (it lists registered adapter factories) and in the **Sling Models** console. If `adaptTo` returns null, the model usually isn't registered — check the bundle is active and the model package is on the `Sling-Model-Packages` header.</Callout>
