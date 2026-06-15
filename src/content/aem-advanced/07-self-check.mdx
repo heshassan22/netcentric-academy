@@ -1,0 +1,90 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'Self-check',
+  topics: 'review questions across replication · DAM · workflows · permissions · MSM · AC Tool'
+};
+
+Quick questions to test yourself on the module. Try to answer before revealing.
+
+## Replication
+
+**Where does the Default Agent's Transport URI point, and why the `sling:authRequestLogin=1` parameter?**
+
+<Reveal title="Answer">
+
+At the **publish** instance's `receive` servlet (`http://localhost:4503/bin/receive`). The
+`sling:authRequestLogin=1` forces an authentication challenge, so the agent's configured transport
+**user/password** are actually used to push the content.
+
+</Reveal>
+
+**After activating a page on author, how do you confirm it worked?**
+
+<Reveal title="Answer">
+
+Open the same path on the **publish** instance (`:4503`) — e.g. `…/content/academy/language-master/en.html`. If the agent's **Test Connection** passes and the page appears on publish, replication is working.
+
+</Reveal>
+
+## DAM
+
+**You upload a 4 MB photo, add it to a page, and the published image is far smaller. Why?**
+
+<Reveal title="Answer">
+
+AEM serves an optimised **rendition**, not the raw asset. DAM workflows generate resized/re-encoded
+copies on ingest, and the Core Image component requests an appropriately sized (often WebP) rendition
+for the viewport. Always upload the **best-quality original** and let AEM downscale.
+
+</Reveal>
+
+## Workflows
+
+**What's the difference between a participant step and a process step?**
+
+<Reveal title="Answer">
+
+A **participant step** is a *human* task — it assigns work to a user/group and waits in their Inbox.
+A **process step** is *automatic* — it runs a server-side process (e.g. activate/deactivate) with no
+human involvement.
+
+</Reveal>
+
+## Users & permissions
+
+**Why grant access through groups rather than to individual users?**
+
+<Reveal title="Answer">
+
+Groups carry the permissions; you add users to groups. It keeps access **manageable and consistent**
+as people join and leave, and it scales — you change a group once instead of editing every user. Aim
+for **least privilege**.
+
+</Reveal>
+
+## MSM
+
+**What is a live copy, and what happens when you "break inheritance" on a component?**
+
+<Reveal title="Answer">
+
+A **live copy** is a site derived from a master (blueprint/language master) that **inherits** its
+content. Breaking inheritance on a component detaches it from the master, so a future **rollout won't
+overwrite** your local change. Re-enable inheritance to resume syncing.
+
+</Reveal>
+
+## AC Tool
+
+**How does the AC Tool define permissions, and why does the YAML file order matter?**
+
+<Reveal title="Answer">
+
+Permissions are described declaratively in **YAML** (groups, users, ACEs) and **applied** by the tool
+— ideally on every deploy. Order matters because a group must be **defined before it's referenced**,
+so files are read in order; prefix filenames with numbers to control it.
+
+</Reveal>
+
+<Callout type="do">Comfortable with all of these? You can take content author→publish, manage assets and workflows, derive sites with MSM, and manage permissions as code. That's the advanced AEM toolkit.</Callout>
