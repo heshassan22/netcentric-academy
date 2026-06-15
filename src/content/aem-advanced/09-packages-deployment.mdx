@@ -1,0 +1,50 @@
+export const meta = {
+  order: 9,
+  num: '09',
+  title: 'Content Packages & Deployment',
+  topics: 'FileVault packages · filter.xml · Package Manager · Maven & the all package'
+};
+
+A **content package** is how JCR content and code move between AEM instances — a zip of repository
+content plus a **filter** that says exactly what's inside.
+
+## Anatomy (FileVault)
+
+```text
+my-package.zip
+├── jcr_root/…                    ← the actual content/code (e.g. /apps/academy, /content/academy)
+└── META-INF/vault/filter.xml     ← which repository paths are in the package
+```
+
+`filter.xml` defines **filter roots** and an import **mode**:
+
+```xml
+<filter root="/apps/academy"/>
+<filter root="/content/academy" mode="merge"/>
+```
+
+- **replace** (default) — the package *owns* that subtree; install overwrites everything under it.
+- **merge** / **update** — only add/update nodes; don't delete what's not in the package.
+
+## Package Manager
+
+At `/crx/packmgr/index.jsp` you can **build**, **download**, **upload**, **install**, and **replicate**
+packages by hand — handy for moving content between environments or snapshotting a subtree.
+
+## In a project
+
+Maven's **filevault-package** plugin builds the `ui.apps` / `ui.content` packages, and the **`all`**
+package embeds them for a single install. You've used these profiles:
+
+```bash
+mvn clean install -PautoInstallSinglePackage          # builds + installs the all package
+mvn clean install -PautoInstallPackage -pl ui.apps    # installs one module's package
+```
+
+<Callout type="warn">A too-broad filter root in **replace** mode can wipe content on install (it owns the whole subtree). Scope filters tightly, and use **merge/update** for shared trees like `/content`.</Callout>
+
+## Practice
+
+- [ ] In Package Manager, create a package with a filter on `/content/academy`, **build** it, download the zip, and inspect its `filter.xml`.
+- [ ] Install it on another instance (or rebuild) and confirm the content arrived.
+- [ ] From the project, deploy with `mvn clean install -PautoInstallPackage -pl ui.apps` and find the installed package in Package Manager.

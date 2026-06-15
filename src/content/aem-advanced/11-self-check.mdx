@@ -1,8 +1,8 @@
 export const meta = {
-  order: 7,
-  num: '07',
+  order: 11,
+  num: '11',
   title: 'Self-check',
-  topics: 'review questions across replication · DAM · workflows · permissions · MSM · AC Tool'
+  topics: 'review questions across the whole module'
 };
 
 Quick questions to test yourself on the module. Try to answer before revealing.
@@ -87,4 +87,52 @@ so files are read in order; prefix filenames with numbers to control it.
 
 </Reveal>
 
-<Callout type="do">Comfortable with all of these? You can take content author→publish, manage assets and workflows, derive sites with MSM, and manage permissions as code. That's the advanced AEM toolkit.</Callout>
+## Dispatcher
+
+**A page renders on publish (`:4503`) but 404s through the dispatcher. What are the two usual causes?**
+
+<Reveal title="Answer">
+
+Either a **security filter** is denying the request (deny-by-default; the path/extension isn't
+allowed), or the **cache** is serving a stale copy that wasn't invalidated. Check the `/filter` and
+the cache (statfile / flush agent) first.
+
+</Reveal>
+
+## OSGi & run modes
+
+**You need a different service URL on publish-prod than on author. Where do you put it?**
+
+<Reveal title="Answer">
+
+In a **run-mode config folder** — e.g. a `.cfg.json` under `config.publish.prod/`. AEM applies only
+the config folders whose run modes all match at startup, so the same build artifact carries different
+config per environment. Don't hard-code it.
+
+</Reveal>
+
+## Packages
+
+**What does the `filter.xml` mode `replace` do that `merge` doesn't — and why is that dangerous?**
+
+<Reveal title="Answer">
+
+`replace` makes the package **own** the filter-root subtree: install overwrites everything under it,
+**deleting** nodes not in the package. `merge`/`update` only add/update. A too-broad `replace` filter
+(e.g. on `/content`) can wipe live content.
+
+</Reveal>
+
+## Querying
+
+**Your query is slow and the log says "Traversed N nodes." What happened and how do you fix it?**
+
+<Reveal title="Answer">
+
+The query had **no usable index**, so Oak walked the tree (traversal). Fix it by constraining to an
+**indexed** path/property, or by adding/extending an Oak index (property or Lucene) under `/oak:index`.
+Use **Explain Query** to confirm which index it uses.
+
+</Reveal>
+
+<Callout type="do">Comfortable with all of these? You can take content author→publish, manage assets and workflows, derive sites with MSM, manage permissions as code, run the dispatcher as a cache + security layer, configure per environment, ship content as packages, and keep queries indexed. That's the advanced AEM toolkit.</Callout>

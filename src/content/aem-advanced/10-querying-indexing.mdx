@@ -1,0 +1,47 @@
+export const meta = {
+  order: 10,
+  num: '10',
+  title: 'Querying & Indexing (Oak)',
+  topics: 'Query Builder · JCR-SQL2 · traversal warnings · Oak indexes'
+};
+
+AEM's repository is **Apache Oak**. Unlike a SQL database, Oak only queries efficiently against an
+**index** — an unindexed query **traverses** the content tree, which is slow and warned about in the
+logs.
+
+## Querying
+
+- **Query Builder** — AEM's high-level predicate syntax; debug it at `/libs/cq/search/content/querydebug.html`.
+- **JCR-SQL2 / XPath** — the low-level query languages Query Builder compiles down to.
+
+```text
+# Query Builder: pages under /content/academy built on a given template
+path=/content/academy
+type=cq:Page
+property=jcr:content/cq:template
+property.value=/conf/academy/settings/wcm/templates/academy-homepage
+```
+
+## Indexes
+
+Index definitions live under **`/oak:index`**:
+
+- **Property index** — fast exact-match lookups on a property (e.g. `cq:template`).
+- **Lucene index** — full-text and complex queries; most AEM queries rely on a Lucene index.
+
+If a query traverses, either add/extend an index or constrain the query (tighter `path`, indexed
+properties).
+
+## Spotting slow queries
+
+- **Explain Query** shows which index a query uses — or that it traverses.
+- The **Query Performance** tool (Tools → Operations → Diagnosis) lists slow/traversing queries.
+- The `error.log` warns: *"Traversed N nodes … consider creating an index."*
+
+<Callout type="do">Constrain by an **indexed** path/property and avoid `//*` over large trees. Add a custom Oak index only when no existing index can serve the query.</Callout>
+
+## Practice
+
+- [ ] Run a Query Builder query in the debugger; open **Explain Query** and note which index it uses.
+- [ ] Write a query that **traverses** (filter on an unindexed property) and find the warning in `error.log`.
+- [ ] Inspect `/oak:index` for a Lucene index (e.g. `cqPageLucene`) and read which properties it indexes.

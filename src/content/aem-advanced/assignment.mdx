@@ -2,7 +2,7 @@ export const meta = {
   order: 99,
   num: '★',
   title: 'Assignment: Advanced AEM Hands-on',
-  topics: 'replication · DAM · workflow · live copy · AC Tool — on the academy environment'
+  topics: 'replication · DAM · workflow · live copy · AC Tool · dispatcher · OSGi · packages · queries'
 };
 
 Work through these on a local **author (:4502)** + **publish (:4503)** setup with the academy content.
@@ -35,4 +35,25 @@ Work through these on a local **author (:4502)** + **publish (:4503)** setup wit
 - [ ] Apply the **anonymous-access-on-publish** example; verify anonymous's permissions changed
 - [ ] Apply the **privileged-user-on-author** example; log in as `Academy`
 
-<Callout type="do">Done when content flows author→publish, your workflow takes an asset down, the live copy mirrors the master, and the AC Tool applies your permissions straight from YAML.</Callout>
+## 7 — Dispatcher
+
+- [ ] In a `dispatcher.any`, locate the `/cache /rules` and the `/filter` section
+- [ ] Add a **deny** rule for `*.json` under `/content` and confirm that path is blocked through the dispatcher
+- [ ] Activate a page and confirm the cache is invalidated (the file is dropped from the dispatcher docroot)
+
+## 8 — OSGi & run modes
+
+- [ ] Persist an OSGi config as a `.cfg.json` under `config.publish/` so it applies **only** on publish; deploy and verify it's absent on author
+- [ ] Read the active run modes at `/system/console/status-slingsettings`
+
+## 9 — Packages
+
+- [ ] In Package Manager, build a package filtered to `/content/academy`, download it, and inspect its `filter.xml`
+- [ ] Reinstall it and confirm the content is restored
+
+## 10 — Querying
+
+- [ ] Run a Query Builder query in the debugger and use **Explain Query** to see which index serves it
+- [ ] Force a **traversing** query and find the warning in `error.log`
+
+<Callout type="do">Done when content flows author→publish, your workflow takes an asset down, the live copy mirrors the master, the AC Tool applies permissions straight from YAML, the dispatcher caches and blocks correctly, your config is scoped by run mode, a package round-trips your content, and you can tell an indexed query from a traversing one.</Callout>

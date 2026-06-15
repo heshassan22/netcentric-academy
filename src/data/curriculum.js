@@ -70,7 +70,7 @@ export const TRACKS = [
     label: 'Advanced AEM',
     badge: '⚡',
     title: 'Advanced AEM',
-    blurb: 'Author→publish replication, DAM assets, metadata & renditions, workflows, Multi-Site Management live copies, and managing permissions as code with the AC Tool.',
+    blurb: 'Author→publish replication, DAM assets & renditions, workflows, MSM live copies, permissions as code (AC Tool), plus the dev/ops backbone: dispatcher, OSGi & run modes, packages & deployment, and Oak querying/indexing.',
     ready: true
   },
   {

@@ -1,0 +1,48 @@
+export const meta = {
+  order: 8,
+  num: '08',
+  title: 'OSGi Configuration & Run Modes',
+  topics: 'the OSGi console · persisting configs · run modes · per-environment config'
+};
+
+AEM runs on an **OSGi** container: every service — servlets, schedulers, replication agents, your own
+components — is tuned through **OSGi configurations**.
+
+## The OSGi console
+
+The Web Console at `/system/console/configMgr` lists every configurable service. Edit a config there
+and it takes effect immediately — but a console edit is **not** version-controlled and is lost on a
+fresh environment. Use it to *inspect* and *experiment*, not as the source of truth.
+
+## Persisting configs in the repository
+
+For real projects, configs live in the codebase under your app as **`.cfg.json`** files (or
+`sling:OsgiConfig` nodes):
+
+```text
+ui.apps/.../apps/academy/osgiconfig/config/com.example.MyService.cfg.json
+```
+
+They deploy with the package, so every environment gets the same config — and it's reviewable in git.
+
+## Run modes — per-environment config
+
+A **run mode** is a label AEM starts with. `author` / `publish` are set automatically; you add custom
+ones like `dev` / `stage` / `prod`. AEM applies the config folder(s) whose run modes all match:
+
+```text
+config/                  ← always applied
+config.author/           ← only on author
+config.publish/          ← only on publish
+config.publish.prod/     ← only when BOTH publish AND prod are active
+```
+
+Run modes are decided at startup (the quickstart jar filename, or `-Dsling.run.modes=publish,prod`).
+
+<Callout type="do">Put environment-specific values (service URLs, credentials, feature flags) in **run-mode config folders**, not in code. Same build artifact, different config per environment.</Callout>
+
+## Practice
+
+- [ ] In `/system/console/configMgr`, find a service (e.g. the **Day CQ Link Externalizer**) and read its current config.
+- [ ] Persist a config as a `.cfg.json` under `config.publish/`, deploy, and confirm it applies **only** on publish (absent on author).
+- [ ] Check the active run modes at `/system/console/status-slingsettings`.
