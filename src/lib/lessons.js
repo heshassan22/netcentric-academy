@@ -25,9 +25,12 @@ for (const t in byTrack) {
   byTrack[t].sort((a, b) => a.order - b.order);
 }
 
+// Lessons shown in navigation (sidebar, track overview, prev/next).
+// Answer pages are excluded everywhere — they're reachable only by direct URL.
 export function getLessons(track) {
-  return byTrack[track] || [];
+  return (byTrack[track] || []).filter((l) => !l.slug.endsWith('assignment-answer'));
 }
+// Resolve a single lesson by slug — includes answer pages, so their URLs still work.
 export function getLesson(track, slug) {
   return (byTrack[track] || []).find((l) => l.slug === slug);
 }
