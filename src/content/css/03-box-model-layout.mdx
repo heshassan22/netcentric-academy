@@ -64,6 +64,32 @@ Try it — flip `box-sizing` between `content-box` and `border-box`, or change t
 
 <Callout type="note">`absolute` looks for the nearest ancestor with a `position` other than `static`. If there is none, it anchors to the document body.</Callout>
 
+Try it — change `.badge`'s `position` (`absolute` / `relative` / `static`) and its `top` / `right` offsets, then flip the parent's `position` and watch where the badge anchors:
+
+<Playground
+  html={`<div class="parent">
+  Card content
+  <span class="badge">NEW</span>
+</div>`}
+  css={`.parent {
+  position: relative;        /* the badge's containing block — try: static */
+  height: 120px;
+  padding: 1rem;
+  background: #f0ebf6;
+  border-radius: 8px;
+}
+.badge {
+  position: absolute;        /* try: static / relative */
+  top: 8px;
+  right: 8px;                /* try: left: 8px / bottom: 8px */
+  padding: .15rem .5rem;
+  background: #6b2fb3;
+  color: #fff;
+  border-radius: 999px;
+  font-size: .75rem;
+}`}
+/>
+
 ## z-index & stacking contexts
 
 The whole idea in one line: **`z-index` is local.** It only ranks elements **inside the same

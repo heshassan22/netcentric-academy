@@ -1,0 +1,55 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'AC Tool: ACLs as Code',
+  topics: 'declarative ACLs · YAML config · install · examples · fragments'
+};
+
+The **[Access Control Tool](https://github.com/Netcentric/accesscontroltool)** (AC Tool) is a
+Netcentric open-source tool that manages AEM **users, groups, and ACLs declaratively** — you describe
+permissions in **YAML**, and the tool applies them repeatably on every deploy, instead of clicking
+through the Security console per environment.
+
+## Install (manual, for this exercise)
+
+1. Download the latest package from **Maven Central**.
+2. **Package Manager** on **author** → upload + install the `.zip`. Repeat on **publish**.
+3. Configuration console → **Main → AC Tool → OSGi config** → set the path where your ACL YAML lives
+   (e.g. `/apps/academy/acls`), and save. Repeat on publish.
+
+<Callout type="note">On real projects you don't do this by hand — Netcentric's Maven plugins deploy the AC Tool and apply the ACLs automatically as part of the build.</Callout>
+
+## How the config works
+
+Drop **YAML files** in your configured folder. Each file has sections defining **groups**, **users**,
+and **ACEs** (access-control entries). **Order matters** — a group must be defined before it's
+referenced — so prefix filenames with numbers to control read order.
+
+```yaml
+# 10-groups.yaml  (illustrative)
+group_config:
+  fragment-authors:
+    - path: /content/academy
+      permission: allow
+      actions: read
+```
+
+After deploying the YAML, open the **AC Tool console** in the System Console and click **Apply** —
+then re-check the permissions; they now reflect the YAML.
+
+## Two examples
+
+- **Anonymous access on publish** — a `fragment-everyone` group grants the `anonymous` user read
+  access so the public site is viewable. Install on publish, **Apply**, then re-check anonymous's permissions.
+- **A privileged user on author** — an `everyone` group tightens the defaults, a `fragment-authors`
+  group grants read to `/content/academy`, and an `Academy` user is added to it. Install on author,
+  **Apply**, then log in (incognito) as `Academy`.
+
+## Fragments & best practice
+
+- A **fragment** is a reusable bundle of ACLs; attach several fragments to a group to compose its access.
+- Prefer **groups + fragments** over per-user grants.
+- Adding real users to **author** isn't recommended (test users only) — and you can scope those to
+  **dev only**, never production, using AEM **run modes** in the AC Tool config.
+
+<Callout type="do">Permissions as code = the same reviewable access on every environment. See the [AC Tool configuration docs](https://github.com/Netcentric/accesscontroltool/blob/develop/docs/Configuration.md) for the full YAML reference.</Callout>

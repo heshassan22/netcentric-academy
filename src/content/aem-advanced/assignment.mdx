@@ -1,0 +1,38 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Advanced AEM Hands-on',
+  topics: 'replication · DAM · workflow · live copy · AC Tool — on the academy environment'
+};
+
+Work through these on a local **author (:4502)** + **publish (:4503)** setup with the academy content.
+
+## 1 — Replication
+
+- [ ] Configure the **Default Agent** transport to the publish *receive* servlet and **Test Connection**
+- [ ] Activate `/content/academy/language-master/en` and confirm it on publish
+
+## 2 — Users
+
+- [ ] In **Security**, create a user (e.g. `tiger-woods`) in the `administrators` group; log in as them in an incognito window
+
+## 3 — DAM
+
+- [ ] Upload two images and compare their **camera-data** metadata
+- [ ] Add one to a page, publish, then compare the **published rendition's size** to the original — and explain the difference
+
+## 4 — Workflow
+
+- [ ] Build an *"Asset deactivation"* workflow (participant step → deactivate step) and run it against an activated asset
+
+## 5 — MSM
+
+- [ ] Create a **live copy** of the English master ("Australian homepage", `au`) using the standard rollout config
+
+## 6 — AC Tool
+
+- [ ] Install the AC Tool on author + publish and point it at `/apps/academy/acls`
+- [ ] Apply the **anonymous-access-on-publish** example; verify anonymous's permissions changed
+- [ ] Apply the **privileged-user-on-author** example; log in as `Academy`
+
+<Callout type="do">Done when content flows author→publish, your workflow takes an asset down, the live copy mirrors the master, and the AC Tool applies your permissions straight from YAML.</Callout>

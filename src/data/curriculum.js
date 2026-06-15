@@ -66,6 +66,14 @@ export const TRACKS = [
     ready: true
   },
   {
+    id: 'aem-advanced',
+    label: 'Advanced AEM',
+    badge: '⚡',
+    title: 'Advanced AEM',
+    blurb: 'Author→publish replication, DAM assets, metadata & renditions, workflows, Multi-Site Management live copies, and managing permissions as code with the AC Tool.',
+    ready: true
+  },
+  {
     id: 'copilot',
     label: 'Copilot',
     badge: '🤖',

@@ -1,0 +1,28 @@
+export const meta = {
+  order: 4,
+  num: '04',
+  title: 'Users, Groups & Permissions',
+  topics: 'the Security console · users vs groups · assigning access · testing it'
+};
+
+AEM access is managed in the **Security** console — **Tools → Security** (`/security/users.html`).
+
+## Users vs groups
+
+- A **user** is an individual account.
+- A **group** carries a set of **permissions**; you grant access by adding users to groups — **not** by
+  assigning permissions to each user one by one. Groups keep access manageable as people join and leave.
+
+## Create a user
+
+1. Security → **Users → Create**.
+2. Give it an **ID** (e.g. `tiger-woods`) and a password.
+3. Under **Groups**, add it to a group — e.g. `administrators` for full access.
+4. **Save**.
+
+Test it: open an **incognito** window and log in as the new user — you'll see exactly what that
+group's permissions allow.
+
+<Callout type="do">Prefer **groups** over per-user permissions, and grant the **least privilege** that does the job. An `administrators` member can do anything — hand it out sparingly.</Callout>
+
+<Callout type="note">Clicking through the Security UI doesn't scale and doesn't survive across environments. The next lesson — the **AC Tool** — manages users, groups, and ACLs **as code**, applied identically on every deploy.</Callout>

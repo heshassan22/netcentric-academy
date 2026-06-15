@@ -1,0 +1,47 @@
+export const meta = {
+  order: 1,
+  num: '01',
+  title: 'Replication & Activation',
+  topics: 'author → publish · replication agents · the receive servlet · activating a page'
+};
+
+AEM is split into **author** (where you create content) and **publish** (what visitors see). Getting
+content from one to the other is **replication** — and pressing *Publish* / *Activate* is what
+triggers it.
+
+## The author → publish model
+
+```text
+Author (:4502)  ──replication──▶  Publish (:4503)  ──▶  visitors
+```
+
+- **Author** — the authoring environment; not public-facing.
+- **Publish** — serves the live site; receives content via replication.
+- **Replication agent** — the configured "pipe" that pushes activated content to a publish instance.
+
+## The default replication agent
+
+Locally, author talks to publish through the **Default Agent**. Configure it once:
+
+1. Open **Tools → Deployment → Replication → Agents on author** (`/etc/replication`) and open the **Default Agent**.
+2. **Edit → Transport** tab, and point the **URI** at the publish *receive* servlet:
+
+```text
+http://localhost:4503/bin/receive?sling:authRequestLogin=1
+```
+
+3. Set the transport **user / password** (locally `admin` / `admin`).
+4. **Save**, then **Test Connection** — you should get a successful handshake.
+
+<Callout type="note">The `receive` servlet on publish is the endpoint that *accepts* replicated content. `sling:authRequestLogin=1` forces an auth challenge so the agent's credentials are actually used.</Callout>
+
+## Activate a page
+
+With the agent working, publish content:
+
+1. Select a page (e.g. `/content/academy/language-master/en`) and **Publish** it.
+2. Verify it on publish: `http://localhost:4503/content/academy/language-master/en.html`.
+
+<Callout type="do">Activation failing? Check the agent's **Test Connection** first, then confirm the publish instance is running and reachable at the Transport URI.</Callout>
+
+<Callout type="note">**Reverse replication** (publish → author) brings user-generated content — form posts, comments — back to author through a *reverse* agent. Same mechanism, opposite direction.</Callout>

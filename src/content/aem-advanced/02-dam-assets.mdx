@@ -1,0 +1,30 @@
+export const meta = {
+  order: 2,
+  num: '02',
+  title: 'DAM: Assets, Metadata & Renditions',
+  topics: 'uploading assets · extracted metadata (EXIF) · renditions · using assets in pages'
+};
+
+The **Digital Asset Management** (DAM) console — `/assets.html/content/dam` — stores images, video and
+documents, plus the **metadata** AEM extracts from them.
+
+## Uploading & metadata
+
+Upload an image to the DAM and open it: AEM has automatically extracted its **metadata**, including
+**camera data** (EXIF — camera model, exposure, GPS, …) when the original photo carries it.
+
+<Callout type="note">Two images can look alike but carry very different metadata: a shot straight from a camera keeps full EXIF, while one exported or processed may have it stripped. Open both and compare the *Camera Data* to see the difference.</Callout>
+
+## Renditions — why the published image is smaller
+
+Add a DAM image to a page with the **Image** component, publish, and the file visitors download is
+usually **smaller** than the original you uploaded. AEM serves an optimised **rendition**, not the raw
+asset:
+
+- On ingestion, DAM workflows generate **renditions** — resized, re-encoded copies — alongside the original.
+- The Core Image component requests an appropriately sized, web-optimised rendition (often WebP) for the viewport.
+
+Try it: add an asset to `/content/academy/language-master/en`, publish, then **Save image as** from the
+published page and compare its size to the original — the delta is the rendition doing its job.
+
+<Callout type="do">Upload the **highest-quality original** and let AEM generate the optimised renditions. Never hand-shrink images before upload — you throw away quality the renditions could have used.</Callout>

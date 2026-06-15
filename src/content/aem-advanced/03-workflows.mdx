@@ -1,0 +1,29 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Workflows: Asset (De)activation',
+  topics: 'workflow models · participant vs process steps · an asset-deactivation workflow'
+};
+
+A **workflow** automates a multi-step process — reviews, publishing, asset processing — combining
+**human** and **automatic** steps.
+
+## Workflow models
+
+Open the **Workflow Models** console (`/libs/cq/workflow/admin/console/content/models.html`). A model
+is a sequence between **Flow Start** and **Flow End**. The two step types you'll use most:
+
+- **Participant step** — a *human* task: it assigns work to a user or group and waits in their **Inbox**.
+- **Process step** — an *automatic* task: it runs a server-side process (e.g. activate / deactivate).
+
+## Build an asset-deactivation workflow
+
+1. **Create** a model, e.g. *"NC: Asset deactivation"*.
+2. Remove every step except **Flow Start** and **Flow End**.
+3. Add a **Participant step** titled *"Deactivate asset"*, assigned to a user or group (the user you make in *Users & Permissions* works well) — someone must approve before it proceeds.
+4. Add a **process step** that **deactivates** the page/asset (takes it down from publish).
+5. **Save**, then run the model against an asset that's currently live on publish.
+
+The assignee approves the task in their Inbox; the process step then removes the asset from publish.
+
+<Callout type="note">Workflows run manually (from the console or Inbox) or automatically via **workflow launchers** that watch a path + event — e.g. "on asset upload, run metadata processing."</Callout>
