@@ -40,9 +40,8 @@ img { max-width: 100%; height: auto; }
 .nav a.soon { opacity: .6; }
 .icon-btn { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-elev); color: var(--text); cursor: pointer; font-size: 1.05rem; }
 .icon-btn:hover { background: var(--bg-soft); }
-.offline-btn { width: auto; padding: 0 .7rem; gap: .3rem; font-size: .8rem; font-weight: 700; white-space: nowrap; }
-.offline-btn.is-ready { color: var(--accent); border-color: var(--accent-2); }
-.offline-btn:disabled { cursor: default; opacity: .9; }
+.icon-btn.is-ready { color: var(--accent); border-color: var(--accent-2); }
+.icon-btn:disabled { cursor: default; opacity: .9; }
 .sidebar-toggle { display: none; }
 
 /* Layout */

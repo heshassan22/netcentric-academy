@@ -33,20 +33,22 @@ export default function OfflineButton() {
 
   if (state === 'unsupported') return null;
 
-  const label = state === 'ready' ? '✓ Offline ready'
-    : state === 'saving' ? 'Saving…'
-    : '⬇ Save offline';
+  // icon only; the label/status lives in the tooltip (title) + aria-label
+  const status = state === 'ready' ? 'Available offline'
+    : state === 'saving' ? 'Saving for offline…'
+    : 'Save for offline';
+  const icon = state === 'ready' ? '✓' : state === 'saving' ? '⌛' : '⬇';
 
   return (
     <button
-      className={'icon-btn offline-btn' + (state === 'ready' ? ' is-ready' : '')}
+      className={'icon-btn' + (state === 'ready' ? ' is-ready' : '')}
       type="button"
       onClick={save}
       disabled={state !== 'idle'}
-      aria-live="polite"
-      title={state === 'ready' ? 'This site is available offline' : 'Save the site to use it offline'}
+      aria-label={status}
+      title={status}
     >
-      {label}
+      {icon}
     </button>
   );
 }
