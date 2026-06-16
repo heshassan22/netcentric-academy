@@ -58,6 +58,21 @@ embed=[academy.publish.atomic.colors, academy.publish.atomic.spacing]
 
 <Callout type="warn">❌ **Bad — `embed`-ing a shared base into every component.** Each component then carries its **own copy** of those styles, so the same CSS ships again and again with no shared cache. Reserve `embed` for **combining a few small libs into one request**, never for sharing.</Callout>
 
+## Troubleshooting: my SCSS change isn't in the CSS
+
+SCSS is a **build input** — AEM never serves your `.scss` directly. The front-end build compiles it
+into the clientlib's CSS, and the *compiled* file is what loads. So when an edit "doesn't show up", the
+new CSS almost always wasn't **produced** or wasn't **deployed**. Check these, most common first:
+
+1. **You didn't rebuild + redeploy.** Editing `.scss` does nothing until the FE build runs. Rebuild and install the front-end module: `mvn clean install -PautoInstallPackage -pl ui.frontend`. Until then AEM keeps serving the previously compiled CSS.
+2. **The build failed, so no new file was written.** A SCSS compile error — or a **stylelint** error — aborts the bundle, and AEM keeps the last good CSS. Read the build log, fix the error, rebuild. (A green "BUILD SUCCESS" line is not enough — scroll up for stylelint warnings/errors.)
+3. **The partial isn't imported.** A new `_card.scss` only compiles if an entry file `@use`s / `@imports` it. An orphan partial is silently ignored — no error, no output.
+4. **You edited the compiled output, not the source.** Generated CSS (under `dist` / the clientlib output) is **overwritten on every build**. Edit the `.scss` source, never the built `.css`.
+5. **Something is caching the old file.** Hard-refresh the browser (it caches the hashed clientlib URL); rebuild AEM's clientlibs via `/libs/granite/ui/content/dumplibs.rebuild.html`; and on **publish**, the **dispatcher** may serve a cached copy — flush it.
+6. **The clientlib category isn't on the page.** The CSS compiled fine, but that category isn't included (HTL clientlib include / page policy), so you never see it. Confirm the `<link>` is actually in the page source.
+
+<Callout type="do">The golden rule: **edit the `.scss`, rebuild, redeploy, hard-refresh.** If the change still isn't there, the build almost certainly **failed** (check the log) or you're editing the **compiled output** instead of the source.</Callout>
+
 ## Performance (ties into the Web Performance track)
 
 - Ship only what a page needs — per-component clientlibs beat one giant global stylesheet.
