@@ -29,17 +29,62 @@ $space: 1rem;
 
 ### Maps
 
-Keys are unique; values can be any type, including nested lists and maps.
+A **map** stores **key → value** pairs — think of a JavaScript object or a dictionary. It lets you
+group related values (a theme, breakpoints, a z-index scale) under **one** variable and look them up by
+name. Keys are unique; values can be any type, including nested lists and maps.
 
 ```scss
 $theme: (
-  brand: #6b2fb3,
+  brand: #6b2fb3,           // key: value
   space: 1rem,
-  shades: (light: #eee, dark: #222)
+  shades: (light: #eee, dark: #222)   // a nested map as a value
 );
-
-.box { color: map.get($theme, brand); }   /* helper functions read maps */
 ```
+
+#### Reading values
+
+You don't write `$theme.brand` — you ask for a key with the **`map.get`** function, which returns that
+value (or `null` if the key is missing):
+
+```scss
+@use 'sass:map';   // the map.* functions live in the sass:map module
+
+.box {
+  color: map.get($theme, brand);                    // #6b2fb3
+  padding: map.get($theme, space);                  // 1rem
+  background: map.get(map.get($theme, shades), dark); // #222  (nested lookup)
+}
+```
+
+<Callout type="note">The `map.*` functions need `@use 'sass:map';` at the top of the file. (Older code used the global `map-get($theme, brand)` — same idea, no `@use` — but the namespaced `map.get` is the modern form.)</Callout>
+
+#### The functions you'll actually use
+
+| Function | Does |
+|---|---|
+| `map.get($map, key)` | the value for a key (or `null`) |
+| `map.has-key($map, key)` | `true`/`false` — is the key present? |
+| `map.keys($map)` | a list of all keys |
+| `map.values($map)` | a list of all values |
+| `map.merge($a, $b)` | a **new** map combining both (maps are immutable — nothing is changed in place) |
+
+#### Why bother — one source of truth you can loop over
+
+The real payoff: define your tokens once, then **generate** CSS from them with `@each` instead of
+repeating yourself:
+
+```scss
+@use 'sass:map';
+
+$sizes: (sm: .5rem, md: 1rem, lg: 2rem);
+
+@each $name, $value in $sizes {
+  .pad-#{$name} { padding: $value; }   // → .pad-sm { padding: .5rem } … etc.
+}
+```
+
+Change a value in the map and every rule built from it updates — that's why maps are the backbone of
+Sass design-token / theming setups.
 
 ## Operators
 
