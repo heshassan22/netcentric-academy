@@ -1,20 +1,21 @@
 export const meta = {
-  order: 4.5,
+  order: 5.5,
   num: '✦',
   title: 'Checkpoint: Vanilla JS Practice',
-  topics: 'Mid-module · plain HTML, no AEM · classes · this/bind · modern JS · events'
+  topics: 'Mid-module · plain HTML, no AEM · functional component · closures · init/initAll · events'
 };
 
 Before the AEM-specific lessons, prove the **language** fundamentals on a plain HTML page — **no
 build, no AEM, no component loader**. Just a `.html` file (or the playground below) and the browser.
-This pulls together lessons **01–04**: variables & types, a **class** with `this`/`bind`, **modern
-JS**, and **events**.
+This pulls together lessons **01–05**: variables & types, the **functional component** pattern
+(closures, `init`/`initAll`), **modern JS**, and **events**.
 
-<Callout type="note">Everything here is pure browser JavaScript. You're practising the foundation the AEM component pattern is built on — next lesson you'll wrap these same ideas in the Netcentric loader.</Callout>
+<Callout type="note">Everything here is pure browser JavaScript, written the **functional** way — the style you'll use most in the project. Next lessons wrap these same ideas in the AEM component pattern.</Callout>
 
-## The task — a Tabs widget, built as a class
+## The task — a Tabs widget, built functionally
 
-You're given this markup. Make the tabs work: clicking a tab shows its panel and hides the others.
+You're given this markup. Make the tabs work: clicking a tab shows its panel and hides the others —
+using an `init`/`initAll` pattern, **no class**.
 
 ```html
 <div class="tabs">
@@ -31,12 +32,12 @@ You're given this markup. Make the tabs work: clicking a tab shows its panel and
 
 ## Steps
 
-- [ ] Write a **`class Tabs`** whose `constructor(root)` stores the root element on `this` and finds the tabs + panels inside it (scoped to `root`, never `document`)
-- [ ] Wire **one delegated `click`** listener on `.tabs__list` (lesson 04) — read the clicked tab via `event.target.closest('.tabs__tab')`
-- [ ] Keep `this` pointing at the instance in the handler — use a **class-field arrow** or **`.bind(this)`** (lesson 02)
-- [ ] On click: show the panel whose `data-panel` matches the tab's `data-tab`, **hide** the rest (toggle `hidden`), and move `aria-selected="true"` to the active tab
-- [ ] Use **modern JS** (lesson 03): `querySelectorAll` + `forEach`/spread, a **template literal** to build the `[data-panel="…"]` selector, and **optional chaining** when reading `dataset`
-- [ ] Create it: `new Tabs(document.querySelector('.tabs'))`
+- [ ] Define a **`SELECTORS`** object holding the class names (root, list, tab, panel)
+- [ ] Write an **`init(root)`** function that finds the tabs + panels **within `root`** and keeps them in local variables — **closures**, no `this` (lesson 03)
+- [ ] Wire **one delegated `click`** listener on `.tabs__list` (lesson 05) — read the clicked tab via `event.target.closest('.tabs__tab')`
+- [ ] Add a `select(name)` helper that **closes over** the panels/tabs: show the panel whose `data-panel` matches, **hide** the rest (toggle `hidden`), and move `aria-selected="true"` to the active tab
+- [ ] Use **modern JS** (lesson 04): `querySelectorAll` + `forEach`, a **template literal** for the `[data-panel="…"]` selector, **optional chaining** on `dataset`
+- [ ] Add **`initAll()`** = `document.querySelectorAll('.tabs').forEach(init)` and run it
 
 ## Try it here
 
@@ -56,24 +57,27 @@ Fill in the `TODO`s — clicking the tabs should swap the panels:
   css={`.tabs__tab { padding: .4rem .8rem; border: 0; background: #eee; cursor: pointer; }
 .tabs__tab[aria-selected="true"] { background: #6b2fb3; color: #fff; }
 .tabs__panel { padding: 1rem; border: 1px solid #ddd; margin-top: .5rem; }`}
-  js={`class Tabs {
-  constructor(root) {
-    this.root = root;
-    this.tabs = root.querySelectorAll('.tabs__tab');
-    // TODO: wire a delegated click listener on '.tabs__list'
-  }
+  js={`const SELECTORS = { root: '.tabs', list: '.tabs__list', tab: '.tabs__tab', panel: '.tabs__panel' };
 
-  select(name) {
+const init = (root) => {
+  const tabs = root.querySelectorAll(SELECTORS.tab);
+  const panels = root.querySelectorAll(SELECTORS.panel);
+
+  const select = (name) => {
     // TODO: show the matching panel, hide the rest, update aria-selected
-  }
-}
+  };
 
-new Tabs(document.querySelector('.tabs'));`}
+  // TODO: one delegated click listener on the list → call select(...)
+};
+
+const initAll = () => document.querySelectorAll(SELECTORS.root).forEach(init);
+initAll();`}
 />
 
-<Callout type="do">Done when clicking any tab swaps the panel, only one panel is visible at a time, `aria-selected` follows the active tab, and `this` is correct inside the handler. Compare with the [answer](checkpoint-assignment-answer).</Callout>
+<Callout type="do">Done when clicking any tab swaps the panel, only one panel is visible at a time, `aria-selected` follows the active tab, and two `.tabs` on the page work independently. Compare with the [answer](checkpoint-assignment-answer).</Callout>
 
 ## Stretch
 
-- [ ] Support **two** `.tabs` widgets on the page at once — loop `document.querySelectorAll('.tabs')` and `new Tabs(el)` for each. Confirm they work independently (that's why state lives on `this`, not globals).
+- [ ] Support **two** `.tabs` widgets on the page at once — `initAll()` already loops, so confirm each one works independently (that's the closure giving each its own state).
 - [ ] Guard against a missing panel with optional chaining so a typo in `data-tab` doesn't throw.
+- [ ] Wrap the whole thing in an **IIFE** so nothing leaks to the global scope.

@@ -1,0 +1,153 @@
+export const meta = {
+  order: 3,
+  num: '03',
+  title: 'Functional Components',
+  topics: 'IIFE module · closures instead of this · init / initAll · selector constants'
+};
+
+Classes (lesson 02) are *one* way to structure a component. But most component behaviour in this
+codebase is written **functionally** — module-scoped functions and **closures** instead of `new` and
+`this`. It's simpler, has no `this` pitfalls, and it's the style you'll meet most often in the project.
+
+## Same job, two styles
+
+A component does the same three things either way: find its elements, hold a little state, react to
+events. The difference is *how* you package that.
+
+| | Class (lesson 02) | Functional (this lesson) |
+|---|---|---|
+| create it | `new Widget(el)` | `init(el)` |
+| hold state | `this.count` on the instance | a `count` variable in the **closure** |
+| behaviour | `this.method()` | inner functions |
+| `this` | mind it (`bind` / arrow) | there's **no `this`** |
+| best for | modelling entities, inheritance | most DOM / UI behaviour |
+
+## The shape: an IIFE module
+
+A component file is wrapped in an **IIFE** — an Immediately Invoked Function Expression. It runs the
+moment the file loads and creates a **private scope**, so nothing leaks to the global `window`.
+
+```js
+(() => {
+  'use strict';
+
+  // everything lives in here — private to this module
+
+})();
+```
+
+## Selector constants
+
+Collect the CSS selectors in one object at the top. The JS, HTML and SCSS all share these class
+names — keeping them in one place makes a rename a one-line change.
+
+```js
+const SELECTORS = {
+  root: '.stepper',
+  value: '.stepper__value',
+  dec: '.stepper__btn--dec',
+  inc: '.stepper__btn--inc',
+};
+```
+
+## `init(element)` — closures instead of `this`
+
+Instead of a constructor storing state on `this`, an **`init` function** receives the element and
+keeps everything in local variables. The event handlers **close over** those variables — that's the
+closure doing the job `this` did in the class version.
+
+```js
+const init = (root) => {
+  const input = root.querySelector(SELECTORS.value);
+  const dec   = root.querySelector(SELECTORS.dec);
+  const inc   = root.querySelector(SELECTORS.inc);
+  if (!input || !dec || !inc) return;        // defensive guard — bail if markup is missing
+
+  const step = Number(input.step) || 1;
+  const min  = Number(input.min);
+  const max  = Number(input.max);
+
+  // `apply` closes over input/dec/inc/min/max — no `this` needed
+  const apply = (delta) => {
+    input.value  = Math.min(Math.max(Number(input.value) + delta, min), max);
+    dec.disabled = Number(input.value) <= min;
+    inc.disabled = Number(input.value) >= max;
+  };
+
+  dec.addEventListener('click', () => apply(-step));
+  inc.addEventListener('click', () => apply(step));
+  apply(0);                                   // set the initial disabled state
+};
+```
+
+Each call to `init(root)` makes a **fresh closure** with its own `input`, `min`, `max` — so two
+steppers on a page stay independent, exactly like two class instances did.
+
+## `initAll()` — one per element on the page
+
+Find every root element and initialise each:
+
+```js
+const initAll = () => document.querySelectorAll(SELECTORS.root).forEach(init);
+
+document.addEventListener('DOMContentLoaded', initAll);
+```
+
+## No `this` to lose
+
+Remember the class gotcha from lesson 02 — a method passed as a callback loses its `this`? **That
+whole problem disappears here.** There's no `this`: handlers are arrow functions that close over plain
+variables, so they always see the right data no matter how they're called.
+
+## Try it — a functional stepper
+
+The markup and styles are given and the demo below **works** — but the **JS panel is hidden**. Your
+turn: build it yourself (an IIFE, `SELECTORS`, `init`, `initAll`) until your version behaves like the
+one shown.
+
+<Playground
+  hideJs
+  html={`<div class="stepper">
+  <button class="stepper__btn stepper__btn--dec" aria-label="Decrease">−</button>
+  <input class="stepper__value" type="number" value="0" min="0" max="5" step="1" readonly>
+  <button class="stepper__btn stepper__btn--inc" aria-label="Increase">+</button>
+</div>`}
+  css={`.stepper { display: inline-flex; gap: .5rem; align-items: center; }
+.stepper__btn { width: 2rem; height: 2rem; border: 0; border-radius: 50%; background: #6b2fb3; color: #fff; cursor: pointer; }
+.stepper__btn:disabled { opacity: .4; cursor: not-allowed; }
+.stepper__value { width: 3rem; text-align: center; }`}
+  js={`(() => {
+  'use strict';
+
+  const SELECTORS = { root: '.stepper', value: '.stepper__value', dec: '.stepper__btn--dec', inc: '.stepper__btn--inc' };
+
+  const init = (root) => {
+    const input = root.querySelector(SELECTORS.value);
+    const dec = root.querySelector(SELECTORS.dec);
+    const inc = root.querySelector(SELECTORS.inc);
+    if (!input || !dec || !inc) return;
+    const step = Number(input.step) || 1, min = Number(input.min), max = Number(input.max);
+    const apply = (delta) => {
+      input.value = Math.min(Math.max(Number(input.value) + delta, min), max);
+      dec.disabled = Number(input.value) <= min;
+      inc.disabled = Number(input.value) >= max;
+    };
+    dec.addEventListener('click', () => apply(-step));
+    inc.addEventListener('click', () => apply(step));
+    apply(0);
+  };
+
+  document.querySelectorAll(SELECTORS.root).forEach(init);
+})();`}
+/>
+
+## How it loads in AEM
+
+Each component is a small JS file bundled by webpack into its **own clientlib** (lesson 06). The file
+is an IIFE that **self-initialises** — it runs `initAll()` on `DOMContentLoaded`, finds its elements,
+and wires them up. No `register`, no `new`. (When you need re-init in author mode, expose `initAll` so
+it can run again — lesson 10.)
+
+<Callout type="do">Reach for the **functional** style for everyday component behaviour: an IIFE, selector constants, an `init(element)` that closes over its state, and an `initAll()` that runs it per element. It's the project's default and sidesteps `this` entirely.</Callout>
+
+<Callout type="note">Use a **class** when you genuinely model an entity with inheritance, or when an API hands you instances. For DOM behaviour, functions + closures are usually clearer.</Callout>

@@ -2,7 +2,7 @@ export const meta = {
   order: 99,
   num: '★',
   title: 'Assignment: Build a Component',
-  topics: 'End of session · ~1.5h · one component, the loader patterns from lessons 04–09'
+  topics: 'End of session · ~1.5h · one component, the loader patterns from lessons 05–10'
 };
 
 Build **one real component — a Dropdown** — applying the track's patterns step by step. Each step
@@ -24,33 +24,33 @@ The markup you enhance:
 </div>
 ```
 
-## Step 1 — Register the class (lesson 05)
+## Step 1 — Register the class (lesson 06)
 
 - [ ] A class taking `(element, options)` — store them, then call `init()`
 - [ ] `register({ Dropdown })` so the loader creates one for every `data-nc="Dropdown"`
 
-## Step 2 — Params & DOM refs (lesson 06)
+## Step 2 — Params & DOM refs (lesson 07)
 
 - [ ] Read `open` from `this.options` (the parsed `data-nc-params`)
 - [ ] Find the toggle button and the menu with `this.element.querySelector(…)` — scoped, never `document`
 
-## Step 3 — Wire the event (lesson 04)
+## Step 3 — Wire the event (lesson 05)
 
 - [ ] On toggle click, show/hide `.dropdown__menu` (its `hidden` attribute) and keep `aria-expanded` in sync
 - [ ] Close it when a click lands **outside** `this.element`
 
-## Step 4 — Announce changes (lesson 07)
+## Step 4 — Announce changes (lesson 08)
 
 - [ ] Dispatch a `dropdown:toggle` custom event (with `{ open }` in `detail`) so other components can react
 
-## Step 5 — Survive author mode (lesson 09)
+## Step 5 — Survive author mode (lesson 10)
 
 - [ ] Guard `init()` so running it twice never binds a second listener (idempotent)
 
-## Step 6 — Ship it (lesson 08)
+## Step 6 — Ship it (lesson 09)
 
 - [ ] Export the class from the publish entry so the build bundles it and the loader runs it
 
-<Callout type="do">Done when: the button toggles its own menu, two Dropdowns on a page work independently, it fires `dropdown:toggle`, and `init()` is safe to run twice. Best practice (lesson 11): scoped to `this.element`, no globals, works without JS.</Callout>
+<Callout type="do">Done when: the button toggles its own menu, two Dropdowns on a page work independently, it fires `dropdown:toggle`, and `init()` is safe to run twice. Best practice (lesson 12): scoped to `this.element`, no globals, works without JS.</Callout>
 
-<Callout type="note">Stretch (lesson 10): debounce a `resize`/`input` handler if your component needs one. Prefer a real AEM component? See [AEM: Extend the Accordion](aem-assignment).</Callout>
+<Callout type="note">Stretch (lesson 11): debounce a `resize`/`input` handler if your component needs one. Prefer a real AEM component? See [AEM: Extend the Accordion](aem-assignment).</Callout>

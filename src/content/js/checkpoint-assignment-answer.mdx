@@ -1,46 +1,46 @@
 export const meta = {
-  order: 4.6,
+  order: 5.6,
   num: '✓',
   title: 'Checkpoint — Answer',
-  topics: 'vanilla JS Tabs: class · this/bind · modern JS · delegated events'
+  topics: 'vanilla JS Tabs: functional · closures · init/initAll · delegated events'
 };
 
-<Callout type="note">One correct solution — attempt the [checkpoint](checkpoint-assignment) first. The point is to use a class, keep `this` correct, and handle clicks with delegation — all in plain browser JS.</Callout>
+<Callout type="note">One correct solution — attempt the [checkpoint](checkpoint-assignment) first. The point is the functional pattern: `init` per element, state in a **closure** (no `this`), and clicks handled by **delegation** — all in plain browser JS.</Callout>
 
 ## The solution
 
 ```js
-class Tabs {
-  constructor(root) {
-    this.root = root;
-    this.tabs = root.querySelectorAll('.tabs__tab');
-    this.panels = root.querySelectorAll('.tabs__panel');
+const SELECTORS = { root: '.tabs', list: '.tabs__list', tab: '.tabs__tab', panel: '.tabs__panel' };
 
-    root.querySelector('.tabs__list').addEventListener('click', this.onClick);
-  }
+const init = (root) => {
+  const list   = root.querySelector(SELECTORS.list);
+  const tabs   = root.querySelectorAll(SELECTORS.tab);
+  const panels = root.querySelectorAll(SELECTORS.panel);
+  if (!list) return;
 
-  onClick = (event) => {
-    const tab = event.target.closest('.tabs__tab');
-    if (tab?.dataset.tab) this.select(tab.dataset.tab);
+  const select = (name) => {
+    const panel = root.querySelector(`[data-panel="${name}"]`);
+    if (!panel) return;
+    panels.forEach(p => p.hidden = p !== panel);
+    tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === name));
   };
 
-  select(name) {
-    const panel = this.root.querySelector(`[data-panel="${name}"]`);
-    if (!panel) return;
+  list.addEventListener('click', (event) => {
+    const tab = event.target.closest(SELECTORS.tab);
+    if (tab?.dataset.tab) select(tab.dataset.tab);
+  });
+};
 
-    this.panels.forEach(p => p.hidden = p !== panel);
-    this.tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === name));
-  }
-}
+const initAll = () => document.querySelectorAll(SELECTORS.root).forEach(init);
 
-document.querySelectorAll('.tabs').forEach(el => new Tabs(el));
+document.addEventListener('DOMContentLoaded', initAll);
 ```
 
 ## Why it's shaped this way
 
-- **A class per widget:** `new Tabs(el)` gives each tab group its **own** `this.tabs`/`this.panels`, so two on a page never clash (lesson 02 — instances are independent).
-- **`this` stays correct:** `onClick` is a **class-field arrow** (`onClick = (e) => {…}`), which auto-binds `this` to the instance — so `this.select(...)` resolves even though the browser calls the handler detached (lesson 02 — losing `this` / `bind`).
-- **One delegated listener:** a single `click` on `.tabs__list`, not one per tab — read the target with `closest()` (lesson 04).
-- **Modern JS:** NodeList `.forEach` (no spread needed), a template-literal selector, optional chaining (`tab?.dataset.tab`), and `setAttribute` coercing the boolean to `"true"`/`"false"` (lesson 03).
+- **A closure per widget:** each `init(root)` call captures its own `list`/`tabs`/`panels`, so two tab groups on a page never clash — the closure does the job a class instance did (lesson 03).
+- **No `this`:** `select` and the click handler are plain functions that **close over** local variables, so there's no `this` to lose — the lesson 02 gotcha simply doesn't apply here.
+- **One delegated listener:** a single `click` on `.tabs__list`, not one per tab — read the target with `closest()` (lesson 05).
+- **Modern JS:** NodeList `.forEach`, a template-literal selector, optional chaining (`tab?.dataset.tab`), and `setAttribute` coercing the boolean to `"true"`/`"false"` (lesson 04).
 
-<Callout type="do">If you stored the tabs/panels on `this`, used one delegated listener, and kept `this` correct with bind/arrow, you've nailed the foundation the AEM component pattern reuses — that's the next lesson.</Callout>
+<Callout type="do">If your widget uses `init`/`initAll`, keeps state in the closure, and handles clicks with one delegated listener, you've nailed the functional pattern the project leans on — the AEM component lessons build straight on it.</Callout>
