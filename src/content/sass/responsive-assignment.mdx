@@ -1,0 +1,78 @@
+export const meta = {
+  order: 100,
+  num: '★',
+  title: 'Assignment: Breakpoint Mixin & Responsive Component',
+  topics: 'responsive mixin · @content · map-driven media queries · responsive account-compare (3 cards)'
+};
+
+The shared layer already has breakpoint **tokens** (`$tablet`, `$desktop`, `$large-desktop`) — but no
+clean way to *use* them, so a component would hand-write `@media (min-width: 600px)` everywhere. In
+this assignment you build a reusable, map-driven **breakpoint mixin**, `@forward` it from the shared
+layer, and use it to make a real component **responsive** and **token-driven**. Build it in your
+project's `ui.frontend` SCSS. Budget **~1.5 hours**.
+
+<Callout type="note">This builds on the [architecture assignment](assignment): you already have `common/styles` with tokens forwarded from `variables.scss`. Here you add the **mixin layer** on top and apply it to an existing component.</Callout>
+
+## Part 1 — Build the breakpoint mixin
+
+- [ ] Add a `mixins.scss` partial in `common/styles`
+- [ ] Build a **`$breakpoints` map** from the existing tokens (`tablet`, `desktop`, `large`)
+- [ ] Write a **`@mixin bp($name)`** that uses `@use "sass:map"`, looks the name up with `map.get`, and wraps **`@content`** in a `@media (min-width: …)` query
+
+<Reveal title="Starter skeleton">
+
+```scss
+// common/styles/mixins.scss
+@use "sass:map";
+@use "variables/breakpoints" as *;
+
+$breakpoints: (
+  tablet:  $tablet,
+  // …add desktop and large
+);
+
+@mixin bp($name) {
+  // 1. look up the min-width for $name
+  // 2. @media (min-width: …) { @content; }
+}
+```
+
+</Reveal>
+
+**Acceptance:** `@include bp(tablet) { … }` compiles to a `@media (min-width: 600px)` block containing
+your styles, and the breakpoint values come from the **tokens**, not hard-coded numbers.
+
+## Part 2 — Expose it through the barrel
+
+- [ ] `@forward "mixins";` from `variables.scss` so any component already doing `@use "variables" as *` gets `bp` automatically
+
+**Acceptance:** a component `@use`s **one** module (`variables`) and can call `bp(...)` — no extra import, no relative path to the mixin file.
+
+## Part 3 — Make the `account-compare` component responsive
+
+Style `academy/publish/components/account-compare/account-compare.clientlibs.scss`. The component
+renders **3 cards** side by side (e.g. comparing account tiers) — but 3 columns don't fit a phone, so
+it needs to adapt.
+
+- [ ] Use a **mobile-first** layout: the 3 cards **stacked** in one column
+- [ ] Scale the grid up with the mixin — **`@include bp(tablet)`** → 2 columns, **`@include bp(desktop)`** → all **3 side by side**
+- [ ] Style the cards with **tokens** (colors, borders) — no hard-coded hex
+- [ ] Keep it **flat BEM** (`.account-compare__card`, `.account-compare__title`), nesting ≤ 2 levels
+
+**Acceptance:** the component reuses the shared mixin + tokens; the cards stack on mobile and become 3
+columns on desktop; the compiled CSS has a mobile-first base plus `min-width` media blocks, with no
+duplicated declarations.
+
+## Verify
+
+- [ ] Rebuild the front end: `mvn clean install -PautoInstallPackage -pl ui.frontend`
+- [ ] Author the component, resize the browser, and confirm the cards go 1 → 2 → 3 columns at tablet/desktop
+- [ ] Open the compiled `account-compare` CSS and confirm the `@media (min-width: 600px / 992px)` blocks are there
+
+## Stretch goals
+
+- A `respond-between($min, $max)` mixin for "only this range".
+- Guard `bp()` with **`@error`** when the name isn't in the map (so a typo fails the build loudly).
+- A **typography mixin** that applies `font-size` + `line-height` from the shared font map.
+
+<Callout type="do">Done when one mixin replaces every hand-written media query, the cards go 1 → 2 → 3 columns from a mobile-first base, all colors come from tokens, and changing a breakpoint token shifts every component that uses `bp()` at once.</Callout>

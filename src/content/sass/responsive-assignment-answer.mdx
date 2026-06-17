@@ -1,0 +1,95 @@
+export const meta = {
+  order: 102,
+  num: '✓',
+  title: 'Responsive Assignment — Answer',
+  topics: 'model solution: map-driven breakpoint mixin + responsive account-compare'
+};
+
+<Callout type="note">One correct solution — attempt the [assignment](responsive-assignment) first. The goal is a single map-driven `bp()` mixin, forwarded through the shared barrel, that replaces every hand-written media query.</Callout>
+
+## 1 — The breakpoint mixin
+
+```scss
+// common/styles/mixins.scss
+@use "sass:map";
+@use "variables/breakpoints" as *;   // resolves via .febuild.js includePaths (common/styles)
+
+$breakpoints: (
+  tablet:  $tablet,        // 600px
+  desktop: $desktop,       // 992px
+  large:   $large-desktop, // 1200px
+);
+
+@mixin bp($name) {
+  $min: map.get($breakpoints, $name);
+
+  @if not $min {
+    @error "Unknown breakpoint `#{$name}` — use one of: #{map.keys($breakpoints)}.";
+  }
+
+  @media (min-width: $min) {
+    @content;
+  }
+}
+```
+
+The `@content` block is where the calling rule's styles are dropped, so `@include bp(tablet) { … }`
+emits `@media (min-width: 600px) { … }`. The `@error` guard turns a typo (`bp(tablet)`) into a build
+failure instead of silently-missing styles.
+
+## 2 — Forward it through the barrel
+
+```scss
+// common/styles/variables.scss  (add this line)
+@forward "mixins";
+```
+
+Now any component already doing `@use "variables" as *` gets `bp` — no separate import.
+
+## 3 — The responsive `account-compare`
+
+Three cards: **stacked** on mobile, **2 columns** at tablet, **3 side by side** at desktop — driven
+entirely by the `bp()` mixin.
+
+```scss
+// academy/publish/components/account-compare/account-compare.clientlibs.scss
+@charset "UTF-8";
+@use "variables" as *;
+
+$module-name: "account-compare";
+
+.#{$module-name} {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;                       // mobile-first: stacked
+
+  @include bp(tablet)  { grid-template-columns: repeat(2, 1fr); }
+  @include bp(desktop) { grid-template-columns: repeat(3, 1fr); }  // all 3 side by side
+
+  &__card {
+    padding: 1.25rem;
+    border: 1px solid $c-grey-300;
+    border-radius: 8px;
+    background: $c-white;
+  }
+
+  &__title {
+    color: $c-purple-700;
+    font-size: 20px;                                // mobile
+  }
+  @include bp(desktop) {
+    &__title { font-size: 24px; }
+  }
+}
+```
+
+The single grid declaration does the heavy lifting: one column by default, then `bp()` widens it to 2
+and 3 columns. No per-card width math, no floats.
+
+## Why this is the shape we want
+
+- **One source of truth:** breakpoints live in the map; change `$tablet` and every `bp(tablet)` block moves with it.
+- **Mobile-first:** the base is the stacked single column; `min-width` layers add columns only as the screen grows — fewer overrides, leaner CSS.
+- **Reuse via `@forward`:** the component imports one module and calls `bp()` — the same `@use`/`@forward` split from [lesson 06](06-project-style-architecture).
+
+<Callout type="do">Compiled output should be the mobile-first 1-column base followed by `@media (min-width: 600px)` / `(min-width: 992px)` blocks that widen the grid — no repeated declarations and no hand-typed pixel breakpoints anywhere in the component.</Callout>
