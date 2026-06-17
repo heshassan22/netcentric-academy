@@ -70,18 +70,71 @@ flowchart TD
 
 ## Event delegation
 
-Instead of a listener on every child, add **one** listener to a parent and decide what to do from
-`event.target`. Efficient, and it works for elements added later.
+Say you have a list and want to react to a click on any item. There's a tempting wrong way and a
+better way.
+
+### ❌ Bad — a listener on every child
 
 ```js
-list.addEventListener('click', (event) => {
-  const item = event.target.closest('li');
-  if (!item) return;                 // ignore clicks outside an <li>
-  alert(item.dataset.info);
+// one listener per <li>
+document.querySelectorAll('.list li').forEach((li) => {
+  li.addEventListener('click', () => console.log(li.dataset.info));
 });
 ```
 
-<Callout type="do">Use delegation for lists and repeated items: one listener on the container beats N listeners on the children, and it keeps working when items are added/removed.</Callout>
+Two real problems:
+
+- **It doesn't scale** — 100 items means 100 listeners to create and keep in memory.
+- **It misses future items** — any `<li>` added *after* this code runs has **no** listener. That bites hard in AEM, where author edits and re-rendering inject fresh DOM all the time.
+
+### ✅ Good — one listener on the parent
+
+Attach a **single** listener to the container and work out what was clicked from `event.target`:
+
+```js
+list.addEventListener('click', (event) => {
+  const item = event.target.closest('li');   // walk up from whatever was clicked
+  if (!item) return;                          // click landed outside an <li> → ignore
+  console.log(item.dataset.info);
+});
+```
+
+One listener covers **every** item — including ones added later — because the click **bubbles** up to
+the container. `closest('li')` handles clicks on something *inside* the `<li>` (an icon, a `<span>`)
+by walking up to the `<li>` you actually care about.
+
+<Callout type="do">Default to **one delegated listener** on the container for lists and repeated items. It's fewer listeners, and — crucially in AEM — it keeps working when items are added or removed.</Callout>
+
+See it: the delegated listener catches clicks on items that **didn't exist** when it was attached. Add a few, then click them — open the console:
+
+<Playground
+  html={`<ul class="list">
+  <li data-info="One">One</li>
+  <li data-info="Two">Two</li>
+</ul>
+<button class="add">Add item</button>`}
+  css={`.list li { cursor: pointer; padding: .25rem .5rem; border-radius: 4px; }
+.list li:hover { background: #f0ebf6; }
+.add { margin-top: .5rem; padding: .4rem .8rem; border: 0; border-radius: 6px; background: #6b2fb3; color: #fff; cursor: pointer; }`}
+  js={`const list = document.querySelector('.list');
+const add = document.querySelector('.add');
+let n = 2;
+
+// ONE delegated listener — handles current AND future <li>s
+list.addEventListener('click', (event) => {
+  const li = event.target.closest('li');
+  if (li) console.log('clicked: ' + li.dataset.info);
+});
+
+// newly added items get NO listener of their own — delegation still catches them
+add.addEventListener('click', () => {
+  n += 1;
+  const li = document.createElement('li');
+  li.dataset.info = 'Item ' + n;
+  li.textContent = 'Item ' + n;
+  list.appendChild(li);
+});`}
+/>
 
 ## 🛠 Practice — delegated list
 
