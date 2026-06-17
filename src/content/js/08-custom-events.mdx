@@ -45,37 +45,11 @@ window.addEventListener('cart:add', (e) => {
 Several "light bulb" components on the page. Two buttons should switch **all** bulbs on/off via
 custom events dispatched on `window`; each bulb toggles `light-bulb__base--on` in response.
 
-<Reveal>
-
-<Tabs>
-<Tab label="Code">
-
-```js
-// buttons dispatch
-onButton.addEventListener('click', () => window.dispatchEvent(new Event('bulb:on')));
-offButton.addEventListener('click', () => window.dispatchEvent(new Event('bulb:off')));
-
-// each bulb listens
-init() {
-  window.addEventListener('bulb:on',  () => this.element.classList.add('light-bulb__base--on'));
-  window.addEventListener('bulb:off', () => this.element.classList.remove('light-bulb__base--on'));
-}
-```
-
-</Tab>
-<Tab label="Result">
-
-Clicking **On** dispatches `bulb:on`, and **every** bulb on the page (not just one) adds
-`light-bulb__base--on` and lights up — that's the broadcast decoupling. **Off** removes it from all.
-
-</Tab>
-</Tabs>
-
-</Reveal>
-
-A working version — both bulbs react to the **same** broadcast event:
+The demo below **works**, but its **JS panel is hidden** — that's your assignment. Wire the buttons to
+broadcast `bulb:on` / `bulb:off` on `window` and make every bulb react, until it matches this:
 
 <Playground
+  hideJs
   html={`<button class="on">All on</button>
 <button class="off">All off</button>
 <div class="bulbs">
