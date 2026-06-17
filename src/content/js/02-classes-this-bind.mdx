@@ -72,12 +72,22 @@ b.greet(); // Hello Linus
 Inside a method, **`this` is whatever is to the left of the dot when the method is called.**
 
 ```js
+class Greeter {
+  constructor(name) { this.name = name; }
+  greet() {
+    console.log(`Hello ${this.name}`);   // `this` = the object that called greet()
+  }
+}
+
+const a = new Greeter('Ada');
+const b = new Greeter('Linus');
+
 a.greet();   // left of the dot is `a` → this === a → "Hello Ada"
 b.greet();   // left of the dot is `b` → this === b → "Hello Linus"
 ```
 
-`this` isn't fixed when you *write* the class — it's decided **at call time**, by *how* the method is
-called. That one sentence explains the gotcha below.
+Same method, two different results — because `this` is decided by **who's left of the dot at call
+time**, not when you wrote the class. That one sentence explains the gotcha below.
 
 ## Step 5 — the classic gotcha: losing `this`
 
