@@ -46,6 +46,55 @@ long relative paths:
 
 <Callout type="warn">`@import` is **deprecated** in Sass — it re-includes files (duplication) and dumps everything into the global scope. Use `@use`/`@forward` in new code.</Callout>
 
+### Practical case: a tokens "barrel"
+
+Say the shared layer has several partials:
+
+```scss
+// common/styles/_colors.scss
+$brand: #6b2fb3;
+$ink:   #1c1c28;
+
+// common/styles/_spacing.scss
+$space-sm: .5rem;
+$space-md: 1rem;
+```
+
+**Without `@forward`**, every component must know — and import — each partial individually, so it's
+coupled to the folder's internal structure:
+
+```scss
+// teaser.scss
+@use "common/styles/colors" as *;
+@use "common/styles/spacing" as *;
+
+.teaser { color: $brand; padding: $space-md; }
+```
+
+**With `@forward`**, you add one entry point that re-exports the whole layer:
+
+```scss
+// common/styles/_index.scss — the public API ("barrel")
+@forward "colors";
+@forward "spacing";
+@forward "breakpoints";
+```
+
+Now every component imports **one** module and doesn't care how the layer is organised inside:
+
+```scss
+// teaser.scss
+@use "common/styles" as tokens;     // resolves to _index.scss automatically
+
+.teaser { color: tokens.$brand; padding: tokens.$space-md; }
+```
+
+Later, split `_colors.scss` into `_brand.scss` + `_neutrals.scss` — update **only** `_index.scss` and
+**no component changes**. That's the payoff: **`@forward` defines a stable public surface; `@use`
+consumes it.**
+
+<Callout type="note">A file can do **both**: `@forward "colors";` to re-expose it *and* `@use "colors";` if the entry point also needs those values itself. `@forward` can also tidy the API — prefix everything (`@forward "spacing" as space-*;`) or expose a subset (`@forward "colors" show $brand;`).</Callout>
+
 ## Design tokens → Sass vs CSS custom properties
 
 Two kinds of "variable", and they're complementary:

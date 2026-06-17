@@ -19,45 +19,6 @@ component's CSS from breaking another's — and keep pages fast.
 - Never reach for `!important` to win a fight — fix the selector or use a modifier class. (If you
   must override a library, prefer **cascade layers** — see the CSS track.)
 
-## Manage clientlib relationships
-
-Two properties on a clientlib (in its `.content.xml`) say how categories relate. They sound similar but
-do very different things:
-
-- **`dependencies`** — "load that category **before** me, as its **own** file." Load order is guaranteed; the two libs stay **separate** requests.
-- **`embed`** — "**copy** that category's compiled output **inside** mine." One request; the other lib's code is **duplicated** into my file.
-
-### See the difference in the page output
-
-A `card` clientlib that needs the atomic `colors`:
-
-**With `dependencies`** → two files, loaded in order (colors stays shared & cacheable):
-
-```html
-<link rel="stylesheet" href="/etc.clientlibs/academy/.../colors.css">  <!-- loads first -->
-<link rel="stylesheet" href="/etc.clientlibs/academy/.../card.css">    <!-- then this    -->
-```
-
-**With `embed`** → one file; the colors are baked into it:
-
-```html
-<link rel="stylesheet" href="/etc.clientlibs/academy/.../card.css">    <!-- colors + card, inlined -->
-```
-
-### Which to use
-
-```text
-# dependencies — shared base kept as ONE cached file, just ordered first
-dependencies=[academy.publish.atomic.colors]
-
-# embed — bundle a few small libs into ONE request (e.g. a site / proxy clientlib)
-embed=[academy.publish.atomic.colors, academy.publish.atomic.spacing]
-```
-
-<Callout type="do">✅ **Good — `dependencies` for anything shared** (colors, base libs). It's downloaded **once** and the browser **caches that single file** across every page and component that depends on it.</Callout>
-
-<Callout type="warn">❌ **Bad — `embed`-ing a shared base into every component.** Each component then carries its **own copy** of those styles, so the same CSS ships again and again with no shared cache. Reserve `embed` for **combining a few small libs into one request**, never for sharing.</Callout>
-
 ## Troubleshooting: my SCSS change isn't in the CSS
 
 SCSS is a **build input** — AEM never serves your `.scss` directly. The front-end build compiles it
