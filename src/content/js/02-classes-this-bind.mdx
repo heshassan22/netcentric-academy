@@ -130,9 +130,9 @@ const greetAda = g.greet.bind(g);
 greetAda();        // Hello Ada — `this` is locked to g forever
 ```
 
-### Use case 1 — event handlers in a component
+### The everyday use — event handlers in a component
 
-The everyday reason you'll use `bind`: handlers run on `this.element`, but the browser calls them
+The main reason you'll reach for `bind`: handlers run on `this.element`, but the browser calls them
 detached. Bind in the constructor so `this` still means the instance:
 
 ```js
@@ -151,37 +151,7 @@ class Dropdown {
 }
 ```
 
-### Use case 2 — being able to remove the listener later
-
-This is the one beginners miss: **`.bind()` returns a *new* function every time you call it.** If you
-want to `removeEventListener` later, you must bind **once** and keep the reference:
-
-```js
-class Dropdown {
-  constructor(element) {
-    this.element = element;
-    this.onClick = this.handleClick.bind(this);   // store the bound function ONCE
-    this.element.addEventListener('click', this.onClick);
-  }
-  destroy() {
-    this.element.removeEventListener('click', this.onClick);  // same reference → removed ✅
-  }
-}
-```
-
-<Callout type="warn">`removeEventListener('click', this.handleClick.bind(this))` does **nothing** — that's a *different* function from the one you added. Same trap with an inline arrow. Save the bound/arrow function on `this` and reuse it.</Callout>
-
-### Use case 3 — presetting arguments (partial application)
-
-`bind`'s first argument is `this`; any extra arguments are **pre-filled**:
-
-```js
-function add(a, b) { return a + b; }
-const add5 = add.bind(null, 5);    // `this` unused → null; a is fixed to 5
-add5(10);                          // 15
-```
-
-<Callout type="do">In components, prefer a **class-field arrow** (`handleClick = () => {…}`) or **bind once in the constructor** and store the reference. Both keep `this` correct *and* give you a stable function you can remove later.</Callout>
+<Callout type="do">In components, prefer a **class-field arrow** (`handleClick = () => {…}`) or **bind in the constructor** — both keep `this` pointing at the instance when the browser calls the handler.</Callout>
 
 ## Try it — watch `this` get lost, then fixed
 
