@@ -13,18 +13,14 @@ export const meta = {
 class Tabs {
   constructor(root) {
     this.root = root;
-    // NodeLists have built-in .forEach(), so spreading [...] into arrays isn't needed
     this.tabs = root.querySelectorAll('.tabs__tab');
     this.panels = root.querySelectorAll('.tabs__panel');
 
-    // We only need the list to attach the listener, no need to save it to 'this'
     root.querySelector('.tabs__list').addEventListener('click', this.onClick);
   }
 
-  // Using an arrow function for the method automatically binds 'this' to the class instance
   onClick = (event) => {
     const tab = event.target.closest('.tabs__tab');
-    // Combine the guard clauses using optional chaining
     if (tab?.dataset.tab) this.select(tab.dataset.tab);
   };
 
@@ -33,8 +29,6 @@ class Tabs {
     if (!panel) return;
 
     this.panels.forEach(p => p.hidden = p !== panel);
-
-    // setAttribute automatically coerces the boolean result into the strings "true" or "false"
     this.tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === name));
   }
 }
