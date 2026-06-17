@@ -1,13 +1,13 @@
 export const meta = {
-  order: 5,
-  num: '05',
+  order: 4,
+  num: '04',
   title: 'Events & Event Delegation',
   topics: 'addEventListener · the event object · delegation · bubbling'
 };
 
 Interactivity is built on **events** — code that listens for activity and runs in response.
 
-<Callout type="note">**In the example** (`assignment/js-starter-accordion`): `accordion.clientlibs.js` `[05]` — one delegated `click` listener on the root, not one per header.</Callout>
+<Callout type="note">Delegation pays off in real components — later you'll see the example Accordion use **one** delegated `click` listener on its root instead of one per header.</Callout>
 
 ## Listening for an event
 
@@ -29,15 +29,13 @@ button.addEventListener('click', (event) => {
 
 ## 🛠 Practice — a button listener
 
-Add a click listener to `.my-component__button` that logs `"button clicked"`:
+Add a click listener to a `.btn` that logs `"button clicked"`:
 
 <Reveal>
 
 ```js
-init() {
-  const button = this.element.querySelector('.my-component__button');
-  button.addEventListener('click', () => console.log('button clicked'));
-}
+const button = document.querySelector('.btn');
+button.addEventListener('click', () => console.log('button clicked'));
 ```
 
 </Reveal>
@@ -92,12 +90,11 @@ One `click` listener on the list; if an `<li>` was clicked, alert its `data-info
 <Reveal>
 
 ```js
-init() {
-  this.element.addEventListener('click', (event) => {
-    const li = event.target.closest('li');
-    if (li) alert(li.dataset.info);
-  });
-}
+const list = document.querySelector('.list');
+list.addEventListener('click', (event) => {
+  const li = event.target.closest('li');
+  if (li) alert(li.dataset.info);
+});
 ```
 
 </Reveal>

@@ -1,0 +1,52 @@
+export const meta = {
+  order: 4.6,
+  num: '✓',
+  title: 'Checkpoint — Answer',
+  topics: 'vanilla JS Tabs: class · this/bind · modern JS · delegated events'
+};
+
+<Callout type="note">One correct solution — attempt the [checkpoint](checkpoint-assignment) first. The point is to use a class, keep `this` correct, and handle clicks with delegation — all in plain browser JS.</Callout>
+
+## The solution
+
+```js
+class Tabs {
+  constructor(root) {
+    this.root = root;
+    // NodeLists have built-in .forEach(), so spreading [...] into arrays isn't needed
+    this.tabs = root.querySelectorAll('.tabs__tab');
+    this.panels = root.querySelectorAll('.tabs__panel');
+
+    // We only need the list to attach the listener, no need to save it to 'this'
+    root.querySelector('.tabs__list').addEventListener('click', this.onClick);
+  }
+
+  // Using an arrow function for the method automatically binds 'this' to the class instance
+  onClick = (event) => {
+    const tab = event.target.closest('.tabs__tab');
+    // Combine the guard clauses using optional chaining
+    if (tab?.dataset.tab) this.select(tab.dataset.tab);
+  };
+
+  select(name) {
+    const panel = this.root.querySelector(`[data-panel="${name}"]`);
+    if (!panel) return;
+
+    this.panels.forEach(p => p.hidden = p !== panel);
+
+    // setAttribute automatically coerces the boolean result into the strings "true" or "false"
+    this.tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === name));
+  }
+}
+
+document.querySelectorAll('.tabs').forEach(el => new Tabs(el));
+```
+
+## Why it's shaped this way
+
+- **A class per widget:** `new Tabs(el)` gives each tab group its **own** `this.tabs`/`this.panels`, so two on a page never clash (lesson 02 — instances are independent).
+- **`this` stays correct:** `onClick` is a **class-field arrow** (`onClick = (e) => {…}`), which auto-binds `this` to the instance — so `this.select(...)` resolves even though the browser calls the handler detached (lesson 02 — losing `this` / `bind`).
+- **One delegated listener:** a single `click` on `.tabs__list`, not one per tab — read the target with `closest()` (lesson 04).
+- **Modern JS:** NodeList `.forEach` (no spread needed), a template-literal selector, optional chaining (`tab?.dataset.tab`), and `setAttribute` coercing the boolean to `"true"`/`"false"` (lesson 03).
+
+<Callout type="do">If you stored the tabs/panels on `this`, used one delegated listener, and kept `this` correct with bind/arrow, you've nailed the foundation the AEM component pattern reuses — that's the next lesson.</Callout>
