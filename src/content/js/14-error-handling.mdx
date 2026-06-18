@@ -1,0 +1,66 @@
+export const meta = {
+  order: 14,
+  num: '14',
+  title: 'Error Handling & Resilience',
+  topics: 'try / catch / finally · guard clauses · optional chaining · fail gracefully'
+};
+
+Robust components expect things to go wrong — bad data, a missing node, a failed request — and
+degrade instead of crashing.
+
+## try / catch / finally
+
+```js
+try {
+  return JSON.parse(text);
+} catch (err) {
+  console.warn('bad JSON:', err.message);
+  return null;            // a sensible fallback, not a crash
+} finally {
+  // always runs — cleanup, hide a spinner, etc.
+}
+```
+
+## Guard clauses
+
+Bail early on the bad case so the happy path stays flat and unindented:
+
+```js
+const init = (root) => {
+  const input = root.querySelector('.field');
+  if (!input) return;     // nothing to do — leave quietly
+  // … the real work
+};
+```
+
+## Optional chaining & nullish
+
+Read possibly-missing data without a chain of `&&`, and supply a default with `??`:
+
+```js
+const city = user?.address?.city ?? 'unknown';
+```
+
+## Try it
+
+<Playground
+  hideHtml
+  html={`<p>Open the console 👇</p>`}
+  js={`const parse = (text) => {
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn('bad JSON:', err.message);
+    return null;
+  }
+};
+
+console.log(parse('{"ok":true}'));   // { ok: true }
+console.log(parse('nope'));          // null  (+ a warning)
+
+const cityOf = (user) => user?.address?.city ?? 'unknown';
+console.log(cityOf({ address: { city: 'Ghent' } }));   // Ghent
+console.log(cityOf(null));                              // unknown`}
+/>
+
+<Callout type="do">Wrap the risky bits (parsing, `fetch`, anything external) in `try/catch`, guard missing DOM/data early, and always have a fallback. A component that fails quietly beats one that takes the page down.</Callout>

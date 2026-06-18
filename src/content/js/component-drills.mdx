@@ -1,0 +1,142 @@
+export const meta = {
+  order: 98,
+  num: '⚑',
+  title: 'Practice Drills: Functional Components',
+  topics: 'functional drills · toggle · tabs · accordion · live filter · carousel'
+};
+
+Five drills, beginner → advanced — a **different component each**, all in the functional style
+(lessons 03 and 05). The HTML and CSS are given; you write the JS. Each starter has the selector
+object and an empty `init` — fill it in, keep state in the closure.
+
+---
+
+## Level 1 — Toggle
+
+- [ ] On the button click, flip the panel's `hidden` and keep `aria-expanded` in sync
+
+<Playground
+  html={`<div class="toggle">
+  <button class="toggle__btn" aria-expanded="false">Details</button>
+  <p class="toggle__panel" hidden>Here are the details.</p>
+</div>`}
+  css={`.toggle__btn { padding: .4rem .8rem; cursor: pointer; }
+.toggle__panel { margin-top: .5rem; padding: .5rem; border: 1px solid #ddd; }`}
+  js={`const SELECTORS = { root: '.toggle', btn: '.toggle__btn', panel: '.toggle__panel' };
+
+const init = (root) => {
+  // your code
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);`}
+/>
+
+---
+
+## Level 2 — Star rating
+
+- [ ] Clicking a star sets the rating to its `data-value` (store it on the root)
+- [ ] Fill (`rating__star--on`) every star up to and including the selected one
+
+<Playground
+  html={`<div class="rating" data-value="0">
+  <button class="rating__star" data-value="1" aria-label="1 star">★</button>
+  <button class="rating__star" data-value="2" aria-label="2 stars">★</button>
+  <button class="rating__star" data-value="3" aria-label="3 stars">★</button>
+  <button class="rating__star" data-value="4" aria-label="4 stars">★</button>
+  <button class="rating__star" data-value="5" aria-label="5 stars">★</button>
+</div>`}
+  css={`.rating { display: inline-flex; gap: .15rem; font-size: 1.6rem; }
+.rating__star { border: 0; background: none; padding: 0; cursor: pointer; color: #ccc; }
+.rating__star--on { color: #f5b50a; }`}
+  js={`const SELECTORS = { root: '.rating', star: '.rating__star' };
+
+const init = (root) => {
+  // your code
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);`}
+/>
+
+---
+
+## Level 3 — Accordion
+
+- [ ] Clicking a header toggles its panel's `hidden` and its `aria-expanded`
+- [ ] Stretch: only one panel open at a time
+
+<Playground
+  html={`<div class="accordion">
+  <div class="accordion__item">
+    <button class="accordion__header" aria-expanded="false">Section 1</button>
+    <div class="accordion__panel" hidden>Content 1</div>
+  </div>
+  <div class="accordion__item">
+    <button class="accordion__header" aria-expanded="false">Section 2</button>
+    <div class="accordion__panel" hidden>Content 2</div>
+  </div>
+</div>`}
+  css={`.accordion__header { width: 100%; text-align: left; padding: .5rem; cursor: pointer; }
+.accordion__panel { padding: .5rem; border: 1px solid #ddd; }`}
+  js={`const SELECTORS = { root: '.accordion', header: '.accordion__header', item: '.accordion__item', panel: '.accordion__panel' };
+
+const init = (root) => {
+  // your code
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);`}
+/>
+
+---
+
+## Level 4 — Live filter
+
+- [ ] On `input`, hide list items whose text doesn't include the typed value (case-insensitive)
+
+<Playground
+  html={`<div class="filter">
+  <input class="filter__input" type="search" placeholder="Filter fruit…">
+  <ul class="filter__list">
+    <li>Apple</li><li>Banana</li><li>Cherry</li><li>Date</li><li>Elderberry</li>
+  </ul>
+</div>`}
+  css={`.filter__input { padding: .4rem; width: 12rem; }
+.filter__list { margin-top: .5rem; padding-left: 1rem; }
+.filter__list li[hidden] { display: none; }`}
+  js={`const SELECTORS = { root: '.filter', input: '.filter__input', item: '.filter__list li' };
+
+const init = (root) => {
+  // your code
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);`}
+/>
+
+---
+
+## Level 5 — Carousel
+
+- [ ] Keep a `current` index **in the closure**; show only that slide
+- [ ] Prev / Next move the index and **wrap around** (`(i + n) % n`)
+
+<Playground
+  html={`<div class="carousel">
+  <button class="carousel__btn" data-dir="-1" aria-label="Previous">‹</button>
+  <div class="carousel__track">
+    <div class="carousel__slide">Slide 1</div>
+    <div class="carousel__slide" hidden>Slide 2</div>
+    <div class="carousel__slide" hidden>Slide 3</div>
+  </div>
+  <button class="carousel__btn" data-dir="1" aria-label="Next">›</button>
+</div>`}
+  css={`.carousel { display: flex; align-items: center; gap: .5rem; }
+.carousel__slide { padding: 2rem; border: 1px solid #ddd; min-width: 8rem; text-align: center; }
+.carousel__btn { width: 2rem; height: 2rem; cursor: pointer; }`}
+  js={`const SELECTORS = { root: '.carousel', btn: '.carousel__btn', slide: '.carousel__slide' };
+
+const init = (root) => {
+  // your code
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);`}
+/>

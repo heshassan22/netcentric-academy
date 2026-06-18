@@ -1,0 +1,49 @@
+export const meta = {
+  order: 13,
+  num: '13',
+  title: 'JSON: parse & stringify',
+  topics: 'text ↔ object · JSON.parse · JSON.stringify'
+};
+
+JSON is **text**; your code works with **objects and arrays**. Two functions bridge the two.
+
+## `JSON.parse` — text → value
+
+Turn a JSON string into a real object/array you can use:
+
+```js
+const text = '{"name":"Ada","langs":["JS","Java"]}';
+const obj = JSON.parse(text);
+obj.name;        // "Ada"
+obj.langs[0];    // "JS"
+```
+
+You'll use it for data from `localStorage`, a `data-*` attribute, or any string source. (After `fetch`,
+`res.json()` already parses for you — see lesson 10.)
+
+## `JSON.stringify` — value → text
+
+Turn an object/array back into a string — to save it, send it in a request body, or log it:
+
+```js
+JSON.stringify(obj);            // '{"name":"Ada","langs":["JS","Java"]}'
+JSON.stringify(obj, null, 2);   // pretty-printed with 2-space indent
+```
+
+## Try it
+
+<Playground
+  hideHtml
+  html={`<p>Open the console 👇</p>`}
+  js={`const text = '{"name":"Ada","langs":["JS","Java"]}';
+
+const obj = JSON.parse(text);          // text -> object
+console.log(obj.name, obj.langs[0]);   // Ada JS
+
+const back = JSON.stringify(obj);      // object -> text
+console.log(back);
+
+console.log(JSON.stringify(obj, null, 2));   // pretty-printed`}
+/>
+
+<Callout type="warn">`JSON.parse` **throws** on invalid JSON — always guard it with `try/catch` (lesson 14) when the input isn't under your control.</Callout>

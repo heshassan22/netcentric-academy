@@ -2,52 +2,90 @@ export const meta = {
   order: 101,
   num: '✓',
   title: 'Assignment — Answer',
-  topics: 'Model solution for the Dropdown · compare with your own'
+  topics: 'Model solution for the Team Directory · compare with your own'
 };
 
-<Callout type="note">One correct solution — attempt the [assignment](assignment) first. The habits that matter: scope to `this.element`, idempotent `init()`, and communicate via a custom event.</Callout>
+<Callout type="note">One correct solution — attempt the [assignment](assignment) first. It pulls together the track: functional structure, fetch with states, a pure transform, fragment rendering, and live filtering.</Callout>
 
 ```js
-// publish/components/dropdown/dropdown.clientlibs.js
-import { register } from '@netcentric/component-loader';
+// directory.clientlibs.js
+(() => {
+  'use strict';
 
-class Dropdown {
-  constructor(element, options) {                 // [03] the loader calls this
-    this.element = element;
-    this.open = Boolean(options && options.open);  // [04] read a param
-    this.init();
-  }
+  const SELECTORS = {
+    root: '.directory',
+    search: '.directory__search',
+    status: '.directory__status',
+    list: '.directory__list'
+  };
 
-  init() {
-    if (this.element.dataset.ncReady) return;       // [08] idempotent — safe to run twice
-    this.element.dataset.ncReady = 'true';
+  // pure: raw API users -> the shape we render, sorted, no mutation
+  const shape = (users) =>
+    users
+      .map((u) => ({ name: u.name, email: u.email, company: u.company.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
-    // [04] DOM refs scoped to this.element
-    this.toggle = this.element.querySelector('.dropdown__toggle');
-    this.menu = this.element.querySelector('.dropdown__menu');
-    this.setOpen(this.open);
-
-    // [05] events
-    this.toggle.addEventListener('click', () => this.setOpen(!this.open));
-    document.addEventListener('click', (event) => {
-      if (!this.element.contains(event.target)) this.setOpen(false);  // close on outside click
+  const renderList = (listEl, people) => {
+    const frag = document.createDocumentFragment();
+    people.forEach((person) => {
+      const li = document.createElement('li');
+      li.className = 'directory__item';
+      li.dataset.name = person.name.toLowerCase();
+      li.textContent = person.name + ' — ' + person.company;
+      frag.appendChild(li);
     });
-  }
+    listEl.replaceChildren(frag);
+  };
 
-  setOpen(open) {
-    this.open = open;
-    this.menu.hidden = !open;
-    this.toggle.setAttribute('aria-expanded', String(open));
-    // [06] announce the change — anyone can listen, no direct references
-    this.element.dispatchEvent(new CustomEvent('dropdown:toggle', {
-      bubbles: true,
-      detail: { open }
-    }));
-  }
-}
+  const init = async (root) => {
+    const search = root.querySelector(SELECTORS.search);
+    const status = root.querySelector(SELECTORS.status);
+    const list = root.querySelector(SELECTORS.list);
+    if (!search || !status || !list) return;
 
-register({ Dropdown });   // [07] shipped via the publish bundle
-export default Dropdown;  // exported so it can be unit-tested
+    let people = [];
+
+    // fetch + states
+    status.textContent = 'Loading…';
+    try {
+      const res = await fetch(root.dataset.endpoint);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      people = shape(await res.json());
+    } catch (err) {
+      status.textContent = 'Could not load the team: ' + err.message;
+      return;
+    }
+
+    renderList(list, people);
+
+    const update = () => {
+      const q = search.value.trim().toLowerCase();
+      const items = list.querySelectorAll(SELECTORS.list + ' > li');
+      let shown = 0;
+      items.forEach((li) => {
+        const match = li.dataset.name.includes(q);
+        li.hidden = !match;
+        if (match) shown += 1;
+      });
+      status.textContent = 'showing ' + shown + ' of ' + people.length;
+    };
+
+    search.addEventListener('input', update);
+    update();
+  };
+
+  const initAll = () => document.querySelectorAll(SELECTORS.root).forEach(init);
+
+  document.addEventListener('DOMContentLoaded', initAll);
+})();
 ```
 
-<Callout type="do">Two Dropdowns coexist (scoped refs), it survives a double `init()`, and it announces every change via `dropdown:toggle` — without knowing who's listening.</Callout>
+## Why it's shaped this way
+
+- **Functional structure** (lessons 03, 15): an IIFE, `SELECTORS`, `init(root)`/`initAll`, config read from `root.dataset.endpoint` — state (`people`) lives in the closure.
+- **Fetch with states** (lessons 10, 14): loading first, `res.ok` checked, errors caught and shown — it never throws uncaught.
+- **Pure transform** (lessons 06, 08): `shape` maps + sorts a **copy**; given the same response it always returns the same list, so it's trivial to reason about.
+- **Fragment render** (lesson 11): one DOM write, `textContent` (no injection), `data-name` for filtering.
+- **Live filter** (lessons 05, 06): one `input` listener, toggles `hidden`, keeps a running count.
+
+<Callout type="do">Notice the side effects (fetch, DOM writes) sit at the edges of `init`, while `shape` stays pure — that split is what makes the logic easy to follow and change.</Callout>

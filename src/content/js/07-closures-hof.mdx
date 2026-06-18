@@ -1,0 +1,61 @@
+export const meta = {
+  order: 7,
+  num: '07',
+  title: 'Closures & Higher-Order Functions',
+  topics: 'a function remembers its scope · functions that take/return functions'
+};
+
+Two ideas that power the functional style — and your component `init` pattern.
+
+## Closure — a function remembers where it was created
+
+A function keeps access to the variables in scope when it was defined, even after that outer function
+has returned. That "remembered" state is **private** and survives between calls.
+
+```js
+const makeCounter = (start) => {
+  let count = start;          // private to each counter
+  return () => {
+    count += 1;
+    return count;
+  };
+};
+```
+
+Each call to `makeCounter` makes a **fresh** `count` — exactly how `init(root)` gives every component
+its own state.
+
+## Higher-order functions
+
+A **higher-order function** takes a function as an argument, returns one, or both. You already use them:
+`map`, `filter`, `addEventListener` all take a function. And `makeCounter` *returns* one.
+
+```js
+const onlyOnce = (fn) => {
+  let done = false;
+  return (...args) => {
+    if (done) return;
+    done = true;
+    return fn(...args);
+  };
+};
+```
+
+## Try it
+
+<Playground
+  hideHtml
+  html={`<p>Open the console 👇</p>`}
+  js={`const makeCounter = (start) => {
+  let count = start;
+  return () => { count += 1; return count; };
+};
+
+const a = makeCounter(0);
+const b = makeCounter(10);
+
+console.log(a(), a(), a());   // 1 2 3
+console.log(b());             // 11  — its own private count`}
+/>
+
+<Callout type="do">When you need private state, return a function (or a few) that close over it — no class, no `this`. That's the whole functional-component idea in one sentence.</Callout>

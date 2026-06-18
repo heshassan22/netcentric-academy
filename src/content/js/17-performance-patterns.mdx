@@ -1,6 +1,6 @@
 export const meta = {
-  order: 11,
-  num: '11',
+  order: 17,
+  num: '17',
   title: 'Performance Patterns',
   topics: 'Lazy init with IntersectionObserver · debounce/throttle · dynamic import · efficient DOM'
 };
@@ -8,7 +8,6 @@ export const meta = {
 Component JS runs on every page that uses the component, so small inefficiencies multiply. These
 patterns keep the front end fast (and tie directly into the Web Performance track).
 
-<Callout type="note">**In the example** (`assignment/js-starter-accordion`): `accordion.clientlibs.js` `[10]` + `accordion.html` show `data-nc-loading="lazy"` and the `import()` pattern. Debounce/throttle and IntersectionObserver are shown as snippets below — the Accordion itself doesn't need them.</Callout>
 
 ## Lazy-initialise with IntersectionObserver
 

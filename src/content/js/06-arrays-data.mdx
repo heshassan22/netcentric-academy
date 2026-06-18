@@ -1,0 +1,58 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'Arrays & Data Transformation',
+  topics: 'map · filter · reduce · find/some/every · chaining · immutable updates'
+};
+
+Most JS work is reshaping arrays of data. A handful of methods cover almost everything — and they
+**return new values** instead of mutating, which suits the functional style.
+
+## The core methods
+
+| Method | Returns | For |
+|---|---|---|
+| `map` | a new array, same length | transform each item |
+| `filter` | a new, shorter array | keep items that pass a test |
+| `reduce` | one value | fold a list into a total/object |
+| `find` | the first match (or `undefined`) | look one up |
+| `some` / `every` | a boolean | "any?" / "all?" |
+
+They **chain** — each returns something the next can work on:
+
+```js
+const names = products
+  .filter((p) => p.inStock)
+  .map((p) => p.name);
+```
+
+## Keep it immutable
+
+`map`/`filter` already return copies. For sorting, use `toSorted()` (not `sort()`, which mutates), and
+spread to copy before changing:
+
+```js
+const cheapestFirst = [...products].sort((a, b) => a.price - b.price); // copy, then sort
+```
+
+## Practice
+
+Open the console and implement each requirement:
+
+<Playground
+  hideHtml
+  html={`<p>Open the console 👇</p>`}
+  js={`const products = [
+  { name: 'Pen', price: 2, inStock: true },
+  { name: 'Mug', price: 8, inStock: false },
+  { name: 'Cap', price: 12, inStock: true }
+];
+
+// 1. Log the names of the in-stock products, comma-separated
+// 2. Log the total price of the in-stock products
+// 3. Log whether any in-stock product costs more than 10
+// 4. Log the name of the first product cheaper than 5
+`}
+/>
+
+<Callout type="do">Reach for `map`/`filter`/`reduce` before a `for` loop — they say *what* you want, return new data, and chain cleanly.</Callout>

@@ -1,0 +1,124 @@
+export const meta = {
+  order: 98.5,
+  num: '✓',
+  title: 'Practice Drills — Answers',
+  topics: 'teacher reference · one functional solution per drill'
+};
+
+<Callout type="note">Teacher reference — reachable only by URL, hidden from the menu. One correct solution per drill; learners should attempt the [drills](component-drills) first.</Callout>
+
+## Level 1 — Toggle
+
+```js
+const SELECTORS = { root: '.toggle', btn: '.toggle__btn', panel: '.toggle__panel' };
+
+const init = (root) => {
+  const btn = root.querySelector(SELECTORS.btn);
+  const panel = root.querySelector(SELECTORS.panel);
+  if (!btn || !panel) return;
+
+  btn.addEventListener('click', () => {
+    const willOpen = panel.hidden;
+    panel.hidden = !willOpen;
+    btn.setAttribute('aria-expanded', String(willOpen));
+  });
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);
+```
+
+## Level 2 — Star rating
+
+```js
+const SELECTORS = { root: '.rating', star: '.rating__star' };
+
+const init = (root) => {
+  const stars = root.querySelectorAll(SELECTORS.star);
+
+  const render = (value) => {
+    root.dataset.value = value;
+    stars.forEach((star) => {
+      star.classList.toggle('rating__star--on', Number(star.dataset.value) <= value);
+    });
+  };
+
+  stars.forEach((star) => {
+    star.addEventListener('click', () => render(Number(star.dataset.value)));
+  });
+
+  render(Number(root.dataset.value) || 0);
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);
+```
+
+## Level 3 — Accordion
+
+```js
+const SELECTORS = { root: '.accordion', header: '.accordion__header', item: '.accordion__item', panel: '.accordion__panel' };
+
+const init = (root) => {
+  const headers = root.querySelectorAll(SELECTORS.header);
+
+  headers.forEach((header) => {
+    header.addEventListener('click', () => {
+      const panel = header.closest(SELECTORS.item).querySelector(SELECTORS.panel);
+      const willOpen = panel.hidden;
+      panel.hidden = !willOpen;
+      header.setAttribute('aria-expanded', String(willOpen));
+    });
+  });
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);
+```
+
+<Callout type="note">Single-open stretch: before opening one, close the others — `headers.forEach(h => { h.setAttribute('aria-expanded', 'false'); h.closest(SELECTORS.item).querySelector(SELECTORS.panel).hidden = true; });` then open the clicked one.</Callout>
+
+## Level 4 — Live filter
+
+```js
+const SELECTORS = { root: '.filter', input: '.filter__input', item: '.filter__list li' };
+
+const init = (root) => {
+  const input = root.querySelector(SELECTORS.input);
+  const items = root.querySelectorAll(SELECTORS.item);
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    items.forEach((item) => {
+      item.hidden = !item.textContent.toLowerCase().includes(q);
+    });
+  });
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);
+```
+
+## Level 5 — Carousel
+
+```js
+const SELECTORS = { root: '.carousel', btn: '.carousel__btn', slide: '.carousel__slide' };
+
+const init = (root) => {
+  const slides = root.querySelectorAll(SELECTORS.slide);
+  const buttons = root.querySelectorAll(SELECTORS.btn);
+  if (!slides.length) return;
+
+  let current = 0;
+
+  const show = (index) => {
+    current = (index + slides.length) % slides.length;   // wrap around
+    slides.forEach((slide, i) => { slide.hidden = i !== current; });
+  };
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => show(current + Number(btn.dataset.dir)));
+  });
+
+  show(0);
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);
+```

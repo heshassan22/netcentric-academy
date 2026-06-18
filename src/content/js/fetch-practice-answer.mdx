@@ -1,0 +1,45 @@
+export const meta = {
+  order: 11.6,
+  num: '✓',
+  title: 'Practice — Answer',
+  topics: 'model solution · fetch + async + arrays + fragment'
+};
+
+<Callout type="note">One correct solution — attempt the [practice](fetch-practice) first.</Callout>
+
+```js
+const SELECTORS = { root: '.todos', status: '.todos__status', list: '.todos__list' };
+
+const init = async (root) => {
+  const status = root.querySelector(SELECTORS.status);
+  const list = root.querySelector(SELECTORS.list);
+
+  status.textContent = 'Loading…';
+
+  let todos;
+  try {
+    const res = await fetch('https://jsonplaceholder.typicode.com/todos');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    todos = (await res.json()).slice(0, 10);
+  } catch (err) {
+    status.textContent = 'Failed: ' + err.message;
+    return;
+  }
+
+  const done = todos.filter((t) => t.completed).length;   // array methods
+
+  const frag = document.createDocumentFragment();
+  todos.forEach((t) => {
+    const li = document.createElement('li');
+    li.textContent = (t.completed ? '✓ ' : '○ ') + t.title;
+    frag.appendChild(li);
+  });
+  list.replaceChildren(frag);                              // one DOM write
+
+  status.textContent = done + ' of ' + todos.length + ' done';
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);
+```
+
+<Callout type="do">Note the shape: an `async init`, loading + error states around the `fetch`, array methods for the count, and a single fragment write — the same moves the [Team Directory](assignment) capstone uses at full size.</Callout>

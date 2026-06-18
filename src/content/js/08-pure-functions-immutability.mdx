@@ -1,0 +1,35 @@
+export const meta = {
+  order: 8,
+  num: '08',
+  title: 'Pure Functions & Immutability',
+  topics: 'same input → same output · no side effects · copy, don\'t mutate'
+};
+
+## Pure functions
+
+A function is **pure** when:
+
+1. The same input always gives the same output.
+2. It has **no side effects** — it doesn't change anything outside itself (globals, the DOM, its arguments).
+
+```js
+const addTax = (total, rate) => total * (1 + rate);   // pure: predictable, testable
+```
+
+Pure functions are trivial to reason about and test — no setup, no surprises. Keep your logic pure and
+push the side effects (DOM writes, network) to the edges.
+
+## Immutability — copy, don't mutate
+
+Changing an object/array that someone else holds causes action-at-a-distance bugs. Make a **new** one
+instead, with spread or `map`:
+
+```js
+const user = { name: 'Ada', role: 'dev' };
+const promoted = { ...user, role: 'lead' };   // user is untouched
+
+const items = ['a', 'b'];
+const more = [...items, 'c'];                  // items is untouched
+```
+
+<Callout type="do">Default to pure functions and immutable updates. Predictable inputs/outputs make code easier to follow, safer to change, and ready to unit-test.</Callout>

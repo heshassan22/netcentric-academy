@@ -15,7 +15,7 @@ This pulls together lessons **01–05**: variables & types, the **functional com
 ## The task — a Tabs widget, built functionally
 
 You're given this markup. Make the tabs work: clicking a tab shows its panel and hides the others —
-using an `init`/`initAll` pattern, **no class**.
+using an `init`/`initAll` pattern.
 
 ```html
 <div class="tabs">
@@ -33,7 +33,7 @@ using an `init`/`initAll` pattern, **no class**.
 ## Steps
 
 - [ ] Define a **`SELECTORS`** object holding the class names (root, list, tab, panel)
-- [ ] Write an **`init(root)`** function that finds the tabs + panels **within `root`** and keeps them in local variables — **closures**, no `this` (lesson 03)
+- [ ] Write an **`init(root)`** function that finds the tabs + panels **within `root`** and keeps them in local variables — **closures** (lesson 03)
 - [ ] Wire **one delegated `click`** listener on `.tabs__list` (lesson 05) — read the clicked tab via `event.target.closest('.tabs__tab')`
 - [ ] Add a `select(name)` helper that **closes over** the panels/tabs: show the panel whose `data-panel` matches, **hide** the rest (toggle `hidden`), and move `aria-selected="true"` to the active tab
 - [ ] Use **modern JS** (lesson 04): `querySelectorAll` + `forEach`, a **template literal** for the `[data-panel="…"]` selector, **optional chaining** on `dataset`

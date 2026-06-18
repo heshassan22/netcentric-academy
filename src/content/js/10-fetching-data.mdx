@@ -1,0 +1,70 @@
+export const meta = {
+  order: 10,
+  num: '10',
+  title: 'Fetching Data',
+  topics: 'fetch · res.json() · loading & error states · AbortController'
+};
+
+`fetch` makes an HTTP request and returns a **promise**. Components that show remote data live and die
+by how they handle the **loading** and **error** states around it.
+
+## The shape of a fetch
+
+```js
+const res = await fetch(url);
+if (!res.ok) throw new Error('HTTP ' + res.status); // fetch only rejects on network failure, not 404/500
+const data = await res.json();
+```
+
+Three states to handle every time: **loading → success → error**.
+
+## Cancelling — AbortController
+
+If the component is removed (or a new search fires) before the response lands, abort the old request:
+
+```js
+const controller = new AbortController();
+fetch(url, { signal: controller.signal });
+// later:
+controller.abort();
+```
+
+## A free API to practise on
+
+[**JSONPlaceholder**](https://jsonplaceholder.typicode.com/) is a fake REST API that returns realistic
+mock JSON — no key, no setup. It exposes several resources, so vary what you fetch:
+
+| Endpoint | Returns |
+|---|---|
+| `/posts` | 100 blog posts (`title`, `body`, `userId`) |
+| `/comments` | 500 comments (`name`, `email`, `body`) |
+| `/todos` | 200 todos (`title`, `completed`) |
+| `/users` | 10 users (`name`, `email`, `company`) |
+| `/albums` · `/photos` | albums and photos |
+
+## Try it (live API)
+
+Load **posts** and show their titles, with loading + error handling:
+
+<Playground
+  hideCss
+  html={`<button class="load">Load posts</button>
+<p class="out">—</p>`}
+  css={`.load { padding: .4rem .8rem; cursor: pointer; }
+.out { margin-top: .5rem; }`}
+  js={`const out = document.querySelector('.out');
+
+document.querySelector('.load').addEventListener('click', async () => {
+  out.textContent = 'Loading…';
+  try {
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const posts = await res.json();
+    out.textContent = posts.slice(0, 3).map((p) => p.title).join(' · ');
+  } catch (err) {
+    out.textContent = 'Failed: ' + err.message;
+  }
+});`}
+/>
+
+<Callout type="warn">`fetch` does **not** reject on `404`/`500` — only on network errors. Always check `res.ok` and throw yourself, or you'll treat an error page as data.</Callout>

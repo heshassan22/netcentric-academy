@@ -1,0 +1,53 @@
+export const meta = {
+  order: 11.5,
+  num: '✦',
+  title: 'Practice: Fetch, async & arrays',
+  topics: 'a small build · async/await · fetch · array methods · render'
+};
+
+A quick one that combines what you just learned: fetch a list, transform it with array methods, and
+render it. Functional, plain browser JS. Uses [JSONPlaceholder](https://jsonplaceholder.typicode.com/).
+
+The markup:
+
+```html
+<div class="todos">
+  <p class="todos__status"></p>
+  <ul class="todos__list"></ul>
+</div>
+```
+
+## Steps
+
+- [ ] Show `Loading…`, then `fetch` `https://jsonplaceholder.typicode.com/todos` (check `res.ok`, catch errors) — lessons 09, 10
+- [ ] The API returns 200 todos — take just the **first 10** with `.slice(0, 10)`, then **count** how many are `completed` (array methods) — lesson 06
+- [ ] Render each as a `<li>` (`✓` / `○` + title) using a **fragment** — lesson 11
+- [ ] Put `X of 10 done` in the status
+
+## Try it
+
+Fill in the `TODO`s:
+
+<Playground
+  html={`<div class="todos">
+  <p class="todos__status">—</p>
+  <ul class="todos__list"></ul>
+</div>`}
+  css={`.todos__list { padding-left: 1rem; }
+.todos__status { font-weight: 700; }`}
+  js={`const SELECTORS = { root: '.todos', status: '.todos__status', list: '.todos__list' };
+
+const init = async (root) => {
+  const status = root.querySelector(SELECTORS.status);
+  const list = root.querySelector(SELECTORS.list);
+
+  // 1. show 'Loading…', then fetch the todos (check res.ok, catch errors)
+  // 2. take the first 10 with .slice(0, 10); count how many are completed
+  // 3. render each as a <li> ('✓ ' or '○ ' + title) using a fragment
+  // 4. set the status to 'X of 10 done'
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);`}
+/>
+
+<Callout type="do">Done when it loads the todos, shows a done-count, lists them, and handles a failed request without crashing. Compare with the [answer](fetch-practice-answer).</Callout>

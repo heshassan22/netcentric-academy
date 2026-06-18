@@ -1,6 +1,6 @@
 export const meta = {
-  order: 8,
-  num: '08',
+  order: 16,
+  num: '16',
   title: 'Custom Events',
   topics: 'Creating events · dispatching · cross-component communication · modules'
 };
@@ -8,7 +8,6 @@ export const meta = {
 Custom events let **independent components talk to each other** without direct references — one
 dispatches, any number listen.
 
-<Callout type="note">**In the example** (`assignment/js-starter-accordion`): `accordion.clientlibs.js` `[06]` — dispatching the `accordion:toggle` event via the shared `emit` helper.</Callout>
 
 <Callout type="when">**When to use it** — to decouple components that shouldn't know about each other: a filter telling unrelated result lists to refresh, a global "close all menus" broadcast, or an "add to cart" signal many widgets react to. For a direct parent↔child relationship, a plain method call or callback is simpler — reach for custom events when a direct reference would create tight coupling.</Callout>
 

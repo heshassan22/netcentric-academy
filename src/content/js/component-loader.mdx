@@ -1,15 +1,15 @@
 export const meta = {
-  order: 6,
+  order: 50,
   num: '06',
   title: 'JS Components & the Component Loader',
-  topics: 'What the loader does · what you need (checklist) · register · the class pattern'
+  topics: 'What the loader does · what you need (checklist) · register · the class pattern',
+  hidden: true
 };
 
 In Netcentric/AEM projects, JavaScript is initialised through the **Component Loader** — an
 open-source library that wires DOM elements to JS classes. You don't call your component yourself;
 you **register** it, mark up an element, and the loader creates an instance for you.
 
-<Callout type="note">**Read along in real code:** the `assignment/js-starter-accordion` branch of the `code` project has a complete, annotated **Accordion**. Get it with `git fetch && git checkout assignment/js-starter-accordion`, then open `ui.frontend/.../publish/components/accordion/accordion.clientlibs.js` — every `[NN]` comment maps to a lesson. This one is `[03]` (`register` + the `data-nc` hook in `accordion.html`).</Callout>
 
 ## What it does
 
@@ -28,7 +28,7 @@ nothing happens (no error) — so it's worth knowing them all.
 2. **Register the class** with `register({ MyComponent })`. The **name you register**
    (`MyComponent`) is the exact name the loader will look for in the HTML.
 3. **Make sure the build includes it** — export it from the publish entry (`index.js`) so the
-   bundler ships it. Code that's never imported never runs. (See *Shipping Component JS*.)
+   bundler ships it. Code that's never imported never runs.
 4. **Mark up the element** with `data-nc="MyComponent"`. The value must match the registered name
    **exactly** (it's case-sensitive).
 5. **The loader runtime must run on the page** — `run()` + `observe()`, loaded via the publish JS

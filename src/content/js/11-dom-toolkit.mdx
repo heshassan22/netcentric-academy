@@ -1,0 +1,74 @@
+export const meta = {
+  order: 11,
+  num: '11',
+  title: 'DOM Toolkit',
+  topics: 'createElement · textContent · classList · dataset · fragments · <template>'
+};
+
+Building DOM from data, the safe and fast way.
+
+## Create & update nodes
+
+```js
+const li = document.createElement('li');
+li.textContent = name;            // textContent, not innerHTML — no injection risk
+li.classList.add('list__item');   // toggle/add/remove classes
+li.dataset.id = product.id;       // data-id="…", read back via li.dataset.id
+```
+
+Use **`textContent`** for text (it can't execute markup); reserve `innerHTML` for trusted strings only.
+
+## Why a DocumentFragment?
+
+A `DocumentFragment` is a lightweight, **off-screen** container. Nodes you add to it aren't in the page
+yet, so building it costs nothing visible — then you insert the whole thing in **one** operation.
+
+**❌ Append inside the loop** — each `appendChild` is a *live* DOM change, so the browser may reflow on
+every iteration (slow and janky for long lists):
+
+```js
+items.forEach((item) => list.appendChild(makeRow(item)));   // N live insertions
+```
+
+**✅ Build off-screen, insert once** — the loop touches only the detached fragment; the page updates a
+single time:
+
+```js
+const frag = document.createDocumentFragment();
+items.forEach((item) => frag.appendChild(makeRow(item)));   // off-screen, no reflow
+list.replaceChildren(frag);                                  // ONE DOM write
+```
+
+Reach for a fragment when you're adding **several** nodes at once (a rendered list, search results). For
+a single node it makes no difference — just append it. A `<template>` element is the markup-first
+version: clone its content with `template.content.cloneNode(true)`.
+
+## Try it
+
+<Playground
+  html={`<button class="add">Add fruit</button>
+<ul class="list"></ul>`}
+  css={`.add { padding: .4rem .8rem; cursor: pointer; }
+.list { margin-top: .5rem; }`}
+  js={`const fruits = ['Apple', 'Banana', 'Cherry'];
+const list = document.querySelector('.list');
+
+const render = (names) => {
+  const frag = document.createDocumentFragment();
+  names.forEach((name) => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    li.dataset.fruit = name.toLowerCase();
+    frag.appendChild(li);
+  });
+  list.replaceChildren(frag);   // one write, every time
+};
+
+render(fruits);
+document.querySelector('.add').addEventListener('click', () => {
+  fruits.push('Fruit ' + (fruits.length + 1));
+  render(fruits);
+});`}
+/>
+
+<Callout type="do">Build nodes with `createElement` + `textContent`, batch them in a fragment, and write once. Avoid string-concatenated `innerHTML` for anything user- or content-derived.</Callout>

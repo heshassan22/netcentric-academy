@@ -1,0 +1,64 @@
+export const meta = {
+  order: 15,
+  num: '15',
+  title: 'Passing Parameters & DOM References',
+  topics: 'data-* attributes · root.dataset · JSON config · scoped querySelector'
+};
+
+A component needs two things from the page: **configuration** (parameters) and access to its **inner
+elements** (DOM references). Both come from the root element passed to `init(root)`.
+
+## Passing parameters
+
+Put config in `data-*` attributes on the root and read it from **`root.dataset`**:
+
+```html
+<div class="my-component" data-text="Hello from data" data-max="5"></div>
+```
+
+```js
+const init = (root) => {
+  const text = root.dataset.text;         // "Hello from data"
+  const max  = Number(root.dataset.max);  // 5  — dataset values are always strings, so coerce
+};
+```
+
+For structured config, store JSON in one attribute and parse it (guarded — see lesson 14):
+
+```js
+const options = JSON.parse(root.dataset.options || '{}');
+```
+
+This is the bridge from **authoring / HTL** to your JS: whatever the template outputs into `data-*`,
+the component reads.
+
+<Callout type="warn">A JSON `data-*` value must be **well-formed** (double-quoted keys/strings). Wrap `JSON.parse` in `try/catch` so one bad value doesn't take the component down.</Callout>
+
+## DOM references
+
+Find inner elements **relative to `root`**, never with a document-wide query:
+
+```js
+const title = root.querySelector('.my-component__title');
+const items = root.querySelectorAll('.my-component__item');
+```
+
+<Callout type="do">Always scope queries to `root`. A page may hold many instances of the same component — `document.querySelector('.title')` would grab the wrong one.</Callout>
+
+## Try it
+
+Reads `data-text` and writes it into the empty span:
+
+<Playground
+  html={`<div class="my-component" data-text="Hello from data-text">
+  <span class="my-component__text"></span>
+</div>`}
+  css={`.my-component__text { font-weight: 700; color: #6b2fb3; }`}
+  js={`const init = (root) => {
+  const el = root.querySelector('.my-component__text');
+  if (!el) return;
+  el.textContent = root.dataset.text;   // textContent, not innerHTML
+};
+
+document.querySelectorAll('.my-component').forEach(init);`}
+/>

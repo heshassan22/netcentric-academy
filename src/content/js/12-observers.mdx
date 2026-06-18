@@ -1,0 +1,44 @@
+export const meta = {
+  order: 12,
+  num: '12',
+  title: 'Observers',
+  topics: 'IntersectionObserver · MutationObserver · ResizeObserver'
+};
+
+Observers let the browser **tell you** when something happens, instead of you polling for it.
+
+| Observer | Fires when… | Use for |
+|---|---|---|
+| **IntersectionObserver** | an element enters/leaves the viewport | lazy-load, reveal-on-scroll, infinite scroll |
+| **MutationObserver** | the DOM tree changes | react to content added/removed |
+| **ResizeObserver** | an element's size changes | responsive components without `resize` math |
+
+They share a shape: `new XObserver(callback)` then `.observe(element)` (and `.disconnect()` to stop).
+
+## IntersectionObserver — reveal on scroll
+
+<Playground
+  html={`<p class="status">scroll the box ↓</p>
+<div class="scroller">
+  <div class="spacer">keep scrolling…</div>
+  <div class="box">👋 watch me</div>
+</div>`}
+  css={`.scroller { height: 120px; overflow: auto; border: 1px solid #ddd; padding: .5rem; }
+.spacer { height: 200px; color: #999; }
+.box { padding: 1rem; background: #eee; border-radius: 6px; transition: background .3s; }
+.box--seen { background: #c8e6c9; }`}
+  js={`const scroller = document.querySelector('.scroller');
+const box = document.querySelector('.box');
+const status = document.querySelector('.status');
+
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    box.classList.toggle('box--seen', entry.isIntersecting);
+    status.textContent = entry.isIntersecting ? 'box is visible ✅' : 'scroll the box ↓';
+  });
+}, { root: scroller, threshold: 0.5 });
+
+io.observe(box);`}
+/>
+
+<Callout type="do">For "do something when it scrolls into view" reach for **IntersectionObserver**, not scroll-event math — it's simpler and far cheaper. Call `.disconnect()` when the component goes away.</Callout>

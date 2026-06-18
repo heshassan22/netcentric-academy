@@ -18,7 +18,8 @@ for (const path in files) {
     order: meta.order ?? 0,
     title: meta.title || slug,
     num: meta.num ?? '',
-    topics: meta.topics || ''
+    topics: meta.topics || '',
+    hidden: meta.hidden || false
   });
 }
 for (const t in byTrack) {
@@ -26,9 +27,10 @@ for (const t in byTrack) {
 }
 
 // Lessons shown in navigation (sidebar, track overview, prev/next).
-// Answer pages are excluded everywhere — they're reachable only by direct URL.
+// Hidden from nav (sidebar, overview, prev/next), reachable only by direct URL:
+// any "*-answer" page, or a lesson with `hidden: true` in its meta.
 export function getLessons(track) {
-  return (byTrack[track] || []).filter((l) => !l.slug.endsWith('assignment-answer'));
+  return (byTrack[track] || []).filter((l) => !l.slug.endsWith('-answer') && !l.hidden);
 }
 // Resolve a single lesson by slug — includes answer pages, so their URLs still work.
 export function getLesson(track, slug) {

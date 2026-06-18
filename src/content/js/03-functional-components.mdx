@@ -6,8 +6,8 @@ export const meta = {
 };
 
 Classes (lesson 02) are *one* way to structure a component. But most component behaviour in this
-codebase is written **functionally** — module-scoped functions and **closures** instead of `new` and
-`this`. It's simpler, has no `this` pitfalls, and it's the style you'll meet most often in the project.
+codebase is written **functionally** — module-scoped functions and **closures**. It's simpler and the
+style you'll meet most often in the project.
 
 ## Same job, two styles
 
@@ -19,7 +19,6 @@ events. The difference is *how* you package that.
 | create it | `new Widget(el)` | `init(el)` |
 | hold state | `this.count` on the instance | a `count` variable in the **closure** |
 | behaviour | `this.method()` | inner functions |
-| `this` | mind it (`bind` / arrow) | there's **no `this`** |
 | best for | modelling entities, inheritance | most DOM / UI behaviour |
 
 ## The shape: an IIFE module
@@ -67,7 +66,7 @@ const init = (root) => {
   const min  = Number(input.min);
   const max  = Number(input.max);
 
-  // `apply` closes over input/dec/inc/min/max — no `this` needed
+  // `apply` closes over input/dec/inc/min/max
   const apply = (delta) => {
     input.value  = Math.min(Math.max(Number(input.value) + delta, min), max);
     dec.disabled = Number(input.value) <= min;
@@ -93,11 +92,10 @@ const initAll = () => document.querySelectorAll(SELECTORS.root).forEach(init);
 document.addEventListener('DOMContentLoaded', initAll);
 ```
 
-## No `this` to lose
+## State lives in the closure
 
-Remember the class gotcha from lesson 02 — a method passed as a callback loses its `this`? **That
-whole problem disappears here.** There's no `this`: handlers are arrow functions that close over plain
-variables, so they always see the right data no matter how they're called.
+Handlers are arrow functions that close over the local variables, so they always have the element and
+state they need — the callback context problem from lesson 02 never comes up.
 
 ## Try it — a functional stepper
 
@@ -143,11 +141,10 @@ one shown.
 
 ## How it loads in AEM
 
-Each component is a small JS file bundled by webpack into its **own clientlib** (lesson 06). The file
+Each component is a small JS file bundled by webpack into its **own clientlib**. The file
 is an IIFE that **self-initialises** — it runs `initAll()` on `DOMContentLoaded`, finds its elements,
-and wires them up. No `register`, no `new`. (When you need re-init in author mode, expose `initAll` so
-it can run again — lesson 10.)
+and wires them up — it self-initialises. (Expose `initAll` so it can run again if the DOM is re-rendered.)
 
-<Callout type="do">Reach for the **functional** style for everyday component behaviour: an IIFE, selector constants, an `init(element)` that closes over its state, and an `initAll()` that runs it per element. It's the project's default and sidesteps `this` entirely.</Callout>
+<Callout type="do">Reach for the **functional** style for everyday component behaviour: an IIFE, selector constants, an `init(element)` that closes over its state, and an `initAll()` that runs it per element. It's the project's default.</Callout>
 
 <Callout type="note">Use a **class** when you genuinely model an entity with inheritance, or when an API hands you instances. For DOM behaviour, functions + closures are usually clearer.</Callout>

@@ -1,56 +1,51 @@
 export const meta = {
   order: 99,
   num: '★',
-  title: 'Assignment: Build a Component',
-  topics: 'End of session · ~1.5h · one component, the loader patterns from lessons 05–10'
+  title: 'Assignment: Build a Team Directory',
+  topics: 'capstone · fetch → transform → render → filter · functional'
 };
 
-Build **one real component — a Dropdown** — applying the track's patterns step by step. Each step
-uses one lesson; do them in order. Build it in `ui.frontend`. Budget **~1.5 hours**.
+Build one component that ties the whole track together: a **Team Directory** that loads people from a
+mock API, shapes the data, renders cards, and filters them live — all in the functional style. Build it
+in `ui.frontend`. Budget **~2 hours**.
 
-<Callout type="note">**Starter project:** check out the `assignment/js-starter-dropdown` branch — the component (HTL, dialog, SCSS) and a demo page are all wired up; only `dropdown.clientlibs.js` is left as **TODOs**. Deploy it, then fill in that one file — no scaffolding. Stuck? Compare with the [answer](assignment-answer).</Callout>
-
-<Callout type="note">Start from markup that already works without JS (a button + a list). Your JS only *enhances* it — that's progressive enhancement.</Callout>
+<Callout type="note">This combines the lessons — it is **not** a copy of any one demo. Data comes from the free **JSONPlaceholder** API: `https://jsonplaceholder.typicode.com/users`.</Callout>
 
 The markup you enhance:
 
 ```html
-<div class="dropdown" data-nc="Dropdown" data-nc-params-Dropdown='{"open": false}'>
-  <button class="dropdown__toggle" aria-expanded="false">Menu</button>
-  <ul class="dropdown__menu" hidden>
-    <li><a href="#">One</a></li>
-    <li><a href="#">Two</a></li>
-  </ul>
+<div class="directory" data-endpoint="https://jsonplaceholder.typicode.com/users">
+  <input class="directory__search" type="search" placeholder="Search names…">
+  <p class="directory__status"></p>
+  <ul class="directory__list"></ul>
 </div>
 ```
 
-## Step 1 — Register the class (lesson 06)
+## Step 1 — Structure (lessons 03, 15)
 
-- [ ] A class taking `(element, options)` — store them, then call `init()`
-- [ ] `register({ Dropdown })` so the loader creates one for every `data-nc="Dropdown"`
+- [ ] IIFE + a `SELECTORS` object; `init(root)` and `initAll()` over every `.directory`
+- [ ] Read the API URL from `root.dataset.endpoint` (don't hard-code it)
 
-## Step 2 — Params & DOM refs (lesson 07)
+## Step 2 — Fetch with states (lessons 10, 14)
 
-- [ ] Read `open` from `this.options` (the parsed `data-nc-params`)
-- [ ] Find the toggle button and the menu with `this.element.querySelector(…)` — scoped, never `document`
+- [ ] Show `Loading…` in the status; `fetch` the endpoint; check `res.ok` then `res.json()`
+- [ ] On failure, show an error message in the status — never let it throw uncaught
 
-## Step 3 — Wire the event (lesson 05)
+## Step 3 — Shape the data (lessons 06, 08)
 
-- [ ] On toggle click, show/hide `.dropdown__menu` (its `hidden` attribute) and keep `aria-expanded` in sync
-- [ ] Close it when a click lands **outside** `this.element`
+- [ ] In a **pure** helper, `map` each raw user to `{ name, email, company }` and **sort by name** (don't mutate the response)
 
-## Step 4 — Announce changes (lesson 08)
+## Step 4 — Render (lesson 11)
 
-- [ ] Dispatch a `dropdown:toggle` custom event (with `{ open }` in `detail`) so other components can react
+- [ ] Build the list with `createElement` + a `DocumentFragment`; use `textContent`, set `data-name` on each item; write once
 
-## Step 5 — Survive author mode (lesson 10)
+## Step 5 — Filter live (lessons 05, 06)
 
-- [ ] Guard `init()` so running it twice never binds a second listener (idempotent)
+- [ ] On the search `input`, filter the items by name (case-insensitive) and update the status to `showing X of Y`
 
-## Step 6 — Ship it (lesson 09)
+## Stretch
 
-- [ ] Export the class from the publish entry so the build bundles it and the loader runs it
+- [ ] Debounce the search input (lesson 17)
+- [ ] `AbortController` to cancel an in-flight request if it re-fetches (lesson 10)
 
-<Callout type="do">Done when: the button toggles its own menu, two Dropdowns on a page work independently, it fires `dropdown:toggle`, and `init()` is safe to run twice. Best practice (lesson 12): scoped to `this.element`, no globals, works without JS.</Callout>
-
-<Callout type="note">Stretch (lesson 11): debounce a `resize`/`input` handler if your component needs one. Prefer a real AEM component? See [AEM: Extend the Accordion](aem-assignment).</Callout>
+<Callout type="do">Done when: it loads from the API, shows loading **and** error states, renders cards from the shaped data, filters live with a running count — and it's all functional (closures for state, pure transforms, queries scoped to `root`). Compare with the [answer](assignment-answer).</Callout>

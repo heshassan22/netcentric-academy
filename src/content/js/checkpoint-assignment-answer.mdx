@@ -5,7 +5,7 @@ export const meta = {
   topics: 'vanilla JS Tabs: functional · closures · init/initAll · delegated events'
 };
 
-<Callout type="note">One correct solution — attempt the [checkpoint](checkpoint-assignment) first. The point is the functional pattern: `init` per element, state in a **closure** (no `this`), and clicks handled by **delegation** — all in plain browser JS.</Callout>
+<Callout type="note">One correct solution — attempt the [checkpoint](checkpoint-assignment) first. The point is the functional pattern: `init` per element, state in a **closure**, and clicks handled by **delegation** — all in plain browser JS.</Callout>
 
 ## The solution
 
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', initAll);
 ## Why it's shaped this way
 
 - **A closure per widget:** each `init(root)` call captures its own `list`/`tabs`/`panels`, so two tab groups on a page never clash — the closure does the job a class instance did (lesson 03).
-- **No `this`:** `select` and the click handler are plain functions that **close over** local variables, so there's no `this` to lose — the lesson 02 gotcha simply doesn't apply here.
+- **State in the closure:** `select` and the click handler close over the local `list`/`tabs`/`panels`, so each widget keeps its own state.
 - **One delegated listener:** a single `click` on `.tabs__list`, not one per tab — read the target with `closest()` (lesson 05).
 - **Modern JS:** NodeList `.forEach`, a template-literal selector, optional chaining (`tab?.dataset.tab`), and `setAttribute` coercing the boolean to `"true"`/`"false"` (lesson 04).
 

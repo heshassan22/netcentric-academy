@@ -1,0 +1,70 @@
+export const meta = {
+  order: 9,
+  num: '09',
+  title: 'Async / await',
+  topics: 'async functions · await · try/catch · running work in parallel'
+};
+
+Some things take time — a network request, a timer. **`async`/`await`** lets you write that code so it
+reads top-to-bottom, while the page stays responsive.
+
+## An async function
+
+```js
+async function load() {
+  const value = await slowThing();   // pause here until it's ready — without freezing the page
+  return value;
+}
+```
+
+- `await` pauses until the awaited value is ready, then hands you the result.
+- `await` only works **inside an `async` function** (or at the top level of a module).
+- An `async` function always returns a promise — so callers can `await` it too.
+
+## Handle failures with try / catch
+
+If the awaited work fails, the `await` throws — catch it like any other error (lesson 14):
+
+```js
+async function load() {
+  try {
+    const data = await getData();
+    use(data);
+  } catch (err) {
+    showError(err.message);    // getData failed
+  }
+}
+```
+
+## Run independent work in parallel
+
+Awaiting one thing after another is **sequential** — slow when they don't depend on each other. Start
+them together with `Promise.all`:
+
+```js
+// sequential — ~500ms
+const a = await first();   // 250ms
+const b = await second();  // 250ms
+
+// parallel — ~250ms
+const [x, y] = await Promise.all([first(), second()]);
+```
+
+## Try it
+
+<Playground
+  hideHtml
+  html={`<p>Open the console 👇</p>`}
+  js={`const delay = (ms, value) => new Promise((resolve) => setTimeout(() => resolve(value), ms));
+
+(async () => {
+  console.log('loading…');
+  const first = await delay(300, 'first');
+  console.log('got:', first);
+
+  const both = await Promise.all([delay(200, 'x'), delay(200, 'y')]);
+  console.log('parallel:', both.join(' + '));
+})();`}
+/>
+
+<Callout type="do">Use `async/await` for readable async flows, wrap awaits that can fail in `try/catch`, and reach for `Promise.all` to run independent work at the same time instead of one-after-another.</Callout>
