@@ -17,6 +17,23 @@ They share a shape: `new XObserver(callback)` then `.observe(element)` (and `.di
 
 ## IntersectionObserver — reveal on scroll
 
+An **IntersectionObserver** watches an element and calls your function whenever it **enters or leaves
+view** — so you never listen to `scroll` or measure positions yourself.
+
+Two steps: create one with a callback, then `observe()` the element. Each time its visibility changes,
+your callback gets an **`entry`**, and `entry.isIntersecting` is `true` when the element is on screen.
+
+```js
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    // entry.isIntersecting === true  → the element is now visible
+  });
+});
+io.observe(myElement);
+```
+
+In the demo below the box turns green once it scrolls into its container, and back again when it leaves:
+
 <Playground
   html={`<p class="status">scroll the box ↓</p>
 <div class="scroller">
@@ -42,3 +59,30 @@ io.observe(box);`}
 />
 
 <Callout type="do">For "do something when it scrolls into view" reach for **IntersectionObserver**, not scroll-event math — it's simpler and far cheaper. Call `.disconnect()` when the component goes away.</Callout>
+
+## Exercise — fade in on scroll
+
+Same idea as the demo, your turn. HTML and CSS are given: the card starts invisible (`opacity: 0`) and
+fades in when the `reveal--in` class is added. Use an `IntersectionObserver` to add that class **once**
+when the card scrolls into view, then stop watching. Fill in the JS starter:
+
+<Playground
+  html={`<div class="scroller">
+  <div class="spacer">scroll down…</div>
+  <div class="reveal">✨ I fade in</div>
+</div>`}
+  css={`.scroller { height: 120px; overflow: auto; border: 1px solid #ddd; padding: .5rem; }
+.spacer { height: 200px; color: #999; }
+.reveal { padding: 1rem; background: #eee; border-radius: 6px; opacity: 0; transition: opacity .5s; }
+.reveal--in { opacity: 1; }`}
+  js={`const scroller = document.querySelector('.scroller');
+const reveal = document.querySelector('.reveal');
+
+// TODO: create an IntersectionObserver with { root: scroller }.
+//   - when \`reveal\` becomes visible (entry.isIntersecting), add the 'reveal--in' class
+//   - it only needs to happen once — then observer.unobserve(reveal)
+//   - start observing \`reveal\`
+`}
+/>
+
+<Callout type="note">Same shape as the demo: `new IntersectionObserver(callback, { root: scroller })` then `.observe(reveal)`. The only new bit is calling `.unobserve()` (or `.disconnect()`) once it's revealed, so it fades in just one time.</Callout>
