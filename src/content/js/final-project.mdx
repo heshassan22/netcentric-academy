@@ -22,7 +22,6 @@ Data comes from [JSONPlaceholder](https://jsonplaceholder.typicode.com/): `/post
 │  │ Post title │  │ Post title │  │ Post title │            │  ← PostList: grid of cards
 │  │ by Author  │  │ by Author  │  │ by Author  │            │     (<article>), fade in
 │  │ excerpt……  │  │ excerpt……  │  │ excerpt……  │            │     on scroll
-│  │ 5 💬       │  │ 3 💬       │  │ 8 💬       │            │
 │  └────────────┘  └────────────┘  └────────────┘            │
 │              … more cards reveal as you scroll …           │
 └───────────────────────────────────────────────────────────┘
@@ -61,7 +60,8 @@ createPostDialog(dialogRoot);                 // listens for 'post:open'
 const list = createPostList(listRoot);        // cards dispatch 'post:open'
 createSearchBar(searchRoot, { onSearch: (q) => list.filter(q) });
 
-const [posts, users] = await Promise.all([getPosts(), getUsers()]);
+const posts = await getPosts();
+const users = await getUsers();
 list.render(joinAuthors(posts, users));
 ```
 
@@ -82,20 +82,82 @@ src/
 └── main.js                    # create + wire the components
 ```
 
-## Requirements (and the lessons they exercise)
+## Requirements
 
-- [ ] **Modules** — split API, helpers, and each component into their own files; `main.js` wires them (lesson 03)
-- [ ] **Fetch in parallel** with `Promise.all`, each call with loading + error states (lessons 09, 10, 14)
-- [ ] **Transform** the data with pure helpers — join authors, sort, build excerpts — without mutating the responses (lessons 06, 08)
-- [ ] **Render** cards with `createElement` + a `DocumentFragment` and `textContent` (lesson 11)
-- [ ] **Compose in `main.js`** — factories return APIs; coordinate with callbacks and method calls (lessons 03, 07)
-- [ ] **One custom event** — a card click dispatches `post:open` (bubbling) and the dialog listens; nothing else uses events (lesson 16)
-- [ ] **Lazy-reveal** cards and **debounce** the search (lessons 12, 17)
+- [ ] **Modules** — split the API, helpers, and each component into their own files; `main.js` wires them
+- [ ] **Load** — fetch the posts and the authors, with loading + error states
+- [ ] **Transform** — shape the data with pure helpers (join authors, build excerpts), no mutation
+- [ ] **Render** — build the cards from the shaped data and put them on the page
+- [ ] **Compose** — factories return APIs; coordinate with callbacks and method calls
+- [ ] **One custom event** — a card click dispatches `post:open` and the dialog listens; nothing else uses events
+- [ ] **Lazy-reveal** the cards and **debounce** the search
 - [ ] **Semantic HTML** — `<header>`, `<main>`, `<article>`, `<form>`, `<dialog>`
-- [ ] **SASS** — tokens + BEM component partials, one breakpoint mixin, `@use`/`@forward` (Sass track)
+- [ ] **SASS** — tokens + BEM component partials and a breakpoint mixin
+
+How you split and name the functions is up to you — aim for clean, readable modules.
 
 ## Acceptance
 
-<Callout type="do">Done when: posts load (with author + comment count), the search filters live, cards fade in on scroll, clicking a card opens a dialog with that post's comments, and every fetch shows loading/handles errors — all in clean functional modules, semantic markup, and SASS.</Callout>
+<Callout type="do">Done when: posts load (each card showing its author), the search filters live, cards fade in on scroll, clicking a card opens a dialog with that post's comments, and every fetch shows loading/handles errors — all in clean functional modules, semantic markup, and SASS.</Callout>
 
 <Callout type="note">Keep side effects (fetch, DOM writes) inside the components; keep the transforms in pure helpers. That split is what makes the modules easy to read, reuse, and change.</Callout>
+
+## Expected result
+
+What you're aiming for — **the grid** (filter bar + cards):
+
+<Playground
+  hideHtml
+  hideCss
+  html={`<header class="site-header">
+  <h1 class="site-header__title">Blog Explorer</h1>
+  <form class="search"><input class="search__input" type="search" placeholder="Search posts…"></form>
+</header>
+<main class="layout">
+  <section class="posts">
+    <article class="card"><h2 class="card__title">sunt aut facere repellat provident</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">quia et suscipit suscipit recusandae consequuntur expedita et cum reprehenderit molestiae ut ut quas…</p></article>
+    <article class="card"><h2 class="card__title">qui est esse</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">est rerum tempore vitae sequi sint nihil reprehenderit dolor beatae ea dolores neque fugiat blanditi…</p></article>
+    <article class="card"><h2 class="card__title">ea molestias quasi exercitationem</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">et iusto sed quo iure voluptatem occaecati omnis eligendi aut ad voluptatem doloribus vel accusantiu…</p></article>
+    <article class="card"><h2 class="card__title">eum et est occaecati</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">ullam et saepe reiciendis voluptatem adipisci sit amet autem assumenda provident rerum culpa quis hi…</p></article>
+    <article class="card"><h2 class="card__title">nesciunt quas odio</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">repudiandae veniam quaerat sunt sed alias aut fugiat sit autem sed est voluptatem omnis possimus ess…</p></article>
+    <article class="card"><h2 class="card__title">dolorem eum magni eos aperiam quia</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">ut aspernatur corporis harum nihil quis provident sequi mollitia nobis aliquid molestiae perspiciati…</p></article>
+  </section>
+</main>`}
+  css={`body { margin: 0; font-family: system-ui, sans-serif; color: #1c1c28; background: #faf9fc; }
+.site-header { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid #e3e0ea; background: #fff; }
+.site-header__title { margin: 0; font-size: 1.25rem; color: #6b2fb3; }
+.search__input { padding: .5rem .75rem; border: 1px solid #e3e0ea; border-radius: 8px; min-width: 180px; }
+.layout { padding: 1rem 1.5rem; }
+.posts { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }
+.card { border: 1px solid #e3e0ea; border-radius: 10px; background: #fff; padding: 1rem; }
+.card__title { margin: 0 0 .25rem; font-size: 1.05rem; color: #6b2fb3; }
+.card__author { margin: 0 0 .5rem; font-size: .85rem; color: #6b6b76; }
+.card__excerpt { margin: 0; font-size: .9rem; line-height: 1.5; }`}
+/>
+
+And **a post's dialog** (after clicking a card):
+
+<Playground
+  hideHtml
+  hideCss
+  html={`<div class="dialog">
+  <button class="dialog__close" aria-label="Close">✕</button>
+  <h2 class="dialog__title">qui est esse</h2>
+  <p class="dialog__author">by Leanne Graham</p>
+  <p class="dialog__body">est rerum tempore vitae sequi sint nihil reprehenderit dolor beatae ea dolores neque fugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis qui aperiam non debitis possimus qui neque nisi nulla</p>
+  <h3 class="dialog__heading">Comments</h3>
+  <ul class="dialog__comments">
+    <li class="dialog__comment">Eliseo Murazik: doloribus at sed quis culpa deserunt consectetur qui praesentium accusamus</li>
+    <li class="dialog__comment">Jayne Kuhic: et omnis dolorem ut voluptatem corrupti velit ad voluptatem maiores</li>
+    <li class="dialog__comment">Nikita: provident id voluptas sapiente assumenda molestiae atque adipisci laborum</li>
+  </ul>
+</div>`}
+  css={`body { margin: 0; font-family: system-ui, sans-serif; color: #1c1c28; background: #efeef3; padding: 1.5rem; }
+.dialog { border: 0; border-radius: 12px; background: #fff; padding: 1.5rem; max-width: 480px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0, 0, 0, .15); }
+.dialog__close { float: right; border: 0; background: none; font-size: 1.1rem; cursor: pointer; color: #6b6b76; }
+.dialog__title { margin: 0 0 .25rem; color: #6b2fb3; }
+.dialog__author { margin: 0 0 1rem; color: #6b6b76; font-size: .85rem; }
+.dialog__heading { margin: 1rem 0 .25rem; font-size: .95rem; }
+.dialog__comments { list-style: none; padding: 0; margin: 0; }
+.dialog__comment { padding: .5rem 0; border-top: 1px solid #e3e0ea; font-size: .9rem; line-height: 1.5; }`}
+/>
