@@ -52,19 +52,6 @@ by **callbacks** and **method calls**, with **one** place using a custom event.
 3. **PostDialog** — `createPostDialog(root)` **listens for `post:open`**, then fetches that post's
    comments and shows the title, body, and comments in a `<dialog>`, with loading and error states.
 
-The one custom event decouples the cards from the dialog — many cards, a single listener. Everything
-else is plain wiring in `main.js`:
-
-```js
-createPostDialog(dialogRoot);                 // listens for 'post:open'
-const list = createPostList(listRoot);        // cards dispatch 'post:open'
-createSearchBar(searchRoot, { onSearch: (q) => list.filter(q) });
-
-const posts = await getPosts();
-const users = await getUsers();
-list.render(joinAuthors(posts, users));
-```
-
 ## Suggested module layout
 
 ```text
