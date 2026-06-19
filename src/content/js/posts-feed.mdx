@@ -1,0 +1,31 @@
+export const meta = {
+  order: 99.5,
+  num: '★',
+  title: 'Assignment: Posts Feed (Load more)',
+  topics: 'fetch once · page state in a closure · render · load more'
+};
+
+Build a **Posts Feed** that loads posts and reveals them **a page at a time** behind a "Load more"
+button — functional style, plain browser JS. Build it in `ui.frontend`. Budget **~1 hour**. Data from
+[JSONPlaceholder](https://jsonplaceholder.typicode.com/) `/posts`.
+
+The markup you enhance:
+
+```html
+<section class="feed">
+  <ul class="feed__list"></ul>
+  <button class="feed__more" type="button">Load more</button>
+  <p class="feed__status"></p>
+</section>
+```
+
+## Build it
+
+- [ ] **Structure** — a functional component on the root; keep the page state in a closure
+- [ ] **Load** — fetch the posts once, with a loading state and an error state
+- [ ] **Page** — show the first batch; on "Load more", **add** the next batch (don't re-render what's already there)
+- [ ] **Stop** — hide the button when there's nothing left, and keep a running count
+
+How you split and name the functions is up to you.
+
+<Callout type="do">Done when the first batch loads, each click appends the next, the count keeps up, the button disappears at the end, and a failed request shows a message. Compare with the [answer](posts-feed-answer).</Callout>

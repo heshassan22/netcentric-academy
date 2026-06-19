@@ -1,0 +1,101 @@
+export const meta = {
+  order: 100,
+  num: '🏁',
+  title: 'Final Project: Blog Explorer',
+  topics: 'capstone · 3 components · ES modules · SASS · most of the track'
+};
+
+Build a small app — a **Blog Explorer** — that puts most of the track to work: fetch real data,
+transform it, render it, filter it, and open details. Build it in the **`kbc-fe`** project (the
+Node/Vite front-end your trainer provides), with **ES modules**, **semantic HTML**, and **SASS**.
+
+Data comes from [JSONPlaceholder](https://jsonplaceholder.typicode.com/): `/posts`, `/users`,
+`/posts/{id}/comments`.
+
+## How it should look
+
+```text
+┌───────────────────────────────────────────────────────────┐
+│  Blog Explorer                      [ search posts…      ]  │  ← header + SearchBar
+├───────────────────────────────────────────────────────────┤
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
+│  │ Post title │  │ Post title │  │ Post title │            │  ← PostList: grid of cards
+│  │ by Author  │  │ by Author  │  │ by Author  │            │     (<article>), fade in
+│  │ excerpt……  │  │ excerpt……  │  │ excerpt……  │            │     on scroll
+│  │ 5 💬       │  │ 3 💬       │  │ 8 💬       │            │
+│  └────────────┘  └────────────┘  └────────────┘            │
+│              … more cards reveal as you scroll …           │
+└───────────────────────────────────────────────────────────┘
+
+Click a card  →  PostDialog (<dialog>)
+        ┌──────────────────────────────────┐
+        │ Post title                    ✕  │
+        │ by Author                        │
+        │ body text……                      │
+        │ ─── Comments ───                 │
+        │ • Name — comment text…           │
+        │ • Name — comment text…           │
+        └──────────────────────────────────┘
+```
+
+Responsive: 1 column on mobile, 2–3 as it widens (SASS + a breakpoint mixin).
+
+## The three components
+
+Each is a **factory function** that sets up its element. They're wired together in `main.js` — mostly
+by **callbacks** and **method calls**, with **one** place using a custom event.
+
+1. **SearchBar** — `createSearchBar(root, { onSearch })`. A `<form>` with a search input; on input
+   (**debounced**) it calls `onSearch(query)`.
+2. **PostList** — `createPostList(root)` returns **`{ render(posts), filter(query) }`**. It renders
+   cards into a grid and **fades them in** with an IntersectionObserver. When a card is clicked it
+   dispatches a single **`post:open`** `CustomEvent` (bubbling, the post in `detail`).
+3. **PostDialog** — `createPostDialog(root)` **listens for `post:open`**, then fetches that post's
+   comments and shows the title, body, and comments in a `<dialog>`, with loading and error states.
+
+The one custom event decouples the cards from the dialog — many cards, a single listener. Everything
+else is plain wiring in `main.js`:
+
+```js
+createPostDialog(dialogRoot);                 // listens for 'post:open'
+const list = createPostList(listRoot);        // cards dispatch 'post:open'
+createSearchBar(searchRoot, { onSearch: (q) => list.filter(q) });
+
+const [posts, users] = await Promise.all([getPosts(), getUsers()]);
+list.render(joinAuthors(posts, users));
+```
+
+## Suggested module layout
+
+```text
+src/
+├── api.js                     # getPosts(), getUsers(), getComments(id) — fetch + res.json()
+├── utils.js                   # debounce · el/excerpt DOM helpers · joinAuthors
+├── components/
+│   ├── search-bar.js          # createSearchBar(root, { onSearch })
+│   ├── post-list.js           # createPostList(root) -> { render, filter }; cards dispatch 'post:open'
+│   └── post-dialog.js         # createPostDialog(root); listens for 'post:open'
+├── styles/
+│   ├── _tokens.scss           # colors, spacing, breakpoints
+│   ├── _post-card.scss        # BEM component styles
+│   └── main.scss              # @use the partials
+└── main.js                    # create + wire the components
+```
+
+## Requirements (and the lessons they exercise)
+
+- [ ] **Modules** — split API, helpers, and each component into their own files; `main.js` wires them (lesson 03)
+- [ ] **Fetch in parallel** with `Promise.all`, each call with loading + error states (lessons 09, 10, 14)
+- [ ] **Transform** the data with pure helpers — join authors, sort, build excerpts — without mutating the responses (lessons 06, 08)
+- [ ] **Render** cards with `createElement` + a `DocumentFragment` and `textContent` (lesson 11)
+- [ ] **Compose in `main.js`** — factories return APIs; coordinate with callbacks and method calls (lessons 03, 07)
+- [ ] **One custom event** — a card click dispatches `post:open` (bubbling) and the dialog listens; nothing else uses events (lesson 16)
+- [ ] **Lazy-reveal** cards and **debounce** the search (lessons 12, 17)
+- [ ] **Semantic HTML** — `<header>`, `<main>`, `<article>`, `<form>`, `<dialog>`
+- [ ] **SASS** — tokens + BEM component partials, one breakpoint mixin, `@use`/`@forward` (Sass track)
+
+## Acceptance
+
+<Callout type="do">Done when: posts load (with author + comment count), the search filters live, cards fade in on scroll, clicking a card opens a dialog with that post's comments, and every fetch shows loading/handles errors — all in clean functional modules, semantic markup, and SASS.</Callout>
+
+<Callout type="note">Keep side effects (fetch, DOM writes) inside the components; keep the transforms in pure helpers. That split is what makes the modules easy to read, reuse, and change.</Callout>

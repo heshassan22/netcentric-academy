@@ -14,17 +14,18 @@ patterns keep the front end fast (and tie directly into the Web Performance trac
 Don't do expensive work for components far below the fold. Defer until they're near the viewport:
 
 ```js
-init() {
+const init = (root) => {
   const io = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) { this.start(); io.disconnect(); }  // run once when visible
+      if (entry.isIntersecting) { start(root); io.disconnect(); }  // run once when visible
     });
   });
-  io.observe(this.element);
-}
-start() {
+  io.observe(root);
+};
+
+const start = (root) => {
   // heavy work: build a carousel, fetch data, init a map…
-}
+};
 ```
 
 This is also how a **lazy-loading image** component works: create the `<img>` and set its `src`
@@ -41,31 +42,74 @@ function debounce(fn, wait = 200) {
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
 }
 
-window.addEventListener('resize', debounce(() => this.recalc(), 200));
+window.addEventListener('resize', debounce(recalc, 200));
 ```
 
 - **Debounce** — run *after* activity stops (search-as-you-type, resize).
 - **Throttle** — run *at most once per interval* (scroll position updates).
 
-<Callout type="do">Add `{ passive: true }` to `scroll`/`touch` listeners so the browser doesn't wait for your handler before scrolling: `el.addEventListener('scroll', onScroll, { passive: true })`.</Callout>
+A simple `throttle`:
+
+```js
+function throttle(fn, wait = 200) {
+  let last = 0;
+  return (...args) => {
+    const now = Date.now();
+    if (now - last >= wait) {   // enough time passed? run it
+      last = now;
+      fn(...args);
+    }
+  };
+}
+```
+
+### Try it — feel the difference
+
+Move your mouse over the pad. **raw** counts every `mousemove`; **throttled** runs at most once every
+300 ms — watch how much slower it climbs:
+
+<Playground
+  html={`<div class="pad">move your mouse here</div>
+<p>raw: <b class="raw">0</b> · throttled: <b class="thr">0</b></p>`}
+  css={`.pad { height: 100px; border: 2px dashed #6b2fb3; border-radius: 8px; display: grid; place-items: center; color: #777; cursor: crosshair; }
+b { color: #6b2fb3; }`}
+  js={`const pad = document.querySelector('.pad');
+const rawOut = document.querySelector('.raw');
+const thrOut = document.querySelector('.thr');
+let raw = 0, thr = 0;
+
+const throttle = (fn, wait = 300) => {
+  let last = 0;
+  return () => {
+    const now = Date.now();
+    if (now - last >= wait) { last = now; fn(); }
+  };
+};
+
+const bump = throttle(() => { thr += 1; thrOut.textContent = thr; }, 300);
+
+pad.addEventListener('mousemove', () => {
+  raw += 1;
+  rawOut.textContent = raw;   // fires on every move
+  bump();                     // at most once per 300ms
+});`}
+/>
 
 ## Dynamic import for heavy/rare code
 
 Don't ship a big dependency in the main bundle if only some pages need it — load it on demand:
 
 ```js
-async start() {
+const start = async (root) => {
   const { default: Chart } = await import('./vendor/chart.js');  // separate chunk, fetched now
-  new Chart(this.element);
-}
+  new Chart(root);
+};
 ```
 
 ## Touch the DOM efficiently
 
-- **Cache** queries in `init()` (`this.items = this.element.querySelectorAll(...)`) instead of
+- **Cache** queries in `init` (`const items = root.querySelectorAll(...)`) instead of
   re-querying on every event.
-- **Batch** DOM writes; avoid reading a layout property (`offsetWidth`) then writing in a loop
-  (layout thrashing). Read first, then write.
 - Build markup off-DOM (a `DocumentFragment`) and insert once.
 
 <Callout type="warn">Reading `getBoundingClientRect()`/`offsetHeight` forces the browser to recalculate layout. Doing that inside a loop that also writes styles causes "layout thrashing" — slow, janky frames.</Callout>

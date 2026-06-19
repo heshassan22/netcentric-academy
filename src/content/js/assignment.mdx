@@ -21,31 +21,14 @@ The markup you enhance:
 </div>
 ```
 
-## Step 1 — Structure (lessons 03, 15)
+## Build it
 
-- [ ] IIFE + a `SELECTORS` object; `init(root)` and `initAll()` over every `.directory`
-- [ ] Read the API URL from `root.dataset.endpoint` (don't hard-code it)
+- [ ] **Structure** — a functional component initialised on the root; keep its state in closures, scoped to the root
+- [ ] **Load** — fetch the people from the API, with a loading state and an error state
+- [ ] **Shape** — turn the raw response into just what a card needs, as a pure step
+- [ ] **Render** — build the cards from the shaped data and put them on the page
+- [ ] **Filter** — as the user types, show only the matching cards and keep a running count
 
-## Step 2 — Fetch with states (lessons 10, 14)
+How you split the functions and name things is up to you — aim for clean, readable modules.
 
-- [ ] Show `Loading…` in the status; `fetch` the endpoint; check `res.ok` then `res.json()`
-- [ ] On failure, show an error message in the status — never let it throw uncaught
-
-## Step 3 — Shape the data (lessons 06, 08)
-
-- [ ] In a **pure** helper, `map` each raw user to `{ name, email, company }` and **sort by name** (don't mutate the response)
-
-## Step 4 — Render (lesson 11)
-
-- [ ] Build the list with `createElement` + a `DocumentFragment`; use `textContent`, set `data-name` on each item; write once
-
-## Step 5 — Filter live (lessons 05, 06)
-
-- [ ] On the search `input`, filter the items by name (case-insensitive) and update the status to `showing X of Y`
-
-## Stretch
-
-- [ ] Debounce the search input (lesson 17)
-- [ ] `AbortController` to cancel an in-flight request if it re-fetches (lesson 10)
-
-<Callout type="do">Done when: it loads from the API, shows loading **and** error states, renders cards from the shaped data, filters live with a running count — and it's all functional (closures for state, pure transforms, queries scoped to `root`). Compare with the [answer](assignment-answer).</Callout>
+<Callout type="do">Done when it loads from the API (with loading + error states), renders the cards, and filters live with a running count. Compare with the [answer](assignment-answer).</Callout>

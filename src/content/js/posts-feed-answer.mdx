@@ -1,0 +1,60 @@
+export const meta = {
+  order: 99.6,
+  num: '✓',
+  title: 'Posts Feed — Answer',
+  topics: 'model solution · fetch + paging in a closure'
+};
+
+<Callout type="note">One correct solution — attempt the [assignment](posts-feed) first.</Callout>
+
+```js
+const SELECTORS = { root: '.feed', list: '.feed__list', more: '.feed__more', status: '.feed__status' };
+const PAGE_SIZE = 10;
+
+const init = async (root) => {
+  const list = root.querySelector(SELECTORS.list);
+  const moreBtn = root.querySelector(SELECTORS.more);
+  const status = root.querySelector(SELECTORS.status);
+
+  let posts = [];
+  let shown = 0;                 // page state — lives in the closure
+
+  status.textContent = 'Loading…';
+  moreBtn.hidden = true;
+  try {
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    posts = await res.json();
+  } catch (err) {
+    status.textContent = 'Failed: ' + err.message;
+    return;
+  }
+
+  const renderNextPage = () => {
+    const next = posts.slice(shown, shown + PAGE_SIZE);
+    const frag = document.createDocumentFragment();
+    next.forEach((post) => {
+      const li = document.createElement('li');
+      li.className = 'feed__item';
+      li.textContent = post.title;
+      frag.appendChild(li);
+    });
+    list.appendChild(frag);                    // append — keep what's already there
+    shown += next.length;
+    status.textContent = 'showing ' + shown + ' of ' + posts.length;
+    moreBtn.hidden = shown >= posts.length;    // nothing left → hide the button
+  };
+
+  moreBtn.addEventListener('click', renderNextPage);
+  renderNextPage();                            // first page
+};
+
+document.querySelectorAll(SELECTORS.root).forEach(init);
+```
+
+## Why it's shaped this way
+
+- **State in the closure** (lesson 07): `posts` and `shown` are private to each `init(root)` — two feeds on a page page independently.
+- **Fetch once** (lessons 10, 14): one request with loading + error states; paging is pure array work afterwards.
+- **`slice` + append** (lessons 06, 11): each page is `posts.slice(shown, shown + PAGE_SIZE)`, built in a fragment and **appended** so earlier items stay.
+- **Self-limiting** (lesson 05): the button hides itself once `shown` reaches the end.
