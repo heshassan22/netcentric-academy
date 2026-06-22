@@ -2,14 +2,16 @@ export const meta = {
   order: 6,
   num: '06',
   title: 'DOM Testing',
-  topics: 'jsdom environment · rendering markup · events · testing a component'
+  topics: 'jsdom · render & assert · events · testing a component'
 };
 
-Front-end units often touch the **DOM**. Jest runs them in **jsdom** — a JavaScript implementation
-of the browser DOM — so you can create elements, dispatch events, and assert on the result without a
-real browser.
+A lot of front-end code touches the **page** — reading elements, reacting to clicks. Jest runs your
+tests in **jsdom**, a fake browser DOM, so you can build elements and click them **without opening a
+real browser**.
 
-## The jsdom environment
+## Turn on the DOM
+
+Add this at the top of a DOM test file (or set it once in `jest.config.js`):
 
 ```js
 /**
@@ -17,30 +19,22 @@ real browser.
  */
 ```
 
-Add that comment at the top of a DOM test file, or set it globally in `jest.config.js`:
+Now `document`, `querySelector`, events, etc. all work.
+
+## Build some HTML, then check it
 
 ```js
-export default { testEnvironment: 'jsdom' };
-```
-
-In jsdom you get `document`, `window`, events, `querySelector`, etc.
-
-## Render markup, then assert
-
-```js
-test('renders the label', () => {
-  document.body.innerHTML = `
-    <button class="cta">Subscribe</button>
-  `;
+test('shows the label', () => {
+  document.body.innerHTML = `<button class="cta">Subscribe</button>`;
   const button = document.querySelector('.cta');
-  expect(button).toHaveTextContent('Subscribe');   // jest-dom matcher
+  expect(button).toHaveTextContent('Subscribe');
 });
 ```
 
-## Testing events
+## Test a click
 
 ```js
-test('toggles open state on click', () => {
+test('toggles open on click', () => {
   document.body.innerHTML = `<button class="menu" aria-expanded="false">Menu</button>`;
   const button = document.querySelector('.menu');
 
@@ -49,29 +43,33 @@ test('toggles open state on click', () => {
     button.setAttribute('aria-expanded', String(!open));
   });
 
-  button.click();
-  expect(button).toHaveAttribute('aria-expanded', 'true');
+  button.click();                                          // simulate the click
+  expect(button).toHaveAttribute('aria-expanded', 'true'); // check the result
 });
 ```
 
-## Testing a component (the loader pattern)
+## Test a component
 
-The JavaScript track's components take an `element` + `options`. That makes them easy to unit-test —
-render markup, instantiate the class, assert on the DOM:
+Our components are `init(root)` functions: drop the markup on the page, call `init`, then check what
+the user would see.
 
 ```js
-import MyComponent from './my-component.js';
+import { init } from './counter.js';
 
-test('writes the param text into the element', () => {
-  document.body.innerHTML = `<div><span class="my-component__text"></span></div>`;
-  const el = document.querySelector('div');
+test('counts up on click', () => {
+  document.body.innerHTML = `
+    <div class="counter">
+      <button class="counter__inc">+</button>
+      <output class="counter__value">0</output>
+    </div>`;
+  init(document.querySelector('.counter'));
 
-  new MyComponent(el, { text: 'Hello' });
+  document.querySelector('.counter__inc').click();
 
-  expect(el.querySelector('.my-component__text')).toHaveTextContent('Hello');
+  expect(document.querySelector('.counter__value')).toHaveTextContent('1');
 });
 ```
 
-<Callout type="do">Test what the **user experiences** — visible text, attributes, and behaviour after an interaction — not internal structure. That keeps tests stable when you refactor the markup.</Callout>
+<Callout type="do">Check what the **user sees** — visible text, attributes, what happens after a click — not the internal markup. Then a redesign of the HTML won't break a test whose behaviour is still correct.</Callout>
 
-<Callout type="warn">jsdom is **not a real browser**: no real layout, no painting, limited support for some APIs (e.g. `getBoundingClientRect` returns zeros). For true rendering/visual behaviour, use an E2E tool (Playwright/Cypress) — that's the top of the pyramid, not unit testing.</Callout>
+<Callout type="warn">jsdom is **not a real browser** — no layout or pixels, and some APIs return empty values (`getBoundingClientRect` gives zeros). For real visual/scroll behaviour use an end-to-end tool (Playwright/Cypress), not a unit test.</Callout>

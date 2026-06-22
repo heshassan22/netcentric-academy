@@ -5,56 +5,59 @@ export const meta = {
   topics: 'describe / test / it · expect · running tests · the test lifecycle'
 };
 
-**Jest** is the de-facto test runner for JavaScript front ends. It finds your test files, runs them,
-and reports results — batteries included (assertions, mocking, coverage, a DOM environment).
+**Jest** is the tool that finds your test files, runs them, and tells you which passed or failed. It
+comes with everything you need built in — no extra setup to get started.
 
-## Anatomy of a test
+## A test file, line by line
 
 ```js
-import { sum } from './math.js';
+import { applyDiscount } from './cart.js';
 
-describe('sum()', () => {
-  test('adds two positive numbers', () => {
-    expect(sum(2, 3)).toBe(5);
+describe('applyDiscount()', () => {        // a group of related tests
+  test('takes 10% off', () => {            // one test
+    expect(applyDiscount(200, 10)).toBe(180);   // the check
   });
 
-  it('handles negative numbers', () => {   // it() is an alias for test()
-    expect(sum(-2, 3)).toBe(1);
+  it('takes nothing off at 0%', () => {    // it() === test(), just reads nicer
+    expect(applyDiscount(200, 0)).toBe(200);
   });
 });
 ```
 
-- **`describe(name, fn)`** — groups related tests into a suite (you can nest them).
-- **`test(name, fn)`** / **`it(name, fn)`** — a single test case. `it` reads nicely:
-  *"it handles negative numbers"*.
-- **`expect(value)`** — wraps a value so you can assert on it with a **matcher** (next lesson).
+- **`describe('...', () => {})`** — a labelled box that groups tests for one thing.
+- **`test('...', () => {})`** / **`it('...', () => {})`** — one test case (identical; pick whichever reads better).
+- **`expect(value)`** — wraps the value so you can check it with a *matcher* like `toBe` (next lesson).
 
-## Running tests
+## Running them
 
 ```bash
-npx jest                 # run all tests once
-npx jest --watch         # re-run on change (only related to git changes)
-npx jest math.test.js    # run one file
-npx jest -t "negative"   # run tests whose name matches
+npx jest                 # run everything once
+npx jest --watch         # re-run automatically as you edit
+npx jest cart.test.js    # just one file
+npx jest -t "10%"        # only tests whose name contains "10%"
 ```
 
-A typical `package.json`:
+Most projects add a script so the team runs it the same way:
 
 ```json
-{
-  "scripts": { "test": "jest", "test:watch": "jest --watch" }
-}
+{ "scripts": { "test": "jest", "test:watch": "jest --watch" } }
 ```
 
-## The lifecycle hooks
+## Setup & cleanup (lifecycle)
 
-Run setup/teardown around tests so each one starts clean:
+Sometimes every test needs the same starting point. These hooks run around your tests:
 
 ```js
-beforeAll(() => { /* once, before all tests in this file/suite */ });
-beforeEach(() => { /* before every test — reset state here */ });
-afterEach(() => { /* after every test — clean up */ });
-afterAll(() => { /* once, after all tests */ });
+let cart;
+
+beforeEach(() => { cart = createCart(); });   // before EVERY test — fresh start
+afterEach(() => { cart = null; });            // after every test — clean up
+
+test('starts empty', () => {
+  expect(cart.items).toHaveLength(0);
+});
 ```
 
-<Callout type="do">Put shared setup in `beforeEach` so every test is **independent** — tests must pass in any order and never rely on state left by another test.</Callout>
+(`beforeAll` / `afterAll` also exist — they run **once** for the whole file.)
+
+<Callout type="do">Put shared setup in **`beforeEach`** so each test starts clean and **independent** — a test must never depend on something a previous test left behind. Tests should pass in any order.</Callout>

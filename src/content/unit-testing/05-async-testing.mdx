@@ -2,53 +2,49 @@ export const meta = {
   order: 5,
   num: '05',
   title: 'Async Testing',
-  topics: 'Promises · async/await · resolves/rejects · fake timers'
+  topics: 'await the work · resolves/rejects · fake timers'
 };
 
-Front-end code is full of async work — fetches, timeouts, animations. The golden rule: **the test
-must wait** for the async work, or it passes before the assertion even runs.
+Lots of front-end code takes time — fetching data, timeouts, animations. The one rule: **the test
+must wait** for that work to finish, or it ends *before* your check runs and passes by accident.
 
-## async / await (preferred)
+## Wait with `async` / `await`
 
 ```js
-test('loads the user', async () => {
-  const user = await loadUser(1);
+test('loads the user', async () => {       // note: async
+  const user = await loadUser(1);          // wait for the promise
   expect(user.name).toBe('Ada');
 });
 ```
 
-<Callout type="warn">Forgetting to `await` is the #1 async-test bug: the test finishes and **passes before** the assertion runs. If a test "can't fail", check that you awaited the async call.</Callout>
+<Callout type="warn">Forgetting `await` is the most common async-test mistake — the test finishes and is marked **passed** before the check ever runs. If a test "can never fail", you probably forgot to `await`.</Callout>
 
-## `.resolves` / `.rejects`
-
-Assert on a promise's outcome directly:
+## Check a promise directly — `resolves` / `rejects`
 
 ```js
-await expect(loadUser(1)).resolves.toMatchObject({ name: 'Ada' });
-await expect(loadUser(0)).rejects.toThrow('not found');
+await expect(loadUser(1)).resolves.toMatchObject({ name: 'Ada' });  // it succeeds
+await expect(loadUser(0)).rejects.toThrow('not found');             // it fails as expected
 ```
 
-## Fake timers
+## Don't wait for real time — fake the clock
 
-Don't make tests wait real seconds for `setTimeout`/`setInterval` — **fake the clock** and advance it:
+Testing something on a timer (like a 300ms debounce)? Faking the clock lets you jump forward instantly
+instead of really waiting:
 
 ```js
-test('debounce fires once after 300ms', () => {
+test('debounce runs once after 300ms', () => {
   jest.useFakeTimers();
   const fn = jest.fn();
   const debounced = debounce(fn, 300);
 
-  debounced(); debounced(); debounced();
-  expect(fn).not.toHaveBeenCalled();
+  debounced(); debounced(); debounced();   // called 3 times fast
+  expect(fn).not.toHaveBeenCalled();        // nothing yet
 
-  jest.advanceTimersByTime(300);   // fast-forward
-  expect(fn).toHaveBeenCalledTimes(1);
+  jest.advanceTimersByTime(300);            // jump 300ms forward
+  expect(fn).toHaveBeenCalledTimes(1);      // ran exactly once
 
   jest.useRealTimers();
 });
 ```
 
-Useful timer controls: `jest.advanceTimersByTime(ms)`, `jest.runAllTimers()`,
-`jest.runOnlyPendingTimers()`.
-
-<Callout type="do">Use fake timers for anything time-based (debounce, throttle, polling, auto-dismiss). Tests stay **fast and deterministic** instead of sleeping for real.</Callout>
+<Callout type="do">Use fake timers for anything time-based — debounce, throttle, polling, auto-dismiss. The test stays fast and gives the same result every run, instead of actually sleeping.</Callout>

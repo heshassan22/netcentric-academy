@@ -2,61 +2,64 @@ export const meta = {
   order: 8,
   num: '08',
   title: 'Coverage & Quality',
-  topics: 'Reading coverage · thresholds · what to test · meaningful vs vanity tests'
+  topics: 'reading coverage · thresholds · what to test · meaningful vs vanity tests'
 };
 
-The last piece: knowing **how much** of your code is tested, and making sure those tests are
-**meaningful** — not just there to hit a number.
+The last piece: knowing **how much** of your code the tests actually run, and making sure those tests
+**mean something** — not just chasing a number.
 
-## Measuring coverage
+## See your coverage
 
 ```bash
 npx jest --coverage
 ```
 
-Jest reports four metrics:
+Jest prints four numbers:
 
-| Metric | Means |
+| Metric | Plain meaning |
 |---|---|
-| **Statements** | % of statements executed |
-| **Branches** | % of `if`/`else`/ternary/`&&` paths taken |
-| **Functions** | % of functions called |
-| **Lines** | % of lines executed |
+| **Statements** | how many lines of code ran |
+| **Branches** | how many `if`/`else` paths were taken |
+| **Functions** | how many functions were called |
+| **Lines** | (almost the same as statements) |
 
-**Branches** is the most revealing — it's easy to run a line without testing both sides of its
-conditions.
+**Branches** is the one to watch — it's easy to run an `if` but only ever test the *true* side.
 
-## Enforcing a threshold
-
-Fail the build if coverage drops below a bar (in `jest.config.js`):
+## Make the build enforce a minimum
 
 ```js
+// jest.config.js
 export default {
   collectCoverage: true,
   coverageThreshold: {
-    global: { branches: 80, functions: 80, lines: 80, statements: 80 }
-  }
+    global: { branches: 80, functions: 80, lines: 80, statements: 80 },
+  },
 };
 ```
 
+Now CI fails if coverage drops below 80%.
+
 ## Coverage is a guide, not a goal
 
-<Callout type="warn">100% coverage does **not** mean bug-free. A test can *execute* a line without asserting anything meaningful about it. Coverage tells you what's **not** tested; it can't tell you whether what *is* tested is tested **well**.</Callout>
+A line can be *run* by a test that doesn't actually check anything — that counts as "covered" but
+proves nothing:
 
 ```js
-// 100% coverage, 0% value — no assertion about behaviour
+// 100% coverage, 0% value — it runs the code but asserts nothing
 test('renders', () => { render(); });
 ```
 
-## What's worth testing
+<Callout type="warn">100% coverage does **not** mean bug-free. Coverage tells you what *isn't* tested — it can't tell you whether what *is* tested is tested well.</Callout>
 
-<Callout type="do">Prioritise: <strong>business logic</strong> (calculations, formatting, validation), <strong>edge cases</strong> (empty, null, zero, boundary, error paths), and <strong>component behaviour</strong> (what happens on a click/input). These are where bugs live and where tests pay off.</Callout>
-<Callout type="dont">Don't chase coverage on trivial code (plain getters, config objects), don't test the framework or the language, and don't assert on implementation details that change on every refactor.</Callout>
+## What's actually worth testing
 
-<Callout type="note">Gut-check: temporarily break a line of production code. If no test fails, that line isn't *meaningfully* covered — regardless of what the coverage report says.</Callout>
+<Callout type="do">Spend your effort on: <strong>logic</strong> (calculations, formatting, validation), <strong>edge cases</strong> (empty, null, zero, the error path), and <strong>behaviour</strong> (what happens on a click). That's where bugs hide.</Callout>
+<Callout type="dont">Don't chase coverage on trivial getters or config, don't test the framework or the language, and don't assert on internals that change every refactor.</Callout>
 
-## You've completed the track
+<Callout type="note">Quick gut-check: break a line of real code on purpose. If **no test goes red**, that line isn't meaningfully tested — no matter what the coverage number says.</Callout>
+
+## You've finished the track
 
 Fundamentals → Jest basics → matchers → mocking → async → DOM → organization → coverage. You can now
-write fast, isolated, meaningful unit tests for front-end logic and components — and know when to
-reach for integration or E2E instead.
+write fast, focused unit tests for front-end logic and components — and know when a job needs
+integration or end-to-end testing instead.

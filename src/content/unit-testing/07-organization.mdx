@@ -2,56 +2,50 @@ export const meta = {
   order: 7,
   num: '07',
   title: 'Test Organization',
-  topics: 'File location &amp; naming · structuring suites · readable test names · DRY setup'
+  topics: 'where tests live · structuring suites · readable names · DRY setup'
 };
 
-Tests are code you'll read far more than you write. Keep them **discoverable, consistent, and
-readable**.
+You read tests far more than you write them, so keep them **easy to find and easy to read**.
 
-## Where tests live & how they're named
+## Where tests live
 
-Two common conventions (Jest finds both by default):
+Jest finds both of these — pick one and be consistent:
 
 ```text
-# 1) next to the source (co-located)
 src/utils/format.js
-src/utils/format.test.js
+src/utils/format.test.js          # right next to the file (recommended)
 
-# 2) in a __tests__ folder
-src/utils/__tests__/format.test.js
+src/utils/__tests__/format.test.js   # or in a __tests__ folder
 ```
 
-- Use `.test.js` (or `.spec.js`) so Jest picks them up.
-- **Co-locating** tests next to the source keeps them visible and easy to update together.
+Putting the test **next to the file** keeps it visible and you update both in the same change.
 
-## Structure a suite to mirror the code
+## Group with `describe`
 
-Use `describe` per unit, and nested `describe`s per scenario:
+`describe` boxes group related tests; nest them per situation so the output reads like a checklist:
 
 ```js
-describe('formatPrice()', () => {
-  describe('with a valid amount', () => {
-    it('formats with two decimals', () => { /* … */ });
-    it('adds the currency symbol', () => { /* … */ });
+describe('applyDiscount()', () => {
+  describe('with a normal percent', () => {
+    it('takes the right amount off', () => { /* … */ });
   });
-
-  describe('with invalid input', () => {
-    it('throws on a negative amount', () => { /* … */ });
+  describe('with a bad percent', () => {
+    it('throws on a negative percent', () => { /* … */ });
   });
 });
 ```
 
-## Write test names as sentences
+## Name tests like sentences
 
-The name should describe **behaviour**, so a failure reads like a spec:
+The name should say the **behaviour**, so a red test reads like a spec:
 
-<Callout type="dont">`test('test1')` · `test('formatPrice works')` — tells you nothing when it fails.</Callout>
-<Callout type="do">`it('adds the currency symbol after the amount')` — reads as "formatPrice → with a valid amount → it adds the currency symbol after the amount".</Callout>
+<Callout type="dont">`test('test1')` · `test('it works')` — tells you nothing when it fails.</Callout>
+<Callout type="do">`it('takes 10% off the total')` — you know exactly what broke before you even open the code.</Callout>
 
-## Keep tests DRY — but readable
+## Reuse setup with a small helper
 
-Factor repeated setup into `beforeEach` or small helpers/factories, but keep each test's **intent**
-obvious at a glance:
+If many tests need a similar object, a tiny **builder** keeps them short — and lets each test show only
+what it cares about:
 
 ```js
 function makeUser(overrides = {}) {
@@ -59,8 +53,8 @@ function makeUser(overrides = {}) {
 }
 
 test('inactive users are hidden', () => {
-  expect(isVisible(makeUser({ active: false }))).toBe(false);
+  expect(isVisible(makeUser({ active: false }))).toBe(false);   // only 'active' matters here
 });
 ```
 
-<Callout type="warn">Don't over-abstract. A test with so much shared setup that you can't tell what it does is worse than a little duplication. Optimise for **readability over DRY** in tests.</Callout>
+<Callout type="do">Don't over-engineer. If you have to scroll away to understand a test, a little repetition is better. In tests, **readability beats DRY** — the reader should see arrange → act → assert in one glance.</Callout>

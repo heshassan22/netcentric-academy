@@ -2,66 +2,58 @@ export const meta = {
   order: 4,
   num: '04',
   title: 'Mocking',
-  topics: 'jest.fn · spies · jest.mock (modules) · mocking fetch/APIs'
+  topics: 'jest.fn · checking calls · jest.mock (modules) · mocking fetch · resetting'
 };
 
-To test a unit in **isolation**, you replace its dependencies (other modules, network, timers) with
-**mocks** — fake versions you control and can inspect.
+To test one piece of code **on its own**, you swap its helpers (other modules, the network) for
+**fakes** you control. A fake lets you (a) decide what it returns and (b) check how it was called.
 
-## Mock functions — `jest.fn()`
+## A fake function — `jest.fn()`
 
-```js
-const onClick = jest.fn();
-
-button.addEventListener('click', onClick);
-button.click();
-
-expect(onClick).toHaveBeenCalled();
-expect(onClick).toHaveBeenCalledTimes(1);
-expect(onClick).toHaveBeenCalledWith(expect.any(Event));
-```
-
-Control what a mock returns:
+`jest.fn()` makes an empty fake function that **remembers every call**:
 
 ```js
-const getUser = jest.fn()
-  .mockReturnValue({ name: 'Ada' });        // sync
-const fetchUser = jest.fn()
-  .mockResolvedValue({ name: 'Ada' });       // resolves a promise
-const failing = jest.fn()
-  .mockRejectedValue(new Error('boom'));     // rejects
+const onSave = jest.fn();          // a fake callback
+
+saveForm(data, onSave);            // code under test should call it
+
+expect(onSave).toHaveBeenCalled();              // was it called at all?
+expect(onSave).toHaveBeenCalledTimes(1);        // exactly once?
+expect(onSave).toHaveBeenCalledWith(data);      // with the right argument?
 ```
 
-## Mocking modules — `jest.mock`
+You can also tell it **what to return**:
 
-Replace an entire imported module:
+```js
+const getUser = jest.fn().mockReturnValue({ name: 'Ada' });   // returns a value
+const fetchUser = jest.fn().mockResolvedValue({ name: 'Ada' }); // returns a resolved promise
+```
+
+## Faking a whole module — `jest.mock`
+
+Replace an imported module so the real one never runs:
 
 ```js
 import { sendEvent } from './analytics.js';
-jest.mock('./analytics.js');   // auto-mock: every export becomes a jest.fn()
+jest.mock('./analytics.js');     // every export becomes a jest.fn()
 
-test('tracks a click', () => {
+test('tracks the click', () => {
   handleClick();
   expect(sendEvent).toHaveBeenCalledWith('cta_click');
 });
 ```
 
-Or provide a custom factory:
+## Faking the network — `fetch`
 
-```js
-jest.mock('./config.js', () => ({ API_BASE: 'https://test.local' }));
-```
-
-## Mocking an API (fetch)
+Don't hit a real server in a unit test. Replace `fetch` with a fake response:
 
 ```js
 beforeEach(() => {
   global.fetch = jest.fn().mockResolvedValue({
     ok: true,
-    json: async () => ({ id: 1, name: 'Ada' })
+    json: async () => ({ id: 1, name: 'Ada' }),
   });
 });
-afterEach(() => jest.resetAllMocks());
 
 test('loads the user', async () => {
   const user = await loadUser(1);
@@ -70,6 +62,6 @@ test('loads the user', async () => {
 });
 ```
 
-<Callout type="do">Reset mocks between tests — `jest.clearAllMocks()` (clears calls) or `jest.resetAllMocks()` (clears calls *and* implementations) in `afterEach` — so call counts don't leak across tests.</Callout>
+<Callout type="do">Clear your fakes between tests so call counts don't carry over — `jest.clearAllMocks()` in `afterEach`, or `clearMocks: true` in the Jest config.</Callout>
 
-<Callout type="warn">Mock at the **boundary** (network, timers, third-party modules), not your own logic. If you mock the very thing you're testing, the test proves nothing. Over-mocking also makes tests brittle and detached from reality.</Callout>
+<Callout type="warn">Only fake the **edges** — the network, timers, third-party modules. Never fake the thing you're actually testing; if you do, the test proves nothing. Too many fakes and your test passes while the real app is broken.</Callout>
