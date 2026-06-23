@@ -11,6 +11,19 @@ test a component in the DOM, organize the suite, and make coverage **meaningful*
 
 <Callout type="note">Extend the same project — don't restart. If you skipped the checkpoint, do [Part 1](checkpoint-assignment) first (setup, matchers, mocking, async); everything here builds on it.</Callout>
 
+## Get the starter
+
+The starter is in the **kbc-fe** repo on branch **`unit-testing-assignment`** (it extends the
+checkpoint project). `counter.js` is provided — write `counter.test.js` and tune coverage:
+
+```bash
+git clone https://github.com/heshassan22/kbc-fe.git
+cd kbc-fe
+git checkout unit-testing-assignment
+npm install
+npm test                # npm run test:coverage for the coverage report
+```
+
 ## Part 1 — DOM testing (Advanced)
 
 Given a `Counter` component class (takes `element`, increments on click):
@@ -24,11 +37,10 @@ Given a `Counter` component class (takes `element`, increments on click):
 ## Part 2 — Organization & coverage (Advanced)
 
 - [ ] Organize tests: co-locate `*.test.js`, group with nested `describe`, share setup with `beforeEach`/`afterEach`
-- [ ] Run `--coverage`; reach a sensible **threshold** (e.g. 80% branches) on the logic
+- [ ] Run `npm run test:coverage` — the config already enforces an 80% threshold; write tests until it passes
 - [ ] Find one **"vanity" test** (runs code, asserts nothing meaningful) and make it real
-- [ ] Add a `coverageThreshold` to `jest.config.js` so CI fails on regressions
 
-**Acceptance:** branch coverage is meaningful, not padded; the suite is grouped and readable; the threshold is enforced.
+**Acceptance:** branch coverage is meaningful, not padded; the suite is grouped and readable.
 
 ## Stretch goals
 

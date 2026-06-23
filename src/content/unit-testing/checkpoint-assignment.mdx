@@ -11,21 +11,30 @@ tests, organization, and coverage on top.
 
 <Callout type="note">Test **behaviour**, not implementation. A good suite goes red when you introduce a real bug and survives a refactor that keeps behaviour the same.</Callout>
 
-## Setup
+## Get the starter
 
-- [ ] Install and configure Jest (`jest`, `@testing-library/jest-dom`, `jest-environment-jsdom`)
-- [ ] Add `"test": "jest"` and a `"test:watch"` script
-- [ ] Confirm `npx jest` runs and finds `*.test.js` files
+The starter is in the **kbc-fe** repo on branch **`unit-testing-checkpoint-assignment`**. Clone it,
+check out the branch, and work under `public/unit-testing/src/` — Jest is already configured:
+
+```bash
+git clone https://github.com/heshassan22/kbc-fe.git
+cd kbc-fe
+git checkout unit-testing-checkpoint-assignment
+npm install
+npm test          # confirm it runs and finds the *.test.js files
+```
+
+Each `*.test.js` has one worked example — add the rest to satisfy the parts below.
 
 ## Part A — Pure logic & matchers (Beginner)
 
-Given `formatPrice(cents)`, `slugify(text)`, and `clamp(n, min, max)`:
+Given `formatPrice(cents)`:
 
-- [ ] Test happy paths with the **right matchers** (`toBe`, `toEqual`, `toThrow`)
-- [ ] Cover **edge cases**: `0`, empty string, negative, boundary values
+- [ ] Test the happy path with the **right matcher** (`toBe`)
+- [ ] Cover **edge cases**: `0` (valid), a negative amount (throws), `null`/`undefined` (throws)
 - [ ] Name tests as behaviour sentences; group with `describe`
 
-**Acceptance:** each function has happy-path + edge-case tests; matchers are specific (e.g. `toHaveLength`, `toThrow('…')`).
+**Acceptance:** happy-path + edge-case tests; matchers are specific (e.g. `toThrow('invalid amount')`).
 
 ## Part B — Mocking & async (Intermediate)
 
@@ -37,41 +46,5 @@ Given `loadUser(id)` that calls `fetch`, and a `debounce(fn, ms)` helper:
 - [ ] Reset mocks between tests (`afterEach(() => jest.resetAllMocks())`)
 
 **Acceptance:** no real network; async assertions are awaited; the debounce test is deterministic (no real waiting).
-
-<Reveal title="Starter code under test">
-
-```js
-// money.js
-export const formatPrice = (cents) => {
-  if (cents == null || cents < 0) throw new Error('invalid amount');
-  return (cents / 100).toFixed(2);
-};
-
-// users.js
-export async function loadUser(id) {
-  const res = await fetch(`/api/users/${id}`);
-  if (!res.ok) throw new Error('not found');
-  return res.json();
-}
-```
-
-```js
-// money.test.js
-import { formatPrice } from './money.js';
-
-describe('formatPrice()', () => {
-  it('formats cents as two decimals', () => {
-    expect(formatPrice(4250)).toBe('42.50');
-  });
-  it('treats 0 as a valid amount', () => {
-    expect(formatPrice(0)).toBe('0.00');
-  });
-  it('throws on a negative amount', () => {
-    expect(() => formatPrice(-1)).toThrow('invalid amount');
-  });
-});
-```
-
-</Reveal>
 
 <Callout type="do">Done with the checkpoint when Jest is configured and your pure logic, mocks, and async paths are covered — tests read as a spec and run deterministically. Save the project; the end-of-session assignment adds DOM testing and coverage.</Callout>

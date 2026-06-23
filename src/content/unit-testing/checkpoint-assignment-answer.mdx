@@ -7,9 +7,14 @@ export const meta = {
 
 <Callout type="note">Attempt the [checkpoint](checkpoint-assignment) first. The [final assignment](assignment) adds DOM testing and coverage on top of these.</Callout>
 
+The starter lives in the **`kbc-fe`** repo on branch **`unit-testing-checkpoint-assignment`** — the
+source files are provided under `public/unit-testing/src/`, and you fill in the `*.test.js` stubs.
+Run with `npm test`.
+
 ## Pure logic & matchers
 
 ```js
+// money.test.js
 import { formatPrice } from './money.js';
 
 describe('formatPrice()', () => {
@@ -28,6 +33,7 @@ describe('formatPrice()', () => {
 ## Mocking fetch + async
 
 ```js
+// users.test.js
 import { loadUser } from './users.js';
 
 afterEach(() => jest.resetAllMocks());
@@ -48,6 +54,7 @@ it('rejects when the response is not ok', async () => {
 ## Fake timers (debounce)
 
 ```js
+// debounce.test.js
 import { debounce } from './debounce.js';
 
 it('fires once after the delay', () => {

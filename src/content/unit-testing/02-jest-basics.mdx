@@ -30,17 +30,19 @@ describe('applyDiscount()', () => {        // a group of related tests
 
 ## Running them
 
-```bash
-npx jest                 # run everything once
-npx jest --watch         # re-run automatically as you edit
-npx jest cart.test.js    # just one file
-npx jest -t "10%"        # only tests whose name contains "10%"
-```
-
-Most projects add a script so the team runs it the same way:
+Add a script to `package.json` so the whole team runs tests the same way:
 
 ```json
 { "scripts": { "test": "jest", "test:watch": "jest --watch" } }
+```
+
+Then:
+
+```bash
+npm test                    # run everything once
+npm run test:watch          # re-run automatically as you edit
+npm test -- cart.test.js    # just one file
+npm test -- -t "10%"        # only tests whose name contains "10%"
 ```
 
 ## Setup & cleanup (lifecycle)
