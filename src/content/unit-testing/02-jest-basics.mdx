@@ -11,15 +11,15 @@ comes with everything you need built in — no extra setup to get started.
 ## A test file, line by line
 
 ```js
-import { applyDiscount } from './cart.js';
+import { sum } from './math.js';
 
-describe('applyDiscount()', () => {        // a group of related tests
-  test('takes 10% off', () => {            // one test
-    expect(applyDiscount(200, 10)).toBe(180);   // the check
+describe('sum()', () => {                   // a group of related tests
+  test('adds two numbers', () => {          // one test
+    expect(sum(2, 3)).toBe(5);              // the check
   });
 
-  it('takes nothing off at 0%', () => {    // it() === test(), just reads nicer
-    expect(applyDiscount(200, 0)).toBe(200);
+  it('adds negative numbers', () => {       // it() === test(), just reads nicer
+    expect(sum(-2, -3)).toBe(-5);
   });
 });
 ```
@@ -41,8 +41,8 @@ Then:
 ```bash
 npm test                    # run everything once
 npm run test:watch          # re-run automatically as you edit
-npm test -- cart.test.js    # just one file
-npm test -- -t "10%"        # only tests whose name contains "10%"
+npm test -- math.test.js    # just one file
+npm test -- -t "adds"       # only tests whose name contains "adds"
 ```
 
 ## Setup & cleanup (lifecycle)
