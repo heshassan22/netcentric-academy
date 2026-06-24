@@ -1,0 +1,308 @@
+export const meta = {
+  order: 100,
+  num: '✓',
+  title: 'Assignment — Answer',
+  topics: 'one model solution per task · compare with your own'
+};
+
+<Callout type="note">Attempt the [assignment](assignment) first. Paths follow this project: components under `apps/academy/components/<name>/`, Sling Models in `core`, front-end sources in `ui.frontend`.</Callout>
+
+## 1 — Create and render a component
+
+```xml
+<!-- apps/academy/components/notice/.content.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Notice"
+    componentGroup="Academy"/>
+```
+
+```html
+<!-- apps/academy/components/notice/notice.html -->
+<div class="notice">A static notice.</div>
+```
+
+Place it in content: `…/jcr:content/root/responsivegrid/notice` with `sling:resourceType="academy/components/notice"`.
+
+## 2 — Derived content (no dialog)
+
+```java
+// core/.../models/pagemeta/PageMetaModel.java
+@Model(adaptables = SlingHttpServletRequest.class,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class PageMetaModel {
+
+    @ScriptVariable
+    private Page currentPage;
+
+    public String getLabel() {
+        return currentPage.getDepth() <= 2 ? "Home" : currentPage.getTitle();
+    }
+}
+```
+
+```html
+<!-- page-meta.html -->
+<sly data-sly-use.meta="biz.netcentric.academy.core.models.pagemeta.PageMetaModel"/>
+<span class="page-meta">${meta.label}</span>
+```
+
+## 3 — Add a dialog and read the value
+
+```xml
+<!-- apps/academy/components/notice/_cq_dialog/.content.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured" jcr:title="Notice"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+  <content jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/container">
+    <items jcr:primaryType="nt:unstructured">
+      <message
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+          fieldLabel="Message"
+          fieldDescription="The text shown in the notice."
+          name="./message"/>
+    </items>
+  </content>
+</jcr:root>
+```
+
+```html
+<div class="notice">${properties.message}</div>
+```
+
+## 4 — Read the value through a Sling Model
+
+```java
+// core/.../models/notice/NoticeModel.java
+package biz.netcentric.academy.core.models.notice;
+
+@Model(adaptables = Resource.class,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class NoticeModel {
+
+    @ValueMapValue
+    @Default(values = "Heads up!")
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+}
+```
+
+```html
+<sly data-sly-use.notice="biz.netcentric.academy.core.models.notice.NoticeModel"/>
+<div class="notice">${notice.message}</div>
+```
+
+<Callout type="warn">The `package` line, the folder path, and the `data-sly-use` class must match exactly. Rebuild and deploy `core` after the change.</Callout>
+
+## 5 — More field types and guards
+
+```xml
+<!-- _cq_dialog items -->
+<link
+    sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
+    fieldLabel="Link" rootPath="/content" name="./link"/>
+<dismissible
+    sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+    text="Dismissible" name="./dismissible" value="true"/>
+<type
+    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+    fieldLabel="Type" name="./type">
+  <items jcr:primaryType="nt:unstructured">
+    <info jcr:primaryType="nt:unstructured" text="Info" value="info"/>
+    <warning jcr:primaryType="nt:unstructured" text="Warning" value="warning"/>
+  </items>
+</type>
+```
+
+```java
+@ValueMapValue @Default(booleanValues = false)
+private boolean dismissible;
+
+@ValueMapValue @Default(values = "info")
+private String type;
+```
+
+<Callout type="note">Wrap the fields in `granite/ui/components/coral/foundation/tabs` once there are more than a handful.</Callout>
+
+## 6 — Add styling with a clientlib
+
+```scss
+// ui.frontend/src/main/frontend/academy/publish/components/notice/notice.clientlibs.scss
+.notice {
+  padding: 1rem;
+  border-radius: 4px;
+
+  &__message { font-weight: 600; }
+  &--warning { background: #fff3cd; }
+}
+```
+
+```html
+<sly data-sly-use.clientlib="${'/libs/granite/sightly/templates/clientlib.html'}"
+     data-sly-call="${clientlib.css @ categories='academy.publish.components.notice'}"/>
+<div class="notice notice--${notice.type}">
+  <p class="notice__message">${notice.message}</p>
+</div>
+```
+
+## 7 — Behaviour with the component loader
+
+```js
+// notice.clientlibs.js
+import { register } from '@netcentric/component-loader';
+
+class Notice {
+  constructor(element, options) {
+    this.element = element;
+    this.speed = options?.speed ?? 0;
+    this.element.addEventListener('click', () => {
+      this.element.classList.toggle('notice--active');
+    });
+  }
+}
+
+register({ Notice });
+export default Notice;
+```
+
+```js
+// publish/components/index.js — import it so the bundle includes it
+export * from 'academy-base-project/publish/components/notice/notice';
+```
+
+```html
+<div class="notice" data-nc="Notice" data-nc-params-Notice='{"speed":300}'>
+  <p class="notice__message">${notice.message}</p>
+</div>
+```
+
+## 8 — Make it insertable through policy
+
+```xml
+<!-- /conf/academy/settings/wcm/policies/.../responsivegrid policy -->
+<policy_default_component_parsys
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="wcm/core/components/policy/policy"
+    components="group:Academy"/>
+```
+
+With `componentGroup="Academy"` and a `_cq_dialog` present, the component appears in **Insert New Component**.
+
+## 9 — Template configuration via a design dialog
+
+```xml
+<!-- apps/academy/components/notice/_cq_design_dialog/.content.xml (items) -->
+<defaultType
+    sling:resourceType="granite/ui/components/coral/foundation/form/select"
+    fieldLabel="Default type" name="./defaultType">
+  <items jcr:primaryType="nt:unstructured">
+    <info jcr:primaryType="nt:unstructured" text="Info" value="info"/>
+    <warning jcr:primaryType="nt:unstructured" text="Warning" value="warning"/>
+  </items>
+</defaultType>
+```
+
+```html
+<!-- fall back to the policy value when the author left the field empty -->
+<div class="notice notice--${notice.type || currentStyle.defaultType}">…</div>
+```
+
+Set it once in **Structure mode → select the component → Policy tab**.
+
+## 10 — Style System variations
+
+```xml
+<!-- in the component's policy -->
+<cq:styleGroups jcr:primaryType="nt:unstructured">
+  <item0 jcr:primaryType="nt:unstructured" cq:styleGroupLabel="Appearance">
+    <cq:styles jcr:primaryType="nt:unstructured">
+      <item0 jcr:primaryType="nt:unstructured"
+          cq:styleLabel="Boxed" cq:styleClasses="notice--boxed"/>
+      <item1 jcr:primaryType="nt:unstructured"
+          cq:styleLabel="Plain" cq:styleClasses="notice--plain"/>
+    </cq:styles>
+  </item0>
+</cq:styleGroups>
+```
+
+```scss
+.notice {
+  &--boxed { border: 1px solid #ccc; padding: 1rem; }
+  &--plain { border: 0; padding: 0; }
+}
+```
+
+AEM adds the chosen class to the component wrapper — no dialog field, no HTL change.
+
+## 11 — Capstone: the "Promo" component
+
+```xml
+<!-- _cq_dialog items: title, text, ctaLabel, ctaUrl -->
+<title    sling:resourceType="…/form/textfield" fieldLabel="Title"     name="./title"/>
+<text     sling:resourceType="…/form/textarea"  fieldLabel="Body"      name="./text"/>
+<ctaLabel sling:resourceType="…/form/textfield" fieldLabel="CTA label" name="./ctaLabel"/>
+<ctaUrl   sling:resourceType="…/form/pathfield" fieldLabel="CTA link"  rootPath="/content" name="./ctaUrl"/>
+```
+
+```html
+<sly data-sly-use.promo="biz.netcentric.academy.core.models.promo.PromoModel"
+     data-sly-use.clientlib="${'/libs/granite/sightly/templates/clientlib.html'}"
+     data-sly-call="${clientlib.css @ categories='academy.publish.components.promo'}"/>
+
+<article class="promo" data-sly-test="${promo.title}">
+  <h2 class="promo__title">${promo.title}</h2>
+  <p class="promo__text">${promo.text}</p>
+  <a class="promo__cta" href="${promo.ctaUrl}"
+     data-sly-test="${promo.ctaLabel && promo.ctaUrl}">${promo.ctaLabel}</a>
+</article>
+```
+
+The model reads each field with `@ValueMapValue` + `@Default`; the policy allows the group, sets one design-dialog option, and defines two `cq:styleGroups` styles.
+
+## 12 — Extend a Core Component
+
+```xml
+<!-- apps/academy/components/title/.content.xml -->
+<jcr:root … jcr:primaryType="cq:Component"
+    sling:resourceSuperType="core/wcm/components/title/v3/title"
+    componentGroup="Academy"/>
+```
+
+```java
+@Model(adaptables = SlingHttpServletRequest.class,
+       adapters = Title.class,
+       resourceType = "academy/components/title",
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class TitleImpl implements Title {
+
+    @Self @Via(type = ResourceSuperType.class)
+    private Title delegate;
+
+    @Override
+    public String getText() {
+        return delegate.getText() + " — Academy";   // the one override
+    }
+
+    // forward the rest to the delegate (IDE-generated)
+}
+```
+
+```java
+@Test
+void appendsSuffix() {
+    Title core = mock(Title.class);
+    when(core.getText()).thenReturn("Hello");
+    // inject the mock as the delegate, then:
+    assertEquals("Hello — Academy", title.getText());
+}
+```
+
+<Callout type="do">Reuse the Core Component wholesale, change exactly one thing through delegation, keep HTL a thin view, and let the policy + Style System carry configuration and appearance.</Callout>

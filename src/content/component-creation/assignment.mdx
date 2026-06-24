@@ -1,0 +1,233 @@
+export const meta = {
+  order: 99,
+  num: '★',
+  title: 'Assignment: Build Components, Beginner → Advanced',
+  topics: 'structure · dialog · Sling Model · clientlibs · policies · Style System'
+};
+
+A graded set of assignments covering the whole module. Each level builds on the one before, so
+do them in order — by the end you have one component that an author can insert, fill, style, and
+configure with no code changes.
+
+<Callout type="note">The **Java (Sling Models) is provided** for every task that needs it — drop each into `core`, then rebuild & deploy: `mvn clean install -PautoInstallSinglePackage`. Your focus is the **front end**: HTL, dialog, clientlibs, SCSS/JS, policy, and the Style System. Place components under a page's `root/responsivegrid` (not directly under `root`).</Callout>
+
+### 1 — Create and render a component
+
+- [ ] Create `apps/academy/components/notice/` with a `.content.xml` node of type `cq:Component`, a `jcr:title`, and `componentGroup="Academy"`
+- [ ] Add `notice.html` that renders static markup: `<div class="notice">A static notice.</div>`
+- [ ] Deploy, place the component under `root/responsivegrid`, and confirm it renders
+
+**Acceptance:** the component renders on a page from its own `notice.html` script.
+
+### 2 — Render derived content (no dialog, no author input)
+
+Java (provided — `core/.../models/pagemeta/PageMetaModel.java`):
+
+```java
+package biz.netcentric.academy.core.models.pagemeta;
+
+import com.day.cq.wcm.api.Page;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.ScriptVariable;
+
+@Model(adaptables = SlingHttpServletRequest.class,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class PageMetaModel {
+
+    @ScriptVariable
+    private Page currentPage;
+
+    public String getLabel() {
+        return currentPage.getDepth() <= 2 ? "Home" : currentPage.getTitle();
+    }
+}
+```
+
+- [ ] Create `apps/academy/components/page-meta/` and wire the model with `data-sly-use`
+- [ ] Render the value with a single expression: `${meta.label}` — no branching in the markup
+
+**Acceptance:** the value comes from page context; the HTL is one expression.
+
+### 3 — Add a dialog and read the value
+
+- [ ] Add a `_cq_dialog` to `notice` with one `textfield`, `name="./message"`, and a `fieldDescription`
+- [ ] Render the authored value with `${properties.message}`
+- [ ] Author a value in the dialog and confirm it shows on the page
+
+**Acceptance:** an author edits the text in the dialog and sees it render.
+
+### 4 — Read the value through a Sling Model
+
+Java (provided — `core/.../models/notice/NoticeModel.java`):
+
+```java
+package biz.netcentric.academy.core.models.notice;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Default;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+
+@Model(adaptables = Resource.class,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class NoticeModel {
+
+    @ValueMapValue
+    @Default(values = "Heads up!")
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+}
+```
+
+- [ ] Swap the HTL from `${properties.message}` to the model: `data-sly-use.notice="...NoticeModel"` → `${notice.message}`
+- [ ] Rebuild & deploy `core`, then clear the dialog field and confirm the default shows
+
+**Acceptance:** an empty field falls back to the default; `data-sly-use` resolves the model.
+
+### 5 — Use more field types and guard them
+
+Java (provided — add these fields to `NoticeModel`):
+
+```java
+@ValueMapValue
+@Default(values = "info")
+private String type;            // info | warning
+
+@ValueMapValue
+@Default(booleanValues = false)
+private boolean dismissible;
+
+public String getType() { return type; }
+public boolean isDismissible() { return dismissible; }
+```
+
+- [ ] Add to the dialog: a `select` (`./type`: info / warning), a `checkbox` (`./dismissible`), and a `pathfield` (`./link`)
+- [ ] Use `${notice.type}` / `${notice.dismissible}` in the HTL (the `@Default`s already guard nulls)
+- [ ] Group the fields under tabs once there are more than a few
+
+**Acceptance:** no null-value error; each field stores under its own `./property`.
+
+### 6 — Add styling with a clientlib
+
+- [ ] Add `notice.clientlibs.scss` under `ui.frontend/src/main/frontend/academy/publish/components/notice/`
+- [ ] Style the `.notice` block and its elements in BEM (`block__element--modifier`)
+- [ ] Load the category from HTL with the Granite `clientlib` template — `academy.publish.components.notice`
+
+**Acceptance:** the component is styled on publish, and the `categories` string matches the generated category.
+
+### 7 — Add behaviour with the component loader
+
+- [ ] Add `notice.clientlibs.js`: a class that toggles a modifier class on click, then `register({ Notice })`
+- [ ] Export it from the publish entry so the build includes it
+- [ ] Mark the element `data-nc="Notice"` and pass one option via `data-nc-params-Notice` (valid JSON)
+
+**Acceptance:** the behaviour runs on placed instances and on instances an author adds live in author mode.
+
+### 8 — Make it insertable through policy
+
+- [ ] Confirm the responsivegrid policy allows `group:Academy`
+- [ ] Insert the component through **Insert New Component** rather than adding the node by hand
+
+**Acceptance:** the component appears in the Insert dialog and an author can add it.
+
+### 9 — Add template-level configuration via a design dialog
+
+- [ ] Add a `_cq_design_dialog` exposing one policy-level option (for example `./defaultType`: info / warning)
+- [ ] Read it in HTL with `currentStyle` — no Java needed: `${notice.type || currentStyle.defaultType}`
+- [ ] Set it once in **Structure mode → Policy tab**
+
+**Acceptance:** the option is set once per template and applies to every instance on that template.
+
+### 10 — Add Style System variations
+
+- [ ] Define `cq:styleGroups` in the component's policy with two styles (label → class, for example `notice--boxed` and `notice--plain`)
+- [ ] Add the matching BEM modifiers in the SCSS
+- [ ] Pick a style from the component toolbar and confirm the class and the look change
+
+**Acceptance:** an author switches the look from the toolbar — no dialog field and no code change per variation.
+
+## Capstone
+
+### 11 — Build a complete "Promo" component
+
+Java (provided — `core/.../models/promo/PromoModel.java`):
+
+```java
+package biz.netcentric.academy.core.models.promo;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Default;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+
+@Model(adaptables = Resource.class,
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class PromoModel {
+
+    @ValueMapValue @Default(values = "") private String title;
+    @ValueMapValue @Default(values = "") private String text;
+    @ValueMapValue @Default(values = "") private String ctaLabel;
+    @ValueMapValue @Default(values = "") private String ctaUrl;
+
+    public String getTitle()    { return title; }
+    public String getText()     { return text; }
+    public String getCtaLabel() { return ctaLabel; }
+    public String getCtaUrl()   { return ctaUrl; }
+}
+```
+
+Combine everything into one new component, `apps/academy/components/promo/`:
+
+- [ ] Dialog: title, body text, CTA label, and CTA link (`pathfield`)
+- [ ] HTL wires `PromoModel` with `data-sly-use` and stays a thin view
+- [ ] Clientlib in BEM, loaded by category; one loader behaviour if it needs JS
+- [ ] Allowed by policy, one design-dialog option, and two Style System variations
+
+**Acceptance:** an author can insert, fill, restyle, and configure the component end to end without code changes.
+
+### 12 — (Stretch) Extend a Core Component
+
+Java (provided — `core/.../models/title/TitleImpl.java`):
+
+```java
+package biz.netcentric.academy.core.models.title;
+
+import com.adobe.cq.wcm.core.components.models.Title;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.Via;
+import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.apache.sling.models.annotations.via.ResourceSuperType;
+
+@Model(adaptables = SlingHttpServletRequest.class,
+       adapters = Title.class,
+       resourceType = "academy/components/title",
+       defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class TitleImpl implements Title {
+
+    @Self @Via(type = ResourceSuperType.class)
+    private Title delegate;
+
+    @Override
+    public String getText() {
+        return delegate.getText() + " — Academy";   // the one override
+    }
+
+    // forward everything else to `delegate` (let your IDE generate these)
+}
+```
+
+- [ ] Create `apps/academy/components/title/.content.xml` with `sling:resourceSuperType="core/wcm/components/title/v3/title"`
+- [ ] Confirm it renders with the inherited dialog + HTL, then deploy the provided model
+
+**Acceptance:** the component reuses the Core Component, changes one thing, and still exports the standard JSON.
+
+<Callout type="do">Work top to bottom. For each setting, decide deliberately: per-instance content goes in the **dialog**, per-template configuration goes in the **policy**, and purely visual variations go in the **Style System**.</Callout>

@@ -2,12 +2,12 @@ export const meta = {
   order: 99,
   num: '★',
   title: 'Assignment: DOM Tests & Coverage',
-  topics: 'End of session · ~1.5h · lessons 06–08 (DOM testing, organization, coverage & quality)'
+  topics: 'End of session · ~1.5h · lessons 07–09 (DOM testing, organization, coverage & quality)'
 };
 
 Pick up the Jest project from the [mid-module checkpoint](checkpoint-assignment) and round it out —
 test a component in the DOM, organize the suite, and make coverage **meaningful**. Applies lessons
-**06–08**. Budget **~1.5 hours**.
+**07–09**. Budget **~1.5 hours**.
 
 <Callout type="note">Extend the same project — don't restart. If you skipped the checkpoint, do [Part 1](checkpoint-assignment) first (setup, matchers, mocking, async); everything here builds on it.</Callout>
 
@@ -24,7 +24,7 @@ npm install
 npm test                # npm run test:coverage for the coverage report
 ```
 
-## Part 1 — DOM testing (Advanced)
+## Part 1 — DOM testing
 
 Given a `Counter` component class (takes `element`, increments on click):
 
@@ -34,7 +34,7 @@ Given a `Counter` component class (takes `element`, increments on click):
 
 **Acceptance:** the component test exercises real user behaviour (click → DOM change); it asserts on what the user sees, not internal fields.
 
-## Part 2 — Organization & coverage (Advanced)
+## Part 2 — Organization & coverage
 
 - [ ] Organize tests: co-locate `*.test.js`, group with nested `describe`, share setup with `beforeEach`/`afterEach`
 - [ ] Run `npm run test:coverage` — the config already enforces an 80% threshold; write tests until it passes

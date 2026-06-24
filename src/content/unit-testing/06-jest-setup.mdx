@@ -1,0 +1,74 @@
+export const meta = {
+  order: 6,
+  num: '06',
+  title: 'Installing & Configuring Jest',
+  topics: 'install · Babel · jest.config · npm scripts · the exact setup used in the starter'
+};
+
+The concept lessons ran in the browser. To run tests in a real project you install Jest once and
+add two small config files. This is the exact setup used in the **kbc-fe** starter.
+
+## 1 — Install the tools
+
+```bash
+npm install --save-dev jest babel-jest @babel/core @babel/preset-env jest-environment-jsdom @testing-library/jest-dom
+```
+
+| Package | What it does |
+|---|---|
+| `jest` | the test runner |
+| `babel-jest` + `@babel/core` + `@babel/preset-env` | let Jest read modern `import`/`export` syntax |
+| `jest-environment-jsdom` | a fake browser DOM, so component tests have `document` |
+| `@testing-library/jest-dom` | extra matchers like `toHaveTextContent`, `toHaveAttribute` |
+
+## 2 — Tell Babel how to read your code
+
+Jest runs on Node, so `import`/`export` is transpiled by Babel first. One preset is enough:
+
+```js
+// babel.config.cjs
+module.exports = {
+  presets: [['@babel/preset-env', { targets: { node: 'current' } }]],
+};
+```
+
+<Callout type="note">The file ends in `.cjs` because the project's `package.json` has `"type": "module"`. The `.cjs` extension forces Node to load the config as CommonJS, which is what Babel expects. If your project is not `"type": "module"`, a plain `babel.config.js` works too.</Callout>
+
+## 3 — Configure Jest
+
+```js
+// jest.config.cjs
+module.exports = {
+  testEnvironment: 'jsdom',
+  roots: ['<rootDir>/public/unit-testing'],
+  setupFilesAfterEnv: ['@testing-library/jest-dom'],
+};
+```
+
+- `testEnvironment: 'jsdom'` — gives every test a `document` and `window`, needed once you test a component.
+- `roots` — where Jest looks for tests. Point it at your source folder so it skips `node_modules`.
+- `setupFilesAfterEnv` — loads the extra matchers once, before every test file.
+
+## 4 — Add the scripts
+
+```json
+{
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  }
+}
+```
+
+## 5 — Run it
+
+```bash
+npm test                # run every *.test.js once
+npm run test:watch      # re-run on save
+npm run test:coverage   # run with a coverage report
+```
+
+Jest finds any file named `*.test.js` (or `*.spec.js`) under `roots` and runs it.
+
+<Callout type="do">That is the whole setup: install, one Babel preset, one Jest config, three scripts. The [checkpoint](checkpoint-assignment) starter already has all of this — you only write the tests.</Callout>

@@ -59,7 +59,7 @@ AEM resolves `academy/components/hello` → the `/apps/academy/components/hello`
 `hello.html`. This `resourceType` → script resolution is the heart of how AEM renders pages.
 
 ```mermaid
-flowchart LR
+flowchart TD
   A["Page node<br/>sling:resourceType =<br/>academy/components/hello"] --> B["AEM searches<br/>/apps then /libs"]
   B --> C["/apps/academy/components/hello"]
   C --> D["runs hello.html"]

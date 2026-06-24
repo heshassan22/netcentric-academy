@@ -1,11 +1,11 @@
 export const meta = {
-  order: 5.5,
+  order: 6.5,
   num: '✦',
   title: 'Checkpoint: Logic, Mocking & Async',
-  topics: 'Mid-module · ~2h · lessons 01–05 (setup, matchers, mocking, async)'
+  topics: 'Mid-module · ~2h · lessons 01–06 (setup, matchers, mocking, async)'
 };
 
-This is the **mid-module checkpoint** — apply lessons **01–05** by setting up Jest and testing pure
+This is the **mid-module checkpoint** — apply lessons **01–06** by setting up Jest and testing pure
 logic, mocks, and async code. **Keep your project**: the [final assignment](assignment) adds DOM
 tests, organization, and coverage on top.
 
@@ -26,7 +26,7 @@ npm test          # confirm it runs and finds the *.test.js files
 
 Each `*.test.js` has one worked example — add the rest to satisfy the parts below.
 
-## Part A — Pure logic & matchers (Beginner)
+## Part A — Pure logic & matchers
 
 Given `formatPrice(cents)`:
 
@@ -36,7 +36,7 @@ Given `formatPrice(cents)`:
 
 **Acceptance:** happy-path + edge-case tests; matchers are specific (e.g. `toThrow('invalid amount')`).
 
-## Part B — Mocking & async (Intermediate)
+## Part B — Mocking & async
 
 Given `loadUser(id)` that calls `fetch`, and a `debounce(fn, ms)` helper:
 
