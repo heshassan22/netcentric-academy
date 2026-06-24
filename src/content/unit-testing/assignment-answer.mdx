@@ -10,7 +10,10 @@ export const meta = {
 The starter is in the **`kbc-fe`** repo on branch **`unit-testing-assignment`** (it extends the
 checkpoint project). `counter.js` is provided; you write `counter.test.js` and tune coverage.
 
-## Part 1 — A DOM + custom-event test
+## Part 1 — A DOM test (two events)
+
+`counter.js` is a plain **functional** component (no framework, no dependencies). The test mounts
+its markup, runs the component, and clicks the two buttons:
 
 ```js
 // counter.test.js
@@ -19,25 +22,26 @@ import Counter from './counter.js';
 function mount() {
   document.body.innerHTML = `
     <div class="counter">
-      <button class="counter__btn">+</button>
+      <button class="counter__inc">+</button>
+      <button class="counter__reset">reset</button>
       <span class="counter__value">0</span>
     </div>`;
   const el = document.querySelector('.counter');
-  new Counter(el, { step: 1 });
+  Counter(el, { step: 1 });
   return el;
 }
 
 describe('Counter', () => {
   it('increments the display on click', () => {
     const el = mount();
-    el.querySelector('.counter__btn').click();
+    el.querySelector('.counter__inc').click();
     expect(el.querySelector('.counter__value')).toHaveTextContent('1');
   });
 
-  it('resets to 0 on a "counter:reset" custom event', () => {
+  it('resets to 0 when the reset button is clicked', () => {
     const el = mount();
-    el.querySelector('.counter__btn').click();
-    window.dispatchEvent(new CustomEvent('counter:reset'));
+    el.querySelector('.counter__inc').click();
+    el.querySelector('.counter__reset').click();
     expect(el.querySelector('.counter__value')).toHaveTextContent('0');
   });
 });

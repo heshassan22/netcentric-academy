@@ -26,10 +26,10 @@ npm test                # npm run test:coverage for the coverage report
 
 ## Part 1 — DOM testing
 
-Given a `Counter` component class (takes `element`, increments on click):
+Given a `Counter` component function (takes `element`, increments on click, resets on a reset button):
 
 - [ ] In **jsdom**, render markup, instantiate the component, **dispatch a click**, and assert the DOM updated (`toHaveTextContent`)
-- [ ] Test a **custom-event** interaction (dispatch on `window`, assert a class/text changed)
+- [ ] Test a second interaction — click the **reset** button and assert the value goes back to `0`
 - [ ] Use `@testing-library/jest-dom` matchers (`toHaveTextContent`, `toHaveAttribute`, `toBeVisible`)
 
 **Acceptance:** the component test exercises real user behaviour (click → DOM change); it asserts on what the user sees, not internal fields.
