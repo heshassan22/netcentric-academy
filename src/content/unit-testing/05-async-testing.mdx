@@ -23,7 +23,6 @@ test('loads the user', async () => {       // note: async
 
 ```js
 await expect(loadUser(1)).resolves.toMatchObject({ name: 'Ada' });  // it succeeds
-await expect(loadUser(0)).rejects.toThrow('not found');             // it fails as expected
 ```
 
 ## Don't wait for real time — fake the clock
