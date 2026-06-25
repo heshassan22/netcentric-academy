@@ -59,7 +59,7 @@ The matching SCSS lives under `academy/author/…`, so the build emits an `acade
 
 CSS is declarative; for **behaviour** you add a JS file beside the component and wire it up with the
 [Netcentric component loader](https://github.com/Netcentric/component-loader). You never call your
-code directly — you **register** a class, and the loader creates an instance for every matching
+code directly — you **register** a **function**, and the loader runs it for every matching
 element on the page (including ones authors add live).
 
 ### 1 · Write the component's JS
@@ -75,24 +75,23 @@ ui.frontend/src/main/frontend/academy/publish/components/hello/
 ```js
 import { register } from '@netcentric/component-loader';
 
-class Hello {
-  constructor(element, options) {
-    this.element = element;   // the DOM node carrying data-nc="Hello"
-    this.options = options;   // parsed from data-nc-params-Hello (JSON)
-    this.init();
-  }
+// A component is a function: it receives its element (and options) and wires up behaviour —
+// no class, no `this`.
+function Hello(element, options) {
+  // element — the DOM node carrying data-nc="Hello"
+  // options — parsed from data-nc-params-Hello (JSON)
 
-  init() {
-    // Scope queries to this.element — never document.querySelector.
-    this.element.addEventListener('click', () => {
-      this.element.classList.toggle('hello--active');
-    });
-  }
+  // Scope queries to `element` — never document.querySelector.
+  element.addEventListener('click', () => {
+    element.classList.toggle('hello--active');
+  });
 }
 
 register({ Hello });   // the key "Hello" is the name you use in data-nc
 export default Hello;
 ```
+
+<Callout type="note">The loader instantiates each component with `new Component(el, options)`. Because the function works off its `element` **argument** (not `this`), you write it as a plain function — no `class` keyword needed.</Callout>
 
 ### 2 · Make the build aware of it
 
@@ -119,7 +118,7 @@ observe();
 ### 4 · Wire it from HTL
 
 Mark the element with `data-nc` (the **registered name** — case-sensitive). Optionally pass config
-as **valid JSON** in `data-nc-params-<Name>`; it arrives as the constructor's `options`:
+as **valid JSON** in `data-nc-params-<Name>`; it arrives as the function's second argument, `options`:
 
 ```html
 <sly data-sly-use.clientlib="${'/libs/granite/sightly/templates/clientlib.html'}"
@@ -134,7 +133,7 @@ as **valid JSON** in `data-nc-params-<Name>`; it arrives as the constructor's `o
 
 - **Multiple components on one element:** `data-nc="Hello,Tracker"` (+ a `data-nc-params-…` per name).
 - **Lazy init:** `data-nc-loading="lazy"` defers instantiation until the element scrolls into view — ideal for heavy or below-the-fold components.
-- **Introspection:** the loader exports `components` (registered classes) and `instances` (live instances by name).
+- **Introspection:** the loader exports `components` (registered components) and `instances` (live instances by name).
 
 <Callout type="warn">The loader ships **untranspiled**, so the front-end build must run Babel over it — include `@netcentric` in `babel-loader` rather than blanket-excluding `node_modules`. `nc-fe-build` already handles this; it only bites in a hand-rolled webpack config.</Callout>
 

@@ -159,14 +159,11 @@ private String type;
 // notice.clientlibs.js
 import { register } from '@netcentric/component-loader';
 
-class Notice {
-  constructor(element, options) {
-    this.element = element;
-    this.speed = options?.speed ?? 0;
-    this.element.addEventListener('click', () => {
-      this.element.classList.toggle('notice--active');
-    });
-  }
+function Notice(element, options) {
+  // options comes from data-nc-params-Notice (JSON)
+  element.addEventListener('click', () => {
+    element.classList.toggle('notice--active');
+  });
 }
 
 register({ Notice });

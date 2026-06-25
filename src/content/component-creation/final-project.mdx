@@ -1,0 +1,182 @@
+export const meta = {
+  order: 101,
+  num: '🏁',
+  title: 'Final Project: Blog Explorer (AEM)',
+  topics: 'capstone · 3 AEM components · dialog · Sling Model · clientlibs · policies · Style System'
+};
+
+Build the **Blog Explorer** as real AEM components — the same app as the JS track's
+[final project](#/js/final-project), assembled the AEM way. It puts the whole module to work:
+structure, dialog, Sling Model, clientlibs (functional loader JS), policies, and the Style System.
+Build it in the **`code`** AEM project.
+
+Data comes from [JSONPlaceholder](https://jsonplaceholder.typicode.com/): `/posts`, `/users`,
+`/posts/{id}/comments` — fetched **client-side** from the component JS (its CORS is open).
+
+## How it should look
+
+```text
+┌───────────────────────────────────────────────────────────┐
+│  Blog Explorer                      [ search posts…      ]  │  ← Blog Search component
+├───────────────────────────────────────────────────────────┤
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
+│  │ Post title │  │ Post title │  │ Post title │            │  ← Post List: grid of cards
+│  │ by Author  │  │ by Author  │  │ by Author  │            │     (<article>), fade in
+│  │ excerpt……  │  │ excerpt……  │  │ excerpt……  │            │     on scroll
+│  └────────────┘  └────────────┘  └────────────┘            │
+│              … more cards reveal as you scroll …           │
+└───────────────────────────────────────────────────────────┘
+
+Click a card  →  Post Dialog (<dialog>) with the post's body + comments
+```
+
+Responsive: 1 column on mobile, 2–3 as it widens (SASS + a breakpoint mixin).
+
+## The component and its three modules
+
+Build **one** AEM component — **Blog Explorer** (`apps/academy/components/blog-explorer`) — whose
+HTL renders the header/search, the grid, and the dialog. Its clientlib JS composes three small
+**functional modules** (the same split as the JS project) and wires them — mostly by **callbacks**,
+with **one** custom event. The entry JS is the AEM equivalent of `main.js`.
+
+1. **search-bar** — `createSearchBar(root, { onSearch })`: a `<form>` with a search input; on input
+   (**debounced**) it calls `onSearch(query)`.
+2. **post-list** — `createPostList(root)` returns **`{ render(posts), filter(query) }`**. It renders
+   the `<article>` cards, **fades them in** with an IntersectionObserver, and filters by query. When
+   a card is clicked it dispatches a single **`post:open`** `CustomEvent` (bubbling, the post in
+   `detail`).
+3. **post-dialog** — `createPostDialog(root)` **listens for `post:open`**, fetches that post's
+   comments, and shows the title, body, and comments in a `<dialog>`, with loading and error states.
+
+## Suggested layout
+
+```text
+apps/academy/components/blog-explorer/
+├── .content.xml          # cq:Component, componentGroup "Academy"
+├── _cq_dialog/           # heading · search placeholder · post count
+└── blog-explorer.html    # header/search + grid + <dialog> markup
+
+ui.frontend/src/main/frontend/academy/publish/components/blog-explorer/
+├── blog-explorer.clientlibs.js    # entry: create + wire the modules (main.js equivalent)
+├── blog-explorer.clientlibs.scss  # tokens + BEM + breakpoint mixin
+├── api.js                          # getPosts() · getUsers() · getComments(id)
+├── helpers.js                      # debounce · excerpt · byId
+├── search-bar.js                   # createSearchBar(root, { onSearch })
+├── post-list.js                    # createPostList(root) -> { render, filter }
+└── post-dialog.js                  # createPostDialog(root); listens for 'post:open'
+
+core/.../models/blogexplorer/BlogExplorerModel.java   # reads the dialog config
+/conf/academy/settings/wcm/policies/                  # allow the group + Style System styles
+```
+
+## The Sling Model (provided)
+
+You focus on the front end — here's the model to drop into `core`. It reads the dialog values
+(`heading`, `placeholder`, `count`); your HTL passes `count` to the JS via a `data-count` attribute.
+
+```java
+package biz.netcentric.academy.core.models.blogexplorer;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Default;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+
+@Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class BlogExplorerModel {
+
+    @ValueMapValue @Default(values = "Blog Explorer")
+    private String heading;
+
+    @ValueMapValue @Default(values = "Search posts…")
+    private String placeholder;
+
+    @ValueMapValue @Default(intValues = 12)
+    private int count;
+
+    public String getHeading() { return heading; }
+    public String getPlaceholder() { return placeholder; }
+    public int getCount() { return count; }
+}
+```
+
+## Requirements
+
+- [ ] **Structure** — one `blog-explorer` component rendered by its HTL (header/search + grid + `<dialog>`)
+- [ ] **Dialog** — authorable options: the heading, the search placeholder, the post count
+- [ ] **Sling Model** — read those dialog values and keep HTL a thin view
+- [ ] **Clientlibs** — BEM SCSS (tokens + a breakpoint mixin for the responsive grid), loaded by category
+- [ ] **Functional JS** — `register` a **function** (not a class); compose three functional modules (search-bar, post-list, post-dialog) wired by callbacks; fetch, transform with pure helpers (join authors, build excerpts), render, **debounce**, and **lazy-reveal** the cards
+- [ ] **One custom event** — a card click dispatches `post:open` and the dialog listens; nothing else uses events
+- [ ] **Loading & error states** on every fetch
+- [ ] **Semantic HTML** in HTL — `<header>`, `<main>`, `<article>`, `<form>`, `<dialog>`
+- [ ] **Policy + Style System** — allow the component on the template, and add at least one Style System variation (e.g. grid density, or a card style)
+
+How you split and name the JS functions is up to you — aim for clean, readable modules.
+
+<Callout type="note">Fetch **client-side** from the component JS to keep it simple. As a stretch, move the fetch server-side into a **Sling Model or servlet** (so the markup ships rendered and the calls can be cached) — that's how a production AEM build would usually do it.</Callout>
+
+## Acceptance
+
+<Callout type="do">Done when: posts load (each card showing its author), the search filters live, cards fade in on scroll, clicking a card opens a dialog with that post's comments, and every fetch shows loading / handles errors — built as real AEM components (HTL + dialog + Sling Model + clientlibs), wired with **functional** loader JS and **one** custom event, allowed by policy with a Style System variation.</Callout>
+
+## Expected result
+
+The **grid** (search bar + cards):
+
+<Playground
+  hideHtml
+  hideCss
+  html={`<header class="site-header">
+  <h1 class="site-header__title">Blog Explorer</h1>
+  <form class="search"><input class="search__input" type="search" placeholder="Search posts…"></form>
+</header>
+<main class="layout">
+  <section class="posts">
+    <article class="card"><h2 class="card__title">sunt aut facere repellat provident</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">quia et suscipit suscipit recusandae consequuntur expedita et cum reprehenderit molestiae ut ut quas…</p></article>
+    <article class="card"><h2 class="card__title">qui est esse</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">est rerum tempore vitae sequi sint nihil reprehenderit dolor beatae ea dolores neque fugiat blanditi…</p></article>
+    <article class="card"><h2 class="card__title">ea molestias quasi exercitationem</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">et iusto sed quo iure voluptatem occaecati omnis eligendi aut ad voluptatem doloribus vel accusantiu…</p></article>
+    <article class="card"><h2 class="card__title">eum et est occaecati</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">ullam et saepe reiciendis voluptatem adipisci sit amet autem assumenda provident rerum culpa quis hi…</p></article>
+    <article class="card"><h2 class="card__title">nesciunt quas odio</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">repudiandae veniam quaerat sunt sed alias aut fugiat sit autem sed est voluptatem omnis possimus ess…</p></article>
+    <article class="card"><h2 class="card__title">dolorem eum magni eos aperiam quia</h2><p class="card__author">by Leanne Graham</p><p class="card__excerpt">ut aspernatur corporis harum nihil quis provident sequi mollitia nobis aliquid molestiae perspiciati…</p></article>
+  </section>
+</main>`}
+  css={`body { margin: 0; font-family: system-ui, sans-serif; color: #1c1c28; background: #faf9fc; }
+.site-header { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid #e3e0ea; background: #fff; }
+.site-header__title { margin: 0; font-size: 1.25rem; color: #6b2fb3; }
+.search__input { padding: .5rem .75rem; border: 1px solid #e3e0ea; border-radius: 8px; min-width: 180px; }
+.layout { padding: 1rem 1.5rem; }
+.posts { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }
+.card { border: 1px solid #e3e0ea; border-radius: 10px; background: #fff; padding: 1rem; }
+.card__title { margin: 0 0 .25rem; font-size: 1.05rem; color: #6b2fb3; }
+.card__author { margin: 0 0 .5rem; font-size: .85rem; color: #6b6b76; }
+.card__excerpt { margin: 0; font-size: .9rem; line-height: 1.5; }`}
+/>
+
+And **a post's dialog** (after clicking a card):
+
+<Playground
+  hideHtml
+  hideCss
+  html={`<div class="dialog">
+  <button class="dialog__close" aria-label="Close">✕</button>
+  <h2 class="dialog__title">qui est esse</h2>
+  <p class="dialog__author">by Leanne Graham</p>
+  <p class="dialog__body">est rerum tempore vitae sequi sint nihil reprehenderit dolor beatae ea dolores neque fugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis qui aperiam non debitis possimus qui neque nisi nulla</p>
+  <h3 class="dialog__heading">Comments</h3>
+  <ul class="dialog__comments">
+    <li class="dialog__comment">Eliseo Murazik: doloribus at sed quis culpa deserunt consectetur qui praesentium accusamus</li>
+    <li class="dialog__comment">Jayne Kuhic: et omnis dolorem ut voluptatem corrupti velit ad voluptatem maiores</li>
+    <li class="dialog__comment">Nikita: provident id voluptas sapiente assumenda molestiae atque adipisci laborum</li>
+  </ul>
+</div>`}
+  css={`body { margin: 0; font-family: system-ui, sans-serif; color: #1c1c28; background: #efeef3; padding: 1.5rem; }
+.dialog { border: 0; border-radius: 12px; background: #fff; padding: 1.5rem; max-width: 480px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0, 0, 0, .15); }
+.dialog__close { float: right; border: 0; background: none; font-size: 1.1rem; cursor: pointer; color: #6b6b76; }
+.dialog__title { margin: 0 0 .25rem; color: #6b2fb3; }
+.dialog__author { margin: 0 0 1rem; color: #6b6b76; font-size: .85rem; }
+.dialog__heading { margin: 1rem 0 .25rem; font-size: .95rem; }
+.dialog__comments { list-style: none; padding: 0; margin: 0; }
+.dialog__comment { padding: .5rem 0; border-top: 1px solid #e3e0ea; font-size: .9rem; line-height: 1.5; }`}
+/>

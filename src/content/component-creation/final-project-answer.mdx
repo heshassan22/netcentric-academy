@@ -1,0 +1,277 @@
+export const meta = {
+  order: 102,
+  num: '✓',
+  title: 'Final Project — Answer',
+  topics: 'one AEM component · three functional modules · one custom event · model solution'
+};
+
+<Callout type="note">Attempt the [final project](final-project) first. One correct shape — a single `blog-explorer` component whose clientlib JS composes three functional modules and wires them, with one `post:open` custom event.</Callout>
+
+## api.js
+
+```js
+const BASE = 'https://jsonplaceholder.typicode.com';
+
+const json = (res) => {
+  if (!res.ok) throw new Error(`request failed: ${res.status}`);
+  return res.json();
+};
+
+export const getPosts = () => fetch(`${BASE}/posts`).then(json);
+export const getUsers = () => fetch(`${BASE}/users`).then(json);
+export const getComments = (postId) => fetch(`${BASE}/posts/${postId}/comments`).then(json);
+```
+
+## helpers.js (pure)
+
+```js
+export const debounce = (fn, ms = 300) => {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+};
+
+export const excerpt = (text, max = 100) =>
+  text.length > max ? `${text.slice(0, max).trimEnd()}…` : text;
+
+export const byId = (list) =>
+  list.reduce((map, item) => ({ ...map, [item.id]: item }), {});
+```
+
+## search-bar.js
+
+```js
+import { debounce } from './helpers';
+
+export function createSearchBar(root, { onSearch }) {
+  const input = root.querySelector('.search__input');
+  const run = debounce((query) => onSearch(query), 300);
+  input.addEventListener('input', () => run(input.value.trim().toLowerCase()));
+}
+```
+
+## post-list.js
+
+```js
+export function createPostList(root) {
+  let cards = [];
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('card--visible');
+      observer.unobserve(entry.target);
+    });
+  });
+
+  const cardEl = (post) => {
+    const article = document.createElement('article');
+    article.className = 'card';
+    article.innerHTML = `
+      <h2 class="card__title">${post.title}</h2>
+      <p class="card__author">by ${post.author}</p>
+      <p class="card__excerpt">${post.excerpt}</p>`;
+    article.addEventListener('click', () => {
+      root.dispatchEvent(new CustomEvent('post:open', { detail: post, bubbles: true }));
+    });
+    observer.observe(article);
+    return article;
+  };
+
+  return {
+    render(posts) {
+      cards = posts.map((post) => ({ post, el: cardEl(post) }));
+      root.replaceChildren(...cards.map((c) => c.el));
+    },
+    filter(query) {
+      cards.forEach(({ post, el }) => {
+        const match = post.title.toLowerCase().includes(query)
+          || post.author.toLowerCase().includes(query);
+        el.hidden = !match;
+      });
+    },
+    error(message) {
+      root.textContent = message;
+    },
+  };
+}
+```
+
+## post-dialog.js
+
+```js
+import { getComments } from './api';
+
+export function createPostDialog(root) {
+  const comments = root.querySelector('.dialog__comments');
+
+  root.querySelector('.dialog__close')
+    .addEventListener('click', () => root.close());
+
+  document.addEventListener('post:open', async (event) => {
+    const post = event.detail;
+    root.querySelector('.dialog__title').textContent = post.title;
+    root.querySelector('.dialog__author').textContent = `by ${post.author}`;
+    root.querySelector('.dialog__body').textContent = post.body;
+    comments.innerHTML = '<li class="dialog__comment">Loading…</li>';
+    root.showModal();
+
+    try {
+      const list = await getComments(post.id);
+      comments.replaceChildren(...list.map((c) => {
+        const li = document.createElement('li');
+        li.className = 'dialog__comment';
+        li.textContent = `${c.name}: ${c.body}`;
+        return li;
+      }));
+    } catch {
+      comments.innerHTML = '<li class="dialog__comment">Could not load comments.</li>';
+    }
+  });
+}
+```
+
+## blog-explorer.clientlibs.js (the entry — the `main.js` equivalent)
+
+```js
+import { register } from '@netcentric/component-loader';
+import { getPosts, getUsers } from './api';
+import { byId, excerpt } from './helpers';
+import { createSearchBar } from './search-bar';
+import { createPostList } from './post-list';
+import { createPostDialog } from './post-dialog';
+
+async function BlogExplorer(element) {
+  const list = createPostList(element.querySelector('.blog-explorer__list'));
+  createPostDialog(element.querySelector('.blog-explorer__dialog'));
+  createSearchBar(element.querySelector('.blog-explorer__search'), {
+    onSearch: (query) => list.filter(query),
+  });
+
+  try {
+    const posts = await getPosts();          // sequential — no Promise.all needed
+    const users = await getUsers();
+    const usersById = byId(users);
+    const count = Number(element.dataset.count) || posts.length;
+
+    const shaped = posts.slice(0, count).map((post) => ({
+      id: post.id,
+      title: post.title,
+      body: post.body,
+      author: usersById[post.userId]?.name ?? 'Unknown',
+      excerpt: excerpt(post.body),
+    }));
+
+    list.render(shaped);
+  } catch {
+    list.error('Could not load posts.');
+  }
+}
+
+register({ BlogExplorer });
+export default BlogExplorer;
+```
+
+<Callout type="note">Export the entry from the publish bundle so the build includes it: in `publish/components/index.js`, `export * from './blog-explorer/blog-explorer.clientlibs';`</Callout>
+
+## blog-explorer.html
+
+```html
+<sly data-sly-use.model="biz.netcentric.academy.core.models.blogexplorer.BlogExplorerModel"
+     data-sly-use.clientlib="${'/libs/granite/sightly/templates/clientlib.html'}"
+     data-sly-call="${clientlib.all @ categories='academy.publish.components.blog-explorer'}"/>
+
+<section class="blog-explorer" data-nc="BlogExplorer" data-count="${model.count}">
+  <header class="blog-explorer__header">
+    <h2 class="blog-explorer__title">${model.heading}</h2>
+    <form class="search blog-explorer__search">
+      <input class="search__input" type="search" placeholder="${model.placeholder}"/>
+    </form>
+  </header>
+
+  <main class="blog-explorer__list posts"></main>
+
+  <dialog class="dialog blog-explorer__dialog">
+    <button class="dialog__close" type="button" aria-label="Close">✕</button>
+    <h2 class="dialog__title"></h2>
+    <p class="dialog__author"></p>
+    <p class="dialog__body"></p>
+    <h3 class="dialog__heading">Comments</h3>
+    <ul class="dialog__comments"></ul>
+  </dialog>
+</section>
+```
+
+## BlogExplorerModel.java
+
+```java
+package biz.netcentric.academy.core.models.blogexplorer;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Default;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+
+@Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+public class BlogExplorerModel {
+
+    @ValueMapValue @Default(values = "Blog Explorer")
+    private String heading;
+
+    @ValueMapValue @Default(values = "Search posts…")
+    private String placeholder;
+
+    @ValueMapValue @Default(intValues = 12)
+    private int count;
+
+    public String getHeading() { return heading; }
+    public String getPlaceholder() { return placeholder; }
+    public int getCount() { return count; }
+}
+```
+
+The `_cq_dialog` has a `textfield` (`./heading`), a `textfield` (`./placeholder`), and a
+`numberfield` (`./count`).
+
+## blog-explorer.clientlibs.scss (essentials)
+
+```scss
+@use "variables/colors" as *;
+@use "variables/breakpoints" as *;
+
+@mixin bp($min) {
+  @media (min-width: $min) { @content; }
+}
+
+.posts {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;                                   // mobile
+  @include bp($bp-tablet)  { grid-template-columns: repeat(2, 1fr); }
+  @include bp($bp-desktop) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.card {
+  border: 1px solid $c-purple-100;
+  border-radius: 10px;
+  padding: 1rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .4s ease, transform .4s ease;
+
+  &--visible { opacity: 1; transform: none; }                  // fade-in on scroll
+  &__title  { color: $c-purple; margin: 0 0 .25rem; }
+  &__author { color: $c-purple-300; font-size: .85rem; margin: 0 0 .5rem; }
+}
+```
+
+## Policy & Style System
+
+Allow the `Academy` group on the template (the responsivegrid policy already does), then add a
+Style System group to the component's policy — e.g. a **Dense grid** style (`blog-explorer--dense`)
+whose SCSS tightens the grid `gap` and column count.
+
+<Callout type="do">Side effects (fetch, DOM writes) live in the modules; the transforms (`excerpt`, `byId`) are pure. The entry JS just wires them — and the single `post:open` event keeps the cards decoupled from the dialog.</Callout>
